@@ -645,7 +645,7 @@ CREATE TABLE `creature` (
   `id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT 'Creature Identifier',
   `map` smallint(5) unsigned NOT NULL DEFAULT '0' COMMENT 'Map Identifier',
   `spawnMask` tinyint(3) unsigned NOT NULL DEFAULT '1',
-  `phaseMask` smallint(5) unsigned NOT NULL DEFAULT '1',
+  `phaseMask` int(11) unsigned NOT NULL DEFAULT '1',
   `modelid` mediumint(8) unsigned NOT NULL DEFAULT '0',
   `equipment_id` mediumint(9) NOT NULL DEFAULT '0',
   `position_x` float NOT NULL DEFAULT '0',
@@ -1425,7 +1425,7 @@ CREATE TABLE `db_version` (
   `version` varchar(120) DEFAULT NULL,
   `creature_ai_version` varchar(120) DEFAULT NULL,
   `cache_id` int(10) DEFAULT '0',
-  `required_c12602_01_mangos_npc_spellclick_spells` bit(1) default NULL
+  `required_c12631_02_mangos_gameobject` bit(1) default NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 ROW_FORMAT=FIXED COMMENT='Used DB version notes';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1435,7 +1435,7 @@ CREATE TABLE `db_version` (
 
 LOCK TABLES `db_version` WRITE;
 /*!40000 ALTER TABLE `db_version` DISABLE KEYS */;
-INSERT INTO `db_version` (`version`, `creature_ai_version`, `cache_id`, `required_c12602_01_mangos_npc_spellclick_spells`) VALUES
+INSERT INTO `db_version` (`version`, `creature_ai_version`, `cache_id`, `required_c12631_02_mangos_gameobject`) VALUES
 ('Mangos default database.','Creature EventAI not provided.',0,NULL);
 /*!40000 ALTER TABLE `db_version` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -1840,7 +1840,7 @@ CREATE TABLE `gameobject` (
   `id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT 'Gameobject Identifier',
   `map` smallint(5) unsigned NOT NULL DEFAULT '0' COMMENT 'Map Identifier',
   `spawnMask` tinyint(3) unsigned NOT NULL DEFAULT '1',
-  `phaseMask` smallint(5) unsigned NOT NULL DEFAULT '1',
+  `phaseMask` int(11) unsigned NOT NULL DEFAULT '1',
   `position_x` float NOT NULL DEFAULT '0',
   `position_y` float NOT NULL DEFAULT '0',
   `position_z` float NOT NULL DEFAULT '0',
