@@ -178,6 +178,8 @@ extern DBCStorage <MailTemplateEntry>            sMailTemplateStore;
 extern DBCStorage <MapEntry>                     sMapStore;
 //extern DBCStorage <MapDifficultyEntry>           sMapDifficultyStore; -- use GetMapDifficultyData insteed
 extern MapDifficultyMap                          sMapDifficultyMap;
+extern DBCStorage <MountCapabilityEntry>         sMountCapabilityStore;
+extern DBCStorage <MountTypeEntry>               sMountTypeStore;
 extern DBCStorage <MovieEntry>                   sMovieStore;
 extern DBCStorage <NumTalentsAtLevelEntry>       sNumTalentsAtLevelStore;
 extern DBCStorage <OverrideSpellDataEntry>       sOverrideSpellDataStore;

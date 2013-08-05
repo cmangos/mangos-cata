@@ -431,7 +431,12 @@ class MANGOS_DLL_SPEC Aura
             }
         }
         void ApplyModifier(bool apply, bool Real = false);
-
+        void ChangeAmount(int32 amount, bool update = true)
+        {
+            m_modifier.m_amount = amount;
+            if (update)
+                GetHolder()->SendAuraUpdate(false);
+        }
         void UpdateAura(uint32 diff) { SetInUse(true); Update(diff); SetInUse(false); }
 
         void SetRemoveMode(AuraRemoveMode mode) { m_removeMode = mode; }

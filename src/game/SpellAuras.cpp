@@ -2896,14 +2896,14 @@ void Aura::HandleAuraDummy(bool apply, bool Real)
             }
             case 58600:                                     // Restricted Flight Area
             {
-                AreaTableEntry const* area = GetAreaEntryByAreaID(target->GetAreaId());
+                //AreaTableEntry const* area = GetAreaEntryByAreaID(target->GetAreaId());
 
-                // Dalaran restricted flight zone (recheck before apply unmount)
-                if (area && target->GetTypeId() == TYPEID_PLAYER && (area->flags & AREA_FLAG_CANNOT_FLY) &&
-                        ((Player*)target)->IsFreeFlying() && !((Player*)target)->isGameMaster())
-                {
-                    target->CastSpell(target, 58601, true); // Remove Flight Auras (also triggered Parachute (45472))
-                }
+                //// Dalaran restricted flight zone (recheck before apply unmount)
+                //if (area && target->GetTypeId() == TYPEID_PLAYER && (area->flags & AREA_FLAG_CANNOT_FLY) &&
+                //        ((Player*)target)->IsFreeFlying() && !((Player*)target)->isGameMaster())
+                //{
+                //    target->CastSpell(target, 58601, true); // Remove Flight Auras (also triggered Parachute (45472))
+                //}
                 return;
             }
             case 61900:                                     // Electrical Charge
@@ -3403,27 +3403,36 @@ void Aura::HandleAuraMounted(bool apply, bool Real)
 
     if (apply)
     {
-        CreatureInfo const* ci = ObjectMgr::GetCreatureTemplate(m_modifier.m_miscvalue);
-        if (!ci)
+        // Running Wild
+        if (GetId() == 87840)
+            target->Mount(target->getGender() == GENDER_MALE ? 29422 : 29423, GetId());
         {
-            sLog.outErrorDb("AuraMounted: `creature_template`='%u' not found in database (only need it modelid)", m_modifier.m_miscvalue);
-            return;
+            CreatureInfo const* ci = ObjectMgr::GetCreatureTemplate(m_modifier.m_miscvalue);
+            if (!ci)
+            {
+                sLog.outErrorDb("AuraMounted: `creature_template`='%u' not found in database (only need it modelid)", m_modifier.m_miscvalue);
+                return;
+            }
+
+            uint32 display_id = Creature::ChooseDisplayId(ci);
+            CreatureModelInfo const* minfo = sObjectMgr.GetCreatureModelRandomGender(display_id);
+            if (minfo)
+                display_id = minfo->modelid;
+
+            target->Mount(display_id, GetId());
+
+            if (ci->vehicleId)
+            {
+                target->SetVehicleId(ci->vehicleId, ci->Entry);
+
+                if (target->GetTypeId() == TYPEID_PLAYER)
+                    target->SetFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_PLAYER_VEHICLE);
+            }
         }
 
-        uint32 display_id = Creature::ChooseDisplayId(ci);
-        CreatureModelInfo const* minfo = sObjectMgr.GetCreatureModelRandomGender(display_id);
-        if (minfo)
-            display_id = minfo->modelid;
-
-        target->Mount(display_id, GetId());
-
-        if (ci->vehicleId)
-        {
-            target->SetVehicleId(ci->vehicleId, ci->Entry);
-
-            if (target->GetTypeId() == TYPEID_PLAYER)
-                target->SetFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_PLAYER_VEHICLE);
-        }
+        // cast speed aura
+        if (MountCapabilityEntry const* mountCapability = target->GetMountCapability(uint32(GetSpellEffect()->EffectMiscValueB)))
+            target->CastSpell(target, mountCapability->SpeedModSpell, true);
     }
     else
     {
@@ -3437,6 +3446,10 @@ void Aura::HandleAuraMounted(bool apply, bool Real)
 
             target->SetVehicleId(0, 0);
         }
+
+        // remove speed aura
+        if (MountCapabilityEntry const* mountCapability = sMountCapabilityStore.LookupEntry(m_modifier.m_amount))
+            target->RemoveAurasByCasterSpell(mountCapability->SpeedModSpell, target->GetObjectGuid());
     }
 }
 
