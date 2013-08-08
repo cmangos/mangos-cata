@@ -1131,6 +1131,8 @@ enum IgnoreUnitState
 
 struct SpellProcEventEntry;                                 // used only privately
 
+#define MAX_OBJECT_SLOT 5
+
 class MANGOS_DLL_SPEC Unit : public WorldObject
 {
     public:
@@ -1659,7 +1661,7 @@ class MANGOS_DLL_SPEC Unit : public WorldObject
         bool CheckAndIncreaseCastCounter();
         void DecreaseCastCounter() { if (m_castCounter) --m_castCounter; }
 
-        ObjectGuid m_ObjectSlotGuid[4];
+        ObjectGuid m_ObjectSlotGuid[MAX_OBJECT_SLOT];
         uint32 m_detectInvisibilityMask;
         uint32 m_invisibilityMask;
 
