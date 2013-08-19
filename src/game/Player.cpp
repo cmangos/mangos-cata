@@ -6197,7 +6197,7 @@ void Player::SaveRecallPosition()
     m_recallO = GetOrientation();
 }
 
-void Player::SendMessageToSet(WorldPacket* data, bool self)
+void Player::SendMessageToSet(WorldPacket* data, bool self) const
 {
     if (IsInWorld())
         GetMap()->MessageBroadcast(this, data, false);
@@ -6208,7 +6208,7 @@ void Player::SendMessageToSet(WorldPacket* data, bool self)
         GetSession()->SendPacket(data);
 }
 
-void Player::SendMessageToSetInRange(WorldPacket* data, float dist, bool self)
+void Player::SendMessageToSetInRange(WorldPacket* data, float dist, bool self) const
 {
     if (IsInWorld())
         GetMap()->MessageDistBroadcast(this, data, dist, false);
@@ -6217,7 +6217,7 @@ void Player::SendMessageToSetInRange(WorldPacket* data, float dist, bool self)
         GetSession()->SendPacket(data);
 }
 
-void Player::SendMessageToSetInRange(WorldPacket* data, float dist, bool self, bool own_team_only)
+void Player::SendMessageToSetInRange(WorldPacket* data, float dist, bool self, bool own_team_only) const
 {
     if (IsInWorld())
         GetMap()->MessageDistBroadcast(this, data, dist, false, own_team_only);
@@ -6226,7 +6226,7 @@ void Player::SendMessageToSetInRange(WorldPacket* data, float dist, bool self, b
         GetSession()->SendPacket(data);
 }
 
-void Player::SendDirectMessage(WorldPacket* data)
+void Player::SendDirectMessage(WorldPacket* data) const
 {
     GetSession()->SendPacket(data);
 }
