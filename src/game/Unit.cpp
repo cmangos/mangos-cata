@@ -8387,7 +8387,7 @@ int32 Unit::ModifyHealth(int32 dVal)
         SetHealth(val);
         gain = val - curHealth;
     }
-    else if (curHealth != maxHealth)
+    else
     {
         SetHealth(maxHealth);
         gain = maxHealth - curHealth;
@@ -8419,7 +8419,7 @@ int32 Unit::ModifyPower(Powers power, int32 dVal)
         SetPower(power, val);
         gain = val - curPower;
     }
-    else if (curPower != maxPower)
+    else
     {
         SetPower(power, maxPower);
         gain = maxPower - curPower;
