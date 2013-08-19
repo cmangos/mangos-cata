@@ -1459,7 +1459,6 @@ void SpellMgr::LoadSpellProcItemEnchant()
     QueryResult* result = WorldDatabase.Query("SELECT entry, ppmRate FROM spell_proc_item_enchant");
     if (!result)
     {
-
         BarGoLink bar(1);
 
         bar.step();
@@ -1800,7 +1799,6 @@ void SpellMgr::LoadSpellElixirs()
     QueryResult* result = WorldDatabase.Query("SELECT entry, mask FROM spell_elixir");
     if (!result)
     {
-
         BarGoLink bar(1);
 
         bar.step();
@@ -3524,7 +3522,6 @@ void SpellMgr::LoadSpellPetAuras()
     QueryResult* result = WorldDatabase.Query("SELECT spell, effectId, pet, aura FROM spell_pet_auras");
     if (!result)
     {
-
         BarGoLink bar(1);
 
         bar.step();
