@@ -493,8 +493,6 @@ enum UnitMoveType
 
 #define MAX_MOVE_TYPE     9
 
-extern float baseMoveSpeed[MAX_MOVE_TYPE];
-
 enum CombatRating
 {
     CR_WEAPON_SKILL             = 0,
