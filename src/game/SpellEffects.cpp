@@ -7445,7 +7445,7 @@ void Spell::EffectScriptEffect(SpellEffectEntry const* effect)
                     if (!unitTarget)
                         return;
 
-                    m_caster->CastSpell(unitTarget, m_spellInfo->CalculateSimpleValue(eff_idx), true);
+                    m_caster->CastSpell(unitTarget, effect->CalculateSimpleValue(), true);
                     return;
                 }
                 case 41055:                                 // Copy Weapon
@@ -7772,7 +7772,7 @@ void Spell::EffectScriptEffect(SpellEffectEntry const* effect)
                     if (!unitTarget || m_caster->GetTypeId() != TYPEID_PLAYER)
                         return;
 
-                    unitTarget->CastSpell(m_caster, m_spellInfo->CalculateSimpleValue(eff_idx), true);
+                    unitTarget->CastSpell(m_caster, effect->CalculateSimpleValue(), true);
                     return;
                 }
                 case 45717:                                 // Fog of Corruption (player buff)
@@ -9336,7 +9336,7 @@ void Spell::EffectActivateObject(SpellEffectEntry const* effect)
     if (!gameObjTarget)
         return;
 
-    uint32 misc_value = m_spellInfo->EffectMiscValue[eff_idx];
+    uint32 misc_value = uint32(effect->EffectMiscValue);
 
     switch (misc_value)
     {
@@ -9353,7 +9353,7 @@ void Spell::EffectActivateObject(SpellEffectEntry const* effect)
         {
             static ScriptInfo activateCommand = generateActivateCommand();
 
-            int32 delay_secs = m_spellInfo->CalculateSimpleValue(eff_idx);
+            int32 delay_secs = effect->CalculateSimpleValue();
 
             gameObjTarget->GetMap()->ScriptCommandStart(activateCommand, delay_secs, m_caster, gameObjTarget);
             break;
@@ -10503,7 +10503,7 @@ void Spell::EffectBind(SpellEffectEntry const* effect)
 
     Player* player = (Player*)unitTarget;
 
-    uint32 area_id = m_spellInfo->EffectMiscValue[eff_idx];
+    uint32 area_id = uint32(effect->EffectMiscValue);
     WorldLocation loc;
     if (effect->EffectImplicitTargetA == TARGET_TABLE_X_Y_Z_COORDINATES ||
         effect->EffectImplicitTargetB == TARGET_TABLE_X_Y_Z_COORDINATES)
