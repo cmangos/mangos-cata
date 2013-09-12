@@ -110,7 +110,7 @@ set(SRC_GRP_MOTION_GEN
 )
 
 set(SRC_GRP_MOVEMENT
-    MovementStructures.h
+    movement/MovementStructures.h
     movement/MoveSpline.cpp
     movement/MoveSpline.h
     movement/MoveSplineFlag.h

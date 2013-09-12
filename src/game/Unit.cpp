@@ -51,7 +51,7 @@
 #include "movement/MoveSplineInit.h"
 #include "movement/MoveSpline.h"
 #include "CreatureLinkingMgr.h"
-#include "MovementStructures.h"
+#include "movement/MovementStructures.h"
 
 #include <math.h>
 #include <stdarg.h>
