@@ -2721,7 +2721,7 @@ void Spell::EffectDummy(SpellEffectEntry const* effect)
                         return;
 
                     for (uint8 i = 0; i < 5; ++i)
-                        m_caster->CastSpell(unitTarget, m_spellInfo->CalculateSimpleValue(eff_idx), true);
+                        m_caster->CastSpell(unitTarget, effect->CalculateSimpleValue(), true);
                     return;
                 }
                 case 63820:                                 // Summon Scrap Bot Trigger (Ulduar - Mimiron) for Scrap Bots
