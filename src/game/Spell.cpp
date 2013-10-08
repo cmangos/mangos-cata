@@ -7956,15 +7956,18 @@ void Spell::GetSpellRangeAndRadius(SpellEffectEntry const* spellEffect, float& r
                 case 62301:                                 // Cosmic Smash (Ulduar, Algalon)
                 case 62374:                                 // Pursued (Ulduar, Flame Leviathan)
                 case 62488:                                 // Activate Construct (Ulduar, Ignis)
+                case 62797:                                 // Storm Cloud (Ulduar, Hodir)
                 case 63018:                                 // Searing Light (Ulduar, XT-002)
                 case 63024:                                 // Gravity Bomb (Ulduar, XT-002)
                 case 63387:                                 // Rapid Burst
+                case 63545:                                 // Icicle (Ulduar, Hodir)
                 case 63795:                                 // Psychosis (Ulduar, Yogg-Saron)
                 case 63820:                                 // Summon Scrap Bot Trigger (Ulduar, Mimiron) use for Scrap Bots, hits npc 33856
                 case 64218:                                 // Overcharge (VoA, Emalon)
                 case 64234:                                 // Gravity Bomb (h) (Ulduar, XT-002)
                 case 64425:                                 // Summon Scrap Bot Trigger (Ulduar, Mimiron) use for Assault Bots, hits npc 33856
                 case 64531:                                 // Rapid Burst (h)
+                case 64543:                                 // Melt Ice (Ulduar, Hodir)
                 case 65121:                                 // Searing Light (h) (Ulduar, XT-002)
                 case 65301:                                 // Psychosis (Ulduar, Yogg-Saron)
                 case 65872:                                 // Pursuing Spikes (ToCrusader, Anub'arak)
@@ -8009,6 +8012,7 @@ void Spell::GetSpellRangeAndRadius(SpellEffectEntry const* spellEffect, float& r
                     break;
                 case 10258:                                 // Awaken Vault Warder (Uldaman)
                 case 28542:                                 // Life Drain (Naxx, Sapphiron)
+                case 62476:                                 // Icicle (Ulduar, Hodir)
                 case 66013:                                 // Penetrating Cold (10 man) (ToCrusader, Anub'arak)
                 case 67755:                                 // Nerubian Burrower (Mode 1) (ToCrusader, Anub'arak)
                 case 67756:                                 // Nerubian Burrower (Mode 2) (ToCrusader, Anub'arak)
@@ -8034,6 +8038,7 @@ void Spell::GetSpellRangeAndRadius(SpellEffectEntry const* spellEffect, float& r
                 case 54522:                                 // Summon Ghouls On Scarlet Crusade
                 case 60936:                                 // Surge of Power (h) (Malygos)
                 case 61693:                                 // Arcane Storm (Malygos)
+                case 62477:                                 // Icicle (h) (Ulduar, Hodir)
                 case 63981:                                 // StoneGrip (h) (Ulduar, Kologarn)
                 case 64598:                                 // Cosmic Smash (h) (Ulduar, Algalon)
                 case 64620:                                 // Summon Fire Bot Trigger (Ulduar, Mimiron) hits npc 33856
