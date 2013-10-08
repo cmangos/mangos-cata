@@ -2715,6 +2715,15 @@ void Spell::EffectDummy(SpellEffectEntry const* effect)
                     unitTarget->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_OOC_NOT_ATTACKABLE);
                     return;
                 }
+                case 62278:                                 // Lightning Orb Charger
+                {
+                    if (!unitTarget)
+                        return;
+
+                    unitTarget->CastSpell(m_caster, 62466, true);
+                    unitTarget->CastSpell(unitTarget, 62279, true);
+                    return;
+                }
                 case 62797:                                 // Storm Cloud
                 {
                     if (!unitTarget || unitTarget->GetTypeId() != TYPEID_PLAYER)
@@ -8585,6 +8594,15 @@ void Spell::EffectScriptEffect(SpellEffectEntry const* effect)
 
                     return;
                 }
+                case 62042:                                 // Stormhammer
+                {
+                    if (!unitTarget || unitTarget->GetTypeId() != TYPEID_PLAYER)
+                        return;
+
+                    unitTarget->CastSpell(unitTarget, 62470, true);
+                    unitTarget->CastSpell(m_caster, 64909, true);
+                    return;
+                }
                 case 62381:                                 // Chill
                 {
                     if (!unitTarget)
@@ -8680,6 +8698,21 @@ void Spell::EffectScriptEffect(SpellEffectEntry const* effect)
                         return;
 
                     unitTarget->RemoveAuraHolderFromStack(64473);
+                    return;
+                }
+                case 64767:                                 // Stormhammer
+                {
+                    if (!unitTarget || unitTarget->GetTypeId() != TYPEID_UNIT)
+                        return;
+
+                    if (Creature* target = (Creature*)unitTarget)
+                    {
+                        target->AI()->EnterEvadeMode();
+                        target->CastSpell(target, 62470, true);
+                        target->CastSpell(m_caster, 64909, true);
+                        target->CastSpell(target, 64778, true);
+                        target->ForcedDespawn(10000);
+                    }
                     return;
                 }
                 case 66477:                                 // Bountiful Feast
