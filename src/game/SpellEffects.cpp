@@ -2746,7 +2746,7 @@ void Spell::EffectDummy(SpellEffectEntry const* effect)
                     if (!unitTarget)
                         return;
 
-                    unitTarget->RemoveAurasDueToSpell(m_spellInfo->CalculateSimpleValue(eff_idx));
+                    unitTarget->RemoveAurasDueToSpell(effect->CalculateSimpleValue());
                     return;
                 }
                 case 63545:                                 // Icicle
@@ -2754,7 +2754,7 @@ void Spell::EffectDummy(SpellEffectEntry const* effect)
                     if (!unitTarget || unitTarget->GetTypeId() != TYPEID_PLAYER)
                         return;
 
-                    m_caster->CastSpell(unitTarget, m_spellInfo->CalculateSimpleValue(eff_idx), true);
+                    m_caster->CastSpell(unitTarget, effect->CalculateSimpleValue(), true);
                 }
                 case 63820:                                 // Summon Scrap Bot Trigger (Ulduar - Mimiron) for Scrap Bots
                 case 64425:                                 // Summon Scrap Bot Trigger (Ulduar - Mimiron) for Assault Bots
@@ -2791,7 +2791,7 @@ void Spell::EffectDummy(SpellEffectEntry const* effect)
                     if (!unitTarget)
                         return;
 
-                    m_caster->CastSpell(unitTarget, m_spellInfo->CalculateSimpleValue(eff_idx), true);
+                    m_caster->CastSpell(unitTarget, effect->CalculateSimpleValue(), true);
                     m_caster->CastSpell(m_caster, 64540, true);
                     return;
                 }
@@ -8680,7 +8680,7 @@ void Spell::EffectScriptEffect(SpellEffectEntry const* effect)
                         return;
 
                     for (uint8 i = 0; i < 5; ++i)
-                        unitTarget->CastSpell(unitTarget, m_spellInfo->CalculateSimpleValue(eff_idx), true);
+                        unitTarget->CastSpell(unitTarget, effect->CalculateSimpleValue(), true);
                     return;
                 }
                 case 64456:                                 // Feral Essence Application Removal
