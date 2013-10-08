@@ -9830,7 +9830,7 @@ void Spell::EffectLeapForward(SpellEffectEntry const* effect)
     if (unitTarget->IsTaxiFlying())
         return;
 
-    if (m_spellInfo->rangeIndex == 1)                       // self range
+    if (m_spellInfo->rangeIndex == SPELL_RANGE_IDX_SELF_ONLY)
     {
         float dis = GetSpellRadius(sSpellRadiusStore.LookupEntry(effect->GetRadiusIndex()));
 
