@@ -8645,18 +8645,6 @@ void Spell::EffectScriptEffect(SpellEffectEntry const* effect)
                     unitTarget->RemoveAuraHolderFromStack(spellId, numStacks);
                     return;
                 }
-                case 62678:                                 // Summon Allies of Nature
-                {
-                    const uint32 randSpells[] =
-                    {
-                        62685,  // Summon Wave - 1 Mob
-                        62686,  // Summon Wave - 3 Mob
-                        62688,  // Summon Wave - 10 Mob
-                    };
-
-                    m_caster->CastSpell(m_caster, randSpells[urand(0, countof(randSpells) - 1)], true);
-                    return;
-                }
                 case 62688:                                 // Summon Wave - 10 Mob
                 {
                     uint32 spellId = effect->CalculateSimpleValue();
