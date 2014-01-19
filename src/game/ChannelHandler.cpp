@@ -40,7 +40,7 @@ void WorldSession::HandleJoinChannelOpcode(WorldPacket& recvPacket)
 
     if (ChannelMgr* cMgr = channelMgr(_player->GetTeam()))
         if (Channel* chn = cMgr->GetJoinChannel(channelname, channel_id))
-            chn->Join(_player->GetObjectGuid(), pass.c_str());
+            chn->Join(_player, pass.c_str());
 }
 
 void WorldSession::HandleLeaveChannelOpcode(WorldPacket& recvPacket)
@@ -59,7 +59,7 @@ void WorldSession::HandleLeaveChannelOpcode(WorldPacket& recvPacket)
     if (ChannelMgr* cMgr = channelMgr(_player->GetTeam()))
     {
         if (Channel* chn = cMgr->GetChannel(channelname, _player))
-            chn->Leave(_player->GetObjectGuid(), true);
+            chn->Leave(_player, true);
         cMgr->LeftChannel(channelname);
     }
 }
@@ -89,7 +89,7 @@ void WorldSession::HandleChannelPasswordOpcode(WorldPacket& recvPacket)
 
     if (ChannelMgr* cMgr = channelMgr(_player->GetTeam()))
         if (Channel* chn = cMgr->GetChannel(channelname, _player))
-            chn->Password(_player->GetObjectGuid(), pass.c_str());
+            chn->Password(_player, pass.c_str());
 }
 
 void WorldSession::HandleChannelSetOwnerOpcode(WorldPacket& recvPacket)
@@ -110,7 +110,7 @@ void WorldSession::HandleChannelSetOwnerOpcode(WorldPacket& recvPacket)
 
     if (ChannelMgr* cMgr = channelMgr(_player->GetTeam()))
         if (Channel* chn = cMgr->GetChannel(channelname, _player))
-            chn->SetOwner(_player->GetObjectGuid(), newp.c_str());
+            chn->SetOwner(_player, newp.c_str());
 }
 
 void WorldSession::HandleChannelOwnerOpcode(WorldPacket& recvPacket)
@@ -121,7 +121,7 @@ void WorldSession::HandleChannelOwnerOpcode(WorldPacket& recvPacket)
 
     if (ChannelMgr* cMgr = channelMgr(_player->GetTeam()))
         if (Channel* chn = cMgr->GetChannel(channelname, _player))
-            chn->SendWhoOwner(_player->GetObjectGuid());
+            chn->SendWhoOwner(_player);
 }
 
 void WorldSession::HandleChannelModeratorOpcode(WorldPacket& recvPacket)
@@ -141,7 +141,7 @@ void WorldSession::HandleChannelModeratorOpcode(WorldPacket& recvPacket)
 
     if (ChannelMgr* cMgr = channelMgr(_player->GetTeam()))
         if (Channel* chn = cMgr->GetChannel(channelname, _player))
-            chn->SetModerator(_player->GetObjectGuid(), otp.c_str());
+            chn->SetModerator(_player, otp.c_str());
 }
 
 void WorldSession::HandleChannelUnmoderatorOpcode(WorldPacket& recvPacket)
@@ -161,7 +161,7 @@ void WorldSession::HandleChannelUnmoderatorOpcode(WorldPacket& recvPacket)
 
     if (ChannelMgr* cMgr = channelMgr(_player->GetTeam()))
         if (Channel* chn = cMgr->GetChannel(channelname, _player))
-            chn->UnsetModerator(_player->GetObjectGuid(), otp.c_str());
+            chn->UnsetModerator(_player, otp.c_str());
 }
 
 void WorldSession::HandleChannelMuteOpcode(WorldPacket& recvPacket)
@@ -181,7 +181,7 @@ void WorldSession::HandleChannelMuteOpcode(WorldPacket& recvPacket)
 
     if (ChannelMgr* cMgr = channelMgr(_player->GetTeam()))
         if (Channel* chn = cMgr->GetChannel(channelname, _player))
-            chn->SetMute(_player->GetObjectGuid(), otp.c_str());
+            chn->SetMute(_player, otp.c_str());
 }
 
 void WorldSession::HandleChannelUnmuteOpcode(WorldPacket& recvPacket)
@@ -201,7 +201,7 @@ void WorldSession::HandleChannelUnmuteOpcode(WorldPacket& recvPacket)
 
     if (ChannelMgr* cMgr = channelMgr(_player->GetTeam()))
         if (Channel* chn = cMgr->GetChannel(channelname, _player))
-            chn->UnsetMute(_player->GetObjectGuid(), otp.c_str());
+            chn->UnsetMute(_player, otp.c_str());
 }
 
 void WorldSession::HandleChannelInviteOpcode(WorldPacket& recvPacket)
@@ -221,7 +221,7 @@ void WorldSession::HandleChannelInviteOpcode(WorldPacket& recvPacket)
 
     if (ChannelMgr* cMgr = channelMgr(_player->GetTeam()))
         if (Channel* chn = cMgr->GetChannel(channelname, _player))
-            chn->Invite(_player->GetObjectGuid(), otp.c_str());
+            chn->Invite(_player, otp.c_str());
 }
 
 void WorldSession::HandleChannelKickOpcode(WorldPacket& recvPacket)
@@ -241,7 +241,7 @@ void WorldSession::HandleChannelKickOpcode(WorldPacket& recvPacket)
 
     if (ChannelMgr* cMgr = channelMgr(_player->GetTeam()))
         if (Channel* chn = cMgr->GetChannel(channelname, _player))
-            chn->Kick(_player->GetObjectGuid(), otp.c_str());
+            chn->Kick(_player, otp.c_str());
 }
 
 void WorldSession::HandleChannelBanOpcode(WorldPacket& recvPacket)
@@ -261,7 +261,7 @@ void WorldSession::HandleChannelBanOpcode(WorldPacket& recvPacket)
 
     if (ChannelMgr* cMgr = channelMgr(_player->GetTeam()))
         if (Channel* chn = cMgr->GetChannel(channelname, _player))
-            chn->Ban(_player->GetObjectGuid(), otp.c_str());
+            chn->Ban(_player, otp.c_str());
 }
 
 void WorldSession::HandleChannelUnbanOpcode(WorldPacket& recvPacket)
@@ -281,7 +281,7 @@ void WorldSession::HandleChannelUnbanOpcode(WorldPacket& recvPacket)
 
     if (ChannelMgr* cMgr = channelMgr(_player->GetTeam()))
         if (Channel* chn = cMgr->GetChannel(channelname, _player))
-            chn->UnBan(_player->GetObjectGuid(), otp.c_str());
+            chn->UnBan(_player, otp.c_str());
 }
 
 void WorldSession::HandleChannelAnnouncementsOpcode(WorldPacket& recvPacket)
@@ -291,7 +291,7 @@ void WorldSession::HandleChannelAnnouncementsOpcode(WorldPacket& recvPacket)
     std::string channelname = recvPacket.ReadString(recvPacket.ReadBits(8));
     if (ChannelMgr* cMgr = channelMgr(_player->GetTeam()))
         if (Channel* chn = cMgr->GetChannel(channelname, _player))
-            chn->Announce(_player->GetObjectGuid());
+            chn->Announce(_player);
 }
 
 void WorldSession::HandleChannelModerateOpcode(WorldPacket& recvPacket)
@@ -302,7 +302,7 @@ void WorldSession::HandleChannelModerateOpcode(WorldPacket& recvPacket)
     recvPacket >> channelname;
     if (ChannelMgr* cMgr = channelMgr(_player->GetTeam()))
         if (Channel* chn = cMgr->GetChannel(channelname, _player))
-            chn->Moderate(_player->GetObjectGuid());
+            chn->Moderate(_player);
 }
 
 void WorldSession::HandleChannelDisplayListQueryOpcode(WorldPacket& recvPacket)
