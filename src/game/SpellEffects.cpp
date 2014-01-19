@@ -2824,7 +2824,6 @@ void Spell::EffectDummy(SpellEffectEntry const* effect)
                     m_caster->CastSpell(m_caster, m_caster->GetMap()->IsRegularDifficulty() ? 66351 : 63009, true);
                     m_caster->RemoveAurasDueToSpell(65345);
                     m_caster->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-                    ((Creature*)m_caster)->ForcedDespawn(2000);
                     return;
                 }
                 case 66390:                                 // Read Last Rites
@@ -8768,6 +8767,14 @@ void Spell::EffectScriptEffect(SpellEffectEntry const* effect)
                         return;
 
                     unitTarget->RemoveAuraHolderFromStack(64473);
+                    return;
+                }
+                case 64623:                                 // Frost Bomb
+                {
+                    if (!unitTarget)
+                        return;
+
+                    m_caster->CastSpell(unitTarget, 64627, true);
                     return;
                 }
                 case 64767:                                 // Stormhammer
