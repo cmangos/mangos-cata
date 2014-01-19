@@ -7729,7 +7729,7 @@ void Spell::EffectScriptEffect(SpellEffectEntry const* effect)
                     if (!unitTarget)
                         return;
 
-                    unitTarget->CastSpell(unitTarget, m_spellInfo->CalculateSimpleValue(eff_idx), true);
+                    unitTarget->CastSpell(unitTarget, effect->CalculateSimpleValue(), true);
                     return;
                 }
                 case 45668:                                 // Ultra-Advanced Proto-Typical Shortening Blaster
@@ -8626,7 +8626,7 @@ void Spell::EffectScriptEffect(SpellEffectEntry const* effect)
                     if (!unitTarget)
                         return;
 
-                    unitTarget->RemoveAurasDueToSpell(m_spellInfo->CalculateSimpleValue(eff_idx));
+                    unitTarget->RemoveAurasDueToSpell(effect->CalculateSimpleValue());
                     return;
                 }
                 case 62262:                                 // Brightleaf Flux
@@ -8638,7 +8638,7 @@ void Spell::EffectScriptEffect(SpellEffectEntry const* effect)
                         unitTarget->RemoveAurasDueToSpell(62239);
                     else
                     {
-                        uint32 stackAmount = urand(1, GetSpellStore()->LookupEntry(62239)->StackAmount);
+                        uint32 stackAmount = urand(1, GetSpellStore()->LookupEntry(62239)->GetStackAmount());
 
                         for (uint8 i = 0; i < stackAmount; ++i)
                             unitTarget->CastSpell(unitTarget, 62239, true);
