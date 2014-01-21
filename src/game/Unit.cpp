@@ -1202,21 +1202,6 @@ uint32 Unit::DealDamage(Unit* pVictim, uint32 damage, CleanDamage const* cleanDa
             }
         }
 
-        // TODO: Store auras by interrupt flag to speed this up.
-        SpellAuraHolderMap& vAuras = pVictim->GetSpellAuraHolderMap();
-        for (SpellAuraHolderMap::const_iterator i = vAuras.begin(), next; i != vAuras.end(); i = next)
-        {
-            const SpellEntry* se = i->second->GetSpellProto();
-            next = i; ++next;
-            if (spellProto && spellProto->Id == se->Id) // Not drop auras added by self
-                continue;
-            if (!se->GetProcFlags() && (se->GetAuraInterruptFlags() & AURA_INTERRUPT_FLAG_DAMAGE))
-            {
-                pVictim->RemoveAurasDueToSpell(i->second->GetId());
-                next = vAuras.begin();
-            }
-        }
-
         if (damagetype != NODAMAGE && damage && pVictim->GetTypeId() == TYPEID_PLAYER)
         {
             if (damagetype != DOT)
@@ -10681,75 +10666,87 @@ void Unit::ProcDamageAndSpellFor(bool isVictim, Unit* pTarget, uint32 procFlag, 
             continue;
 
         SpellProcEventEntry const* spellProcEvent = NULL;
+        // check if that aura is triggered by proc event (then it will be managed by proc handler)
         if (!IsTriggeredAtSpellProcEvent(pTarget, itr->second, procSpell, procFlag, procExtra, attType, isVictim, spellProcEvent))
+        {
+            const SpellEntry* se = itr->second->GetSpellProto();
+            if (!se)
+                continue;
+
+            // spell seem not managed by proc system, although some case need to be handled
+
+            // check if the aura is interruptible by damage (not remove self added aura)
+            if (procSpell && procSpell->Id != se->Id && se->GetAuraInterruptFlags() & AURA_INTERRUPT_FLAG_DAMAGE)
+                removedSpells.push_back(se->Id);
+
             continue;
+        }
+            
 
         itr->second->SetInUse(true);                        // prevent holder deletion
         procTriggered.push_back(ProcTriggeredData(spellProcEvent, itr->second));
     }
 
-    // Nothing found
-    if (procTriggered.empty())
-        return;
-
-    // Handle effects proceed this time
-    for (ProcTriggeredList::const_iterator itr = procTriggered.begin(); itr != procTriggered.end(); ++itr)
+    if (!procTriggered.empty())
     {
-        // Some auras can be deleted in function called in this loop (except first, ofc)
-        SpellAuraHolder* triggeredByHolder = itr->triggeredByHolder;
-        if (triggeredByHolder->IsDeleted())
-            continue;
-
-        SpellProcEventEntry const* spellProcEvent = itr->spellProcEvent;
-        bool useCharges = triggeredByHolder->GetAuraCharges() > 0;
-        bool procSuccess = true;
-        bool anyAuraProc = false;
-
-        // For players set spell cooldown if need
-        uint32 cooldown = 0;
-        if (GetTypeId() == TYPEID_PLAYER && spellProcEvent && spellProcEvent->cooldown)
-            cooldown = spellProcEvent->cooldown;
-
-        for (int32 i = 0; i < MAX_EFFECT_INDEX; ++i)
+        // Handle effects proceed this time
+        for (ProcTriggeredList::const_iterator itr = procTriggered.begin(); itr != procTriggered.end(); ++itr)
         {
-            Aura* triggeredByAura = triggeredByHolder->GetAuraByEffectIndex(SpellEffectIndex(i));
-            if (!triggeredByAura)
+            // Some auras can be deleted in function called in this loop (except first, ofc)
+            SpellAuraHolder* triggeredByHolder = itr->triggeredByHolder;
+            if (triggeredByHolder->IsDeleted())
                 continue;
 
-            SpellEffectEntry const* spellEffect = triggeredByHolder->GetSpellProto()->GetSpellEffect(SpellEffectIndex(i));
-            if (!spellEffect)
-                continue;
+            SpellProcEventEntry const* spellProcEvent = itr->spellProcEvent;
+            bool useCharges = triggeredByHolder->GetAuraCharges() > 0;
+            bool procSuccess = true;
+            bool anyAuraProc = false;
 
-            if (procSpell)
+            // For players set spell cooldown if need
+            uint32 cooldown = 0;
+            if (GetTypeId() == TYPEID_PLAYER && spellProcEvent && spellProcEvent->cooldown)
+                cooldown = spellProcEvent->cooldown;
+
+            for (int32 i = 0; i < MAX_EFFECT_INDEX; ++i)
             {
-                if (spellProcEvent)
-                {
-                    if (spellProcEvent->spellFamilyMask[i])
-                    {
-                        if (!procSpell->IsFitToFamilyMask(spellProcEvent->spellFamilyMask[i]))
-                            continue;
+                Aura* triggeredByAura = triggeredByHolder->GetAuraByEffectIndex(SpellEffectIndex(i));
+                if (!triggeredByAura)
+                    continue;
 
-                        // don't allow proc from cast end for non modifier spells
-                        // unless they have proc ex defined for that
-                        if (IsCastEndProcModifierAura(triggeredByHolder->GetSpellProto(), SpellEffectIndex(i), procSpell))
+                SpellEffectEntry const* spellEffect = triggeredByHolder->GetSpellProto()->GetSpellEffect(SpellEffectIndex(i));
+                if (!spellEffect)
+                    continue;
+
+                if (procSpell)
+                {
+                    if (spellProcEvent)
+                    {
+                        if (spellProcEvent->spellFamilyMask[i])
                         {
-                            if (useCharges && procExtra != PROC_EX_CAST_END && spellProcEvent->procEx == PROC_EX_NONE)
+                            if (!procSpell->IsFitToFamilyMask(spellProcEvent->spellFamilyMask[i]))
+                                continue;
+
+                            // don't allow proc from cast end for non modifier spells
+                            // unless they have proc ex defined for that
+                            if (IsCastEndProcModifierAura(triggeredByHolder->GetSpellProto(), SpellEffectIndex(i), procSpell))
+                            {
+                                if (useCharges && procExtra != PROC_EX_CAST_END && spellProcEvent->procEx == PROC_EX_NONE)
+                                    continue;
+                            }
+                            else if (spellProcEvent->procEx == PROC_EX_NONE && procExtra == PROC_EX_CAST_END)
                                 continue;
                         }
-                        else if (spellProcEvent->procEx == PROC_EX_NONE && procExtra == PROC_EX_CAST_END)
+                        // don't check dbc FamilyFlags if schoolMask exists
+                        else if (!triggeredByAura->CanProcFrom(procSpell, procFlag, spellProcEvent->procEx, procExtra, damage != 0, !spellProcEvent->schoolMask))
                             continue;
                     }
-                    // don't check dbc FamilyFlags if schoolMask exists
-                    else if (!triggeredByAura->CanProcFrom(procSpell, procFlag, spellProcEvent->procEx, procExtra, damage != 0, !spellProcEvent->schoolMask))
+                    else if (!triggeredByAura->CanProcFrom(procSpell, procFlag, PROC_EX_NONE, procExtra, damage != 0, true))
                         continue;
                 }
-                else if (!triggeredByAura->CanProcFrom(procSpell, procFlag, PROC_EX_NONE, procExtra, damage != 0, true))
-                    continue;
-            }
 
-            SpellAuraProcResult procResult = (*this.*AuraProcHandler[spellEffect->EffectApplyAuraName])(pTarget, damage, triggeredByAura, procSpell, procFlag, procExtra, cooldown);
-            switch (procResult)
-            {
+                SpellAuraProcResult procResult = (*this.*AuraProcHandler[spellEffect->EffectApplyAuraName])(pTarget, damage, triggeredByAura, procSpell, procFlag, procExtra, cooldown);
+                switch (procResult)
+                {
                 case SPELL_AURA_PROC_CANT_TRIGGER:
                     continue;
                 case SPELL_AURA_PROC_FAILED:
@@ -10757,20 +10754,21 @@ void Unit::ProcDamageAndSpellFor(bool isVictim, Unit* pTarget, uint32 procFlag, 
                     break;
                 case SPELL_AURA_PROC_OK:
                     break;
+                }
+
+                anyAuraProc = true;
             }
 
-            anyAuraProc = true;
-        }
+            // Remove charge (aura can be removed by triggers)
+            if (useCharges && procSuccess && anyAuraProc && !triggeredByHolder->IsDeleted())
+            {
+                // If last charge dropped add spell to remove list
+                if (triggeredByHolder->DropAuraCharge())
+                    removedSpells.push_back(triggeredByHolder->GetId());
+            }
 
-        // Remove charge (aura can be removed by triggers)
-        if (useCharges && procSuccess && anyAuraProc && !triggeredByHolder->IsDeleted())
-        {
-            // If last charge dropped add spell to remove list
-            if (triggeredByHolder->DropAuraCharge())
-                removedSpells.push_back(triggeredByHolder->GetId());
+            triggeredByHolder->SetInUse(false);
         }
-
-        triggeredByHolder->SetInUse(false);
     }
 
     if (!removedSpells.empty())
