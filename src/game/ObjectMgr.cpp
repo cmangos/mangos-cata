@@ -955,7 +955,8 @@ void ObjectMgr::LoadCreatureClassLvlStats()
             cCLS.BaseDamage = fields[7 + (i * 2)].GetFloat();
         }
         ++storedRow;
-    } while (result->NextRow());
+    }
+    while (result->NextRow());
 
     delete result;
 
