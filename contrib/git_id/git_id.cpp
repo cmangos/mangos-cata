@@ -436,8 +436,8 @@ bool get_sql_update_info(const char* buffer, sql_update_info& info)
     if (sscanf(buffer, REV_SCAN "_%[^_]_%d_%d", &dummy[0], &dummy[1], &dummy[2]) == 3)
         return false;
 
-    if (sscanf(buffer, REV_SCAN "_%[^_]_%d_%[^_]_%[^.].sql", &info.rev, &info.nr, info.db, info.table) != 4 &&
-            sscanf(buffer, REV_SCAN "_%[^_]_%d_%[^.].sql", &info.rev, &info.nr, info.db) != 3)
+    if (sscanf(buffer, REV_SCAN "_%d_%[^_]_%[^.].sql", &info.rev, &info.nr, info.db, info.table) != 4 &&
+            sscanf(buffer, REV_SCAN "_%d_%[^.].sql", &info.rev, &info.nr, info.db) != 3)
     {
         info.rev = 0;       // this may be set by the first scans, even if they fail
         if (sscanf(buffer, "%d_%[^_]_%[^.].sql", &info.nr, info.db, info.table) != 3 &&
@@ -562,7 +562,7 @@ bool convert_sql_updates()
         // generating the new name should work for updates with or without a rev
         char src_file[MAX_PATH], new_name[MAX_PATH], dst_file[MAX_PATH];
         snprintf(src_file, MAX_PATH, "%s%s/%s", path_prefix, sql_update_dir, itr->c_str());
-        snprintf(new_name, MAX_PATH, "%d_%0*d_%s%s%s", rev, 2, info.nr, info.db, info.has_table ? "_" : "", info.table);
+        snprintf(new_name, MAX_PATH, REV_PREFIX "%d_%0*d_%s%s%s", rev, 2, info.nr, info.db, info.has_table ? "_" : "", info.table);
         snprintf(dst_file, MAX_PATH, "%s%s/%s.sql", path_prefix, sql_update_dir, new_name);
 
         FILE* fin = fopen(src_file, "r");
