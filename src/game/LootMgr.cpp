@@ -1264,7 +1264,7 @@ void LoadLootTemplates_Creature()
     {
         if (CreatureInfo const* cInfo = sCreatureStorage.LookupEntry<CreatureInfo>(i))
         {
-            if (uint32 lootid = cInfo->lootid)
+            if (uint32 lootid = cInfo->LootId)
             {
                 if (ids_set.find(lootid) == ids_set.end())
                     LootTemplates_Creature.ReportNotExistedId(lootid);
@@ -1478,7 +1478,7 @@ void LoadLootTemplates_Skinning()
     {
         if (CreatureInfo const* cInfo = sCreatureStorage.LookupEntry<CreatureInfo>(i))
         {
-            if (uint32 lootid = cInfo->SkinLootId)
+            if (uint32 lootid = cInfo->SkinningLootId)
             {
                 if (ids_set.find(lootid) == ids_set.end())
                     LootTemplates_Skinning.ReportNotExistedId(lootid);
