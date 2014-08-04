@@ -2388,9 +2388,6 @@ struct VehicleSeatEntry
     //uint32 unk[6];                                        // 58-63
     //uint32 unk2;                                          // 64 4.0.0
     //uint32 unk3;                                          // 65 4.0.1
-
-    bool IsUsable() const { return m_flags & SEAT_FLAG_USABLE; }
-
 };
 
 struct WMOAreaTableEntry
