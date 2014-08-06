@@ -841,7 +841,7 @@ bool Player::Create(uint32 guidlow, const std::string& name, uint8 race, uint8 c
     // all item positions resolved
 
     if (info->phaseMap != 0)
-        CharacterDatabase.PExecute("REPLACE INTO `character_phase_data (`guid`, `map`) VALUES (%u, %u)", guidlow, info->phaseMap);
+        CharacterDatabase.PExecute("REPLACE INTO `character_phase_data` (`guid`, `map`) VALUES (%u, %u)", guidlow, info->phaseMap);
 
     return true;
 }
