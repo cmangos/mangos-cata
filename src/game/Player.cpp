@@ -14806,7 +14806,7 @@ void Player::SendQuestReward(Quest const* pQuest, uint32 XP, Object* /*questGive
         for (QuestPhaseMapsVector::const_iterator itr = QuestPhaseVector->begin(); itr != QuestPhaseVector->end(); ++itr)
         {
             GetSession()->SendSetPhaseShift(itr->PhaseMask, itr->MapId);
-            CharacterDatabase.PExecute("REPLACE INTO character_phase_data` (`guid`, `map`, `phase`) VALUES (%u, %u, %u)", GetSession()->GetPlayer()->GetGUIDLow(), itr->MapId, itr->PhaseMask);
+            CharacterDatabase.PExecute("REPLACE INTO character_phase_data (`guid`, `map`, `phase`) VALUES (%u, %u, %u)", GetSession()->GetPlayer()->GetGUIDLow(), itr->MapId, itr->PhaseMask);
         }
     }
 }
