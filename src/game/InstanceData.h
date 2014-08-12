@@ -21,6 +21,7 @@
 
 #include "Common.h"
 #include "ObjectGuid.h"
+#include "WorldPacket.h"
 
 class Map;
 class Unit;
@@ -47,6 +48,21 @@ enum InstanceConditionIDs                                   // Suggested values 
     INSTANCE_CONDITION_ID_SCALDING_WATER    = 37284,
     // to check vehicles in Ulduar
     INSTANCE_CONDITION_ID_ULDUAR            = 33113,
+};
+
+enum EncounterFrameTypes                                    // only raid UI specific
+{
+    ENCOUNTER_FRAME_SET_COMBAT_RES_LIMIT    = 0,
+    ENCOUNTER_FRAME_RESET_COMBAT_RES_LIMIT  = 1,
+    ENCOUNTER_FRAME_ENGAGE                  = 2,
+    ENCOUNTER_FRAME_DISENGAGE               = 3,
+    ENCOUNTER_FRAME_UPDATE_PRIORITY         = 4,
+    ENCOUNTER_FRAME_ADD_TIMER               = 5,
+    ENCOUNTER_FRAME_ENABLE_OBJECTIVE        = 6,
+    ENCOUNTER_FRAME_UPDATE_OBJECTIVE        = 7,
+    ENCOUNTER_FRAME_DISABLE_OBJECTIVE       = 8,
+    ENCOUNTER_FRAME_UNK7                    = 9,    // Seems to have something to do with sorting the encounter units
+    ENCOUNTER_FRAME_ADD_COMBAT_RES_LIMIT    = 10
 };
 
 class MANGOS_DLL_SPEC InstanceData
@@ -119,6 +135,9 @@ class MANGOS_DLL_SPEC InstanceData
         // This is used for such things are heroic loot
         // See ObjectMgr.h enum ConditionSource for possible values of conditionSourceType
         virtual bool CheckConditionCriteriaMeet(Player const* source, uint32 instance_condition_id, WorldObject const* conditionSource, uint32 conditionSourceType) const;
+
+        // Special UI unit frame - sent mostly for raid bosses
+        void SendEncounterFrame(uint32 type, ObjectGuid sourceGuid = ObjectGuid(), uint8 param1 = 0, uint8 param2 = 0);
 };
 
 #endif
