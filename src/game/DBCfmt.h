@@ -96,6 +96,7 @@ const char QuestFactionRewardfmt[]="niiiiiiiiii";
 const char QuestSortEntryfmt[]="nx";
 const char QuestXPLevelfmt[]="niiiiiiiiii";
 const char Phasefmt[]="nii";
+const char PowerDisplayfmt[] = "nixxxx";
 const char PvPDifficultyfmt[]="diiiii";
 const char RandomPropertiesPointsfmt[]="niiiiiiiiiiiiiii";
 const char ScalingStatDistributionfmt[]="niiiiiiiiiiiiiiiiiiiixi";

@@ -1428,6 +1428,16 @@ struct PhaseEntry
     uint32 Flags;                                           // 2 - 0x0, 0x4, 0x8
 };
 
+struct PowerDisplayEntry
+{
+    uint32      id;                                         // 0        m_ID
+    uint32      power;                                      // 1        m_power
+    // uint32   unk1                                        // 2
+    // float    unk2                                        // 3
+    // float    unk3                                        // 4
+    // float    unk4                                        // 5
+};
+
 struct PvPDifficultyEntry
 {
     //uint32      id;                                       // 0        m_ID
@@ -2320,9 +2330,9 @@ struct VehicleEntry
     uint32  m_uiLocomotionType;                             // 34
     float   m_msslTrgtImpactTexRadius;                      // 35
     uint32  m_uiSeatIndicatorType;                          // 36       m_vehicleUIIndicatorID
-    uint32  m_powerType;                                    // 37       m_powerDisplayID
-                                                            // 38 new in 3.1
-                                                            // 39 new in 3.1
+    uint32  m_powerDisplayID;                               // 37
+    // 38 new in 3.1
+    // 39 new in 3.1
 };
 
 struct VehicleSeatEntry
