@@ -1165,6 +1165,18 @@ enum IgnoreUnitState
 #define REGEN_TIME_PRECISE      500                         // Used in Spell::CheckPower for precise regeneration in spell cast time
 #define REGEN_TIME_HOLY_POWER   10000                       // This determines how often holy power regen is processed
 
+// Power type values defines
+enum PowerDefaults
+{
+    POWER_RAGE_DEFAULT              = 1000,
+    POWER_FOCUS_DEFAULT             = 100,
+    POWER_ENERGY_DEFAULT            = 100,
+    POWER_RUNE_DEFAULT              = 8,
+    POWER_RUNIC_POWER_DEFAULT       = 1000,
+    POWER_HOLY_POWER_DEFAULT        = 3,
+    POWER_SOUL_SHARDS_DEFAULT       = 3,
+};
+
 struct SpellProcEventEntry;                                 // used only privately
 
 #define MAX_OBJECT_SLOT 5
