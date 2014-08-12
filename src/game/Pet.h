@@ -172,7 +172,6 @@ class MANGOS_DLL_SPEC Pet : public Creature
         }
 
         void RegenerateAll(uint32 update_diff) override;    // overwrite Creature::RegenerateAll
-        void Regenerate(Powers power);
         void GivePetXP(uint32 xp);
         void GivePetLevel(uint32 level);
         void SynchronizeLevelWithOwner();
