@@ -73,6 +73,7 @@ ScriptMgr::ScriptMgr() :
     m_pOnGOUse(NULL),
     m_pOnItemUse(NULL),
     m_pOnAreaTrigger(NULL),
+    m_pOnNpcSpellClick(NULL),
     m_pOnProcessEvent(NULL),
     m_pOnEffectDummyCreature(NULL),
     m_pOnEffectDummyGO(NULL),
@@ -2111,6 +2112,11 @@ bool ScriptMgr::OnAreaTrigger(Player* pPlayer, AreaTriggerEntry const* atEntry)
     return m_pOnAreaTrigger != NULL && m_pOnAreaTrigger(pPlayer, atEntry);
 }
 
+bool ScriptMgr::OnNpcSpellClick(Player* pPlayer, Creature* pClickedCreature, uint32 spellId)
+{
+    return m_pOnNpcSpellClick != NULL && m_pOnNpcSpellClick(pPlayer, pClickedCreature, spellId);
+}
+
 bool ScriptMgr::OnProcessEvent(uint32 eventId, Object* pSource, Object* pTarget, bool isStart)
 {
     return m_pOnProcessEvent != NULL && m_pOnProcessEvent(eventId, pSource, pTarget, isStart);
@@ -2191,6 +2197,7 @@ ScriptLoadResult ScriptMgr::LoadScriptLibrary(const char* libName)
     GET_SCRIPT_HOOK_PTR(m_pOnGOUse,                    "GOUse");
     GET_SCRIPT_HOOK_PTR(m_pOnItemUse,                  "ItemUse");
     GET_SCRIPT_HOOK_PTR(m_pOnAreaTrigger,              "AreaTrigger");
+    GET_SCRIPT_HOOK_PTR(m_pOnNpcSpellClick,            "NpcSpellClick");
     GET_SCRIPT_HOOK_PTR(m_pOnProcessEvent,             "ProcessEvent");
     GET_SCRIPT_HOOK_PTR(m_pOnEffectDummyCreature,      "EffectDummyCreature");
     GET_SCRIPT_HOOK_PTR(m_pOnEffectDummyGO,            "EffectDummyGameObject");
@@ -2245,6 +2252,7 @@ void ScriptMgr::UnloadScriptLibrary()
     m_pOnGOUse                  = NULL;
     m_pOnItemUse                = NULL;
     m_pOnAreaTrigger            = NULL;
+    m_pOnNpcSpellClick          = NULL;
     m_pOnProcessEvent           = NULL;
     m_pOnEffectDummyCreature    = NULL;
     m_pOnEffectDummyGO          = NULL;
