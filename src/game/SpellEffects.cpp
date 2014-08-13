@@ -8843,6 +8843,23 @@ void Spell::EffectScriptEffect(SpellEffectEntry const* effect)
                     m_caster->CastSpell(unitTarget, 63036, true);
                     return;
                 }
+                case 63993:                                 // Cancel Illusion Room Aura
+                {
+                    if (!unitTarget || unitTarget->GetTypeId() != TYPEID_PLAYER)
+                        return;
+
+                    unitTarget->CastSpell(unitTarget, 63992, true);
+                    unitTarget->RemoveAurasDueToSpell(effect->CalculateSimpleValue());
+                    return;
+                }
+                case 64069:                                 // Match Health (Rank 1)
+                {
+                    if (!unitTarget)
+                        return;
+
+                    unitTarget->SetHealthPercent(m_caster->GetHealthPercent());
+                    return;
+                }
                 case 64123:                                 // Lunge
                 {
                     if (!unitTarget || unitTarget->GetTypeId() != TYPEID_PLAYER)
@@ -8921,6 +8938,14 @@ void Spell::EffectScriptEffect(SpellEffectEntry const* effect)
                         return;
 
                     unitTarget->CastSpell(m_caster, 63382, false);
+                    return;
+                }
+                case 65238:                                 // Shattered Illusion
+                {
+                    if (!unitTarget)
+                        return;
+
+                    unitTarget->RemoveAurasDueToSpell(effect->CalculateSimpleValue());
                     return;
                 }
                 case 66477:                                 // Bountiful Feast
