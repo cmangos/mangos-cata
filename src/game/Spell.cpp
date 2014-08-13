@@ -7994,6 +7994,7 @@ void Spell::GetSpellRangeAndRadius(SpellEffectEntry const* spellEffect, float& r
                 case 64234:                                 // Gravity Bomb (h) (Ulduar, XT-002)
                 case 64402:                                 // Rocket Strike (Ulduar, Mimiron)
                 case 64425:                                 // Summon Scrap Bot Trigger (Ulduar, Mimiron) use for Assault Bots, hits npc 33856
+                case 64465:                                 // Shadow Beacon (Ulduar, Yogg-Saron)
                 case 64543:                                 // Melt Ice (Ulduar, Hodir)
                 case 64623:                                 // Frost Bomb (Ulduar, Mimiron)
                 case 65121:                                 // Searing Light (h) (Ulduar, XT-002)
@@ -8041,6 +8042,7 @@ void Spell::GetSpellRangeAndRadius(SpellEffectEntry const* spellEffect, float& r
                 case 10258:                                 // Awaken Vault Warder (Uldaman)
                 case 28542:                                 // Life Drain (Naxx, Sapphiron)
                 case 62476:                                 // Icicle (Ulduar, Hodir)
+                case 63802:                                 // Brain Link (Ulduar, Yogg-Saron)
                 case 66013:                                 // Penetrating Cold (10 man) (ToCrusader, Anub'arak)
                 case 67755:                                 // Nerubian Burrower (Mode 1) (ToCrusader, Anub'arak)
                 case 67756:                                 // Nerubian Burrower (Mode 2) (ToCrusader, Anub'arak)

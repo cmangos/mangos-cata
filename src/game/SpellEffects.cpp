@@ -2793,6 +2793,15 @@ void Spell::EffectDummy(SpellEffectEntry const* effect)
                     m_caster->CastSpell(unitTarget, effect->CalculateSimpleValue(), true);
                     return;
                 }
+                case 64172:                                 // Titanic Storm
+                {
+                    if (!unitTarget || !unitTarget->HasAura(effect->CalculateSimpleValue()))
+                        return;
+
+                    // There is no known spell to kill the target
+                    m_caster->DealDamage(unitTarget, unitTarget->GetHealth(), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
+                    return;
+                }
                 case 64385:                                 // Spinning (from Unusual Compass)
                 {
                     m_caster->SetFacingTo(frand(0, M_PI_F * 2));
@@ -2843,6 +2852,14 @@ void Spell::EffectDummy(SpellEffectEntry const* effect)
                     }
 
                     m_caster->CastSpell(m_caster, spell_id, true);
+                    return;
+                }
+                case 65206:                                 // Destabilization Matrix
+                {
+                    if (!unitTarget)
+                        return;
+
+                    m_caster->CastSpell(unitTarget, effect->CalculateSimpleValue(), true);
                     return;
                 }
                 case 65346:                                 // Proximity Mine
@@ -8826,6 +8843,22 @@ void Spell::EffectScriptEffect(SpellEffectEntry const* effect)
                     m_caster->CastSpell(unitTarget, 63036, true);
                     return;
                 }
+                case 64123:                                 // Lunge
+                {
+                    if (!unitTarget || unitTarget->GetTypeId() != TYPEID_PLAYER)
+                    return;
+
+                    unitTarget->CastSpell(unitTarget, unitTarget->GetMap()->IsRegularDifficulty() ? 64125 : 64126, true);
+                    return;
+                }
+                case 64131:                                 // Lunge
+                {
+                    if (!unitTarget || unitTarget->GetTypeId() != TYPEID_PLAYER)
+                        return;
+
+                    unitTarget->CastSpell(m_caster, effect->CalculateSimpleValue(), true);
+                    return;
+                }
                 case 64456:                                 // Feral Essence Application Removal
                 {
                     if (!unitTarget)
@@ -8833,6 +8866,22 @@ void Spell::EffectScriptEffect(SpellEffectEntry const* effect)
 
                     uint32 spellId = effect->CalculateSimpleValue();
                     unitTarget->RemoveAuraHolderFromStack(spellId);
+                    return;
+                }
+                case 64466:                                 // Empowering Shadows
+                {
+                    if (!unitTarget)
+                        return;
+
+                    unitTarget->CastSpell(m_caster, effect->CalculateSimpleValue(), true);
+                    return;
+                }
+                case 64467:                                 // Empowering Shadows
+                {
+                    if (!unitTarget)
+                        return;
+
+                    unitTarget->CastSpell(unitTarget, m_caster->GetMap()->IsRegularDifficulty() ? 64468 : 64486, true);
                     return;
                 }
                 case 64475:                                 // Strength of the Creator
