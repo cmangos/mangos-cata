@@ -1436,8 +1436,8 @@ class MANGOS_DLL_SPEC Unit : public WorldObject
         void SetHealthPercent(float percent);
         int32 ModifyHealth(int32 val);
 
-        Powers getPowerType() const { return Powers(GetByteValue(UNIT_FIELD_BYTES_0, 3)); }
-        void setPowerType(Powers power);
+        Powers GetPowerType() const { return Powers(GetByteValue(UNIT_FIELD_BYTES_0, 3)); }
+        void SetPowerType(Powers power);
         int32 GetPower(Powers power) const;
         int32 GetPowerByIndex(uint32 index) const;
         uint32 GetMaxPower(Powers power) const;
@@ -1454,7 +1454,7 @@ class MANGOS_DLL_SPEC Unit : public WorldObject
         static uint32 GetPowerIndexByClass(Powers power, uint32 classId);
         static Powers GetPowerTypeByIndex(uint32 index, uint32 classId);
         uint32 GetPowerIndex(Powers power) const { return GetPowerIndexByClass(power, getClass()); }
-        Powers getPowerType(uint32 index) const { return GetPowerTypeByIndex(index, getClass()); }
+        Powers GetPowerType(uint32 index) const { return GetPowerTypeByIndex(index, getClass()); }
 
         uint32 GetAttackTime(WeaponAttackType att) const { return (uint32)(GetFloatValue(UNIT_FIELD_BASEATTACKTIME + att) / m_modAttackSpeedPct[att]); }
         void SetAttackTime(WeaponAttackType att, uint32 val) { SetFloatValue(UNIT_FIELD_BASEATTACKTIME + att, val * m_modAttackSpeedPct[att]); }

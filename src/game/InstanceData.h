@@ -61,7 +61,7 @@ enum EncounterFrameTypes                                    // only raid UI spec
     ENCOUNTER_FRAME_ENABLE_OBJECTIVE        = 6,
     ENCOUNTER_FRAME_UPDATE_OBJECTIVE        = 7,
     ENCOUNTER_FRAME_DISABLE_OBJECTIVE       = 8,
-    ENCOUNTER_FRAME_UNK7                    = 9,    // Seems to have something to do with sorting the encounter units
+    ENCOUNTER_FRAME_UNK7                    = 9,            // Seems to have something to do with sorting the encounter units
     ENCOUNTER_FRAME_ADD_COMBAT_RES_LIMIT    = 10
 };
 

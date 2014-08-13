@@ -4087,6 +4087,9 @@ void Spell::SendSpellGo()
         castFlags |= CAST_FLAG_PREDICTED_RUNES;             // rune cooldowns list
     }
 
+    if (m_powerCost)
+        castFlags |= CAST_FLAG_PREDICTED_POWER;             // all powerCost spells have this
+
     WorldPacket data(SMSG_SPELL_GO, 50);                    // guess size
 
     if (m_CastItem)
@@ -5844,7 +5847,7 @@ SpellCastResult Spell::CheckCast(bool strict)
                 // Can be area effect, Check only for players and not check if target - caster (spell can have multiply drain/burn effects)
                 if (m_caster->GetTypeId() == TYPEID_PLAYER)
                     if (Unit* target = m_targets.getUnitTarget())
-                        if (target != m_caster && int32(target->getPowerType()) != spellEffect->EffectMiscValue)
+                        if (target != m_caster && int32(target->GetPowerType()) != spellEffect->EffectMiscValue)
                             return SPELL_FAILED_BAD_TARGETS;
                 break;
             }
@@ -6205,7 +6208,7 @@ SpellCastResult Spell::CheckCast(bool strict)
                 if (m_caster->GetTypeId() != TYPEID_PLAYER || m_CastItem)
                     break;
 
-                if (expectedTarget->getPowerType() != POWER_MANA)
+                if (expectedTarget->GetPowerType() != POWER_MANA)
                     return SPELL_FAILED_BAD_TARGETS;
 
                 break;
@@ -7723,7 +7726,7 @@ void Spell::FillRaidOrPartyManaPriorityTargets(UnitList& targetUnitMap, Unit* me
 
     PrioritizeManaUnitQueue manaUsers;
     for (UnitList::const_iterator itr = targetUnitMap.begin(); itr != targetUnitMap.end(); ++itr)
-        if ((*itr)->getPowerType() == POWER_MANA && !(*itr)->isDead())
+        if ((*itr)->GetPowerType() == POWER_MANA && !(*itr)->isDead())
             manaUsers.push(PrioritizeManaUnitWraper(*itr));
 
     targetUnitMap.clear();
