@@ -344,6 +344,15 @@ void Spell::EffectSchoolDMG(SpellEffectEntry const* effect)
                     case 70492: case 72505:                 // Ooze Eruption
                     case 71904:                             // Chaos Bane
                     case 72624: case 72625:                 // Ooze Eruption
+                    case 77679: case 92968: case 92969: case 92970:     // Scorching Blast
+                    case 82935: case 88915: case 88916: case 88917:     // Caustic Slime
+                    case 86014: case 92863: case 92864: case 92865:     // Twilight Meteorite
+                    case 86367: case 93135: case 93136: case 93137:     // Sleet Storm
+                    case 86825: case 92879: case 92880: case 92881:     // Blackout
+                    case 88942: case 95172:                 // Meteor Slash
+                    case 89348: case 95178:                 // Demon Repellent Ray
+                    case 98474: case 100212: case 100213: case 100214:  //Flame Scythe
+                    case 105069: case 108094:               // Seething Hate
                     {
                         uint32 count = 0;
                         for(TargetList::const_iterator ihit = m_UniqueTargetInfo.begin(); ihit != m_UniqueTargetInfo.end(); ++ihit)
