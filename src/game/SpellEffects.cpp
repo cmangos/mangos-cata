@@ -4148,31 +4148,31 @@ void Spell::EffectTeleportUnits(SpellEffectEntry const* effect)   // TODO - Use 
     if (!unitTarget || unitTarget->IsTaxiFlying())
         return;
 
-        switch (m_spellInfo->Id)
+    switch (m_spellInfo->Id)
+    {
+        case 48129:                                 // Scroll of Recall
+        case 60320:                                 // Scroll of Recall II
+        case 60321:                                 // Scroll of Recall III
         {
-            case 48129:                                 // Scroll of Recall
-            case 60320:                                 // Scroll of Recall II
-            case 60321:                                 // Scroll of Recall III
+            uint32 failAtLevel = 0;
+            switch (m_spellInfo->Id)
             {
-                uint32 failAtLevel = 0;
-                switch (m_spellInfo->Id)
-                {
-                    case 48129: failAtLevel = 40; break;
-                    case 60320: failAtLevel = 70; break;
-                    case 60321: failAtLevel = 80; break;
-                }
-
-                if (unitTarget->getLevel() > failAtLevel && unitTarget->GetTypeId() == TYPEID_PLAYER)
-                {
-                    unitTarget->CastSpell(unitTarget, 60444, true);
-                    // TODO: Unclear use of probably related spell 60322
-                    uint32 spellId = (((Player*)unitTarget)->GetTeam() == ALLIANCE ? 60323 : 60328) + urand(0, 7);
-                    unitTarget->CastSpell(unitTarget, spellId, true);
-                    return;
-                }
-                break;
+                case 48129: failAtLevel = 40; break;
+                case 60320: failAtLevel = 70; break;
+                case 60321: failAtLevel = 80; break;
             }
+
+            if (unitTarget->getLevel() > failAtLevel && unitTarget->GetTypeId() == TYPEID_PLAYER)
+            {
+                unitTarget->CastSpell(unitTarget, 60444, true);
+                // TODO: Unclear use of probably related spell 60322
+                uint32 spellId = (((Player*)unitTarget)->GetTeam() == ALLIANCE ? 60323 : 60328) + urand(0, 7);
+                unitTarget->CastSpell(unitTarget, spellId, true);
+                return;
+            }
+            break;
         }
+    }
 
     // Target dependend on TargetB, if there is none provided, decide dependend on A
     uint32 targetType = effect->EffectImplicitTargetB;
@@ -7486,11 +7486,11 @@ void Spell::EffectScriptEffect(SpellEffectEntry const* effect)
                 case 37345:                                 // Karazhan - Chess NPC Action: Melee Attack: Orc Warlock
                 case 37348:                                 // Karazhan - Chess NPC Action: Melee Attack: Warchief Blackhand
                 {
-                        if (!unitTarget)
-                            return;
-
-                        m_caster->CastSpell(unitTarget, 32247, true);
+                    if (!unitTarget)
                         return;
+
+                    m_caster->CastSpell(unitTarget, 32247, true);
+                    return;
                 }
                 case 32301:                                 // Ping Shirrak
                 {
@@ -8924,7 +8924,7 @@ void Spell::EffectScriptEffect(SpellEffectEntry const* effect)
                 case 64123:                                 // Lunge
                 {
                     if (!unitTarget || unitTarget->GetTypeId() != TYPEID_PLAYER)
-                    return;
+                        return;
 
                     unitTarget->CastSpell(unitTarget, unitTarget->GetMap()->IsRegularDifficulty() ? 64125 : 64126, true);
                     return;
