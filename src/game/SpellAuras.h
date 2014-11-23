@@ -408,6 +408,7 @@ class MANGOS_DLL_SPEC Aura
         void HandleModIncreaseSpellPowerPct(bool apply, bool Real);
         void HandleOverrideSpellPowerByAp(bool apply, bool Real);
         void HandleMirrorName(bool apply, bool Real);
+        void HandlePreventResurrection(bool apply, bool Real);
 
         virtual ~Aura();
 
