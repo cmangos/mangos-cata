@@ -633,7 +633,7 @@ void World::LoadConfigSettings(bool reload)
     setConfigMinMax(CONFIG_UINT32_START_PLAYER_LEVEL, "StartPlayerLevel", 1, 1, getConfig(CONFIG_UINT32_MAX_PLAYER_LEVEL));
     setConfigMinMax(CONFIG_UINT32_START_HEROIC_PLAYER_LEVEL, "StartHeroicPlayerLevel", 55, 1, getConfig(CONFIG_UINT32_MAX_PLAYER_LEVEL));
 
-    setConfigMinMax(CONFIG_UINT32_START_PLAYER_MONEY, "StartPlayerMoney", 0, 0, MAX_MONEY_AMOUNT);
+    setConfigMinMax(CONFIG_UINT32_START_PLAYER_MONEY, "StartPlayerMoney", 0, 0, (uint32)MAX_MONEY_AMOUNT);
 
     setConfigMinMax(CONFIG_UINT32_CURRENCY_RESET_TIME_HOUR, "Currency.ResetHour", 6, 0, 23);
     setConfigMinMax(CONFIG_UINT32_CURRENCY_RESET_TIME_WEEK_DAY, "Currency.ResetWeekDay", 3, 0, 6);

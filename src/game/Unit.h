@@ -1439,8 +1439,8 @@ class MANGOS_DLL_SPEC Unit : public WorldObject
 
         Powers GetPowerType() const { return Powers(GetByteValue(UNIT_FIELD_BYTES_0, 3)); }
         void SetPowerType(Powers power);
-        int32 GetPower(Powers power) const;
-        int32 GetPowerByIndex(uint32 index) const;
+        uint32 GetPower(Powers power) const;
+        uint32 GetPowerByIndex(uint32 index) const;
         uint32 GetMaxPower(Powers power) const;
         uint32 GetMaxPowerByIndex(uint32 index) const;
         void SetPowerByIndex(uint32 power, int32 val);
