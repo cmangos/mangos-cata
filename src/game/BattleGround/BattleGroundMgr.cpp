@@ -1429,7 +1429,7 @@ void BattleGroundMgr::BuildPvpLogDataPacket(WorldPacket* data, BattleGround* bg)
     if (bg->isArena())
     {
         // it seems this must be according to BG_WINNER_A/H and _NOT_ BG_TEAM_A/H
-        for (int8 i = 0; i < BG_TEAMS_COUNT; ++i)
+        for (int8 i = 0; i < PVP_TEAM_COUNT; ++i)
         {
             if (ArenaTeam* at = sObjectMgr.GetArenaTeamById(bg->m_ArenaTeamIds[i]))
                 data->WriteBits(at->GetName().length(), 8);
@@ -1534,7 +1534,7 @@ void BattleGroundMgr::BuildPvpLogDataPacket(WorldPacket* data, BattleGround* bg)
 
     if (bg->isRated())                                      // arena
     {
-        for (int8 i = 0; i < BG_TEAMS_COUNT; ++i)
+        for (int8 i = 0; i < PVP_TEAM_COUNT; ++i)
         {
             uint32 pointsLost = bg->m_ArenaTeamRatingChanges[i] < 0 ? abs(bg->m_ArenaTeamRatingChanges[i]) : 0;
             uint32 pointsGained = bg->m_ArenaTeamRatingChanges[i] > 0 ? bg->m_ArenaTeamRatingChanges[i] : 0;
@@ -1551,7 +1551,7 @@ void BattleGroundMgr::BuildPvpLogDataPacket(WorldPacket* data, BattleGround* bg)
 
     if (bg->isArena())
     {
-        for (int8 i = 0; i < BG_TEAMS_COUNT; ++i)
+        for (int8 i = 0; i < PVP_TEAM_COUNT; ++i)
         {
             if (ArenaTeam* at = sObjectMgr.GetArenaTeamById(bg->m_ArenaTeamIds[i]))
                 data->append(at->GetName().data(), at->GetName().length());
