@@ -673,7 +673,7 @@ void Creature::RegeneratePower()
                 addValue = uint32(Spirit / 5.0f + 17.0f) * ManaIncreaseRate;
             }
             else
-                addValue = maxValue / 3;
+                addValue = maxValue / 3.0f;
             break;
         case POWER_ENERGY:
             // ToDo: for vehicle this is different - NEEDS TO BE FIXED!
