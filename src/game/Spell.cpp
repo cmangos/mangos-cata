@@ -7390,10 +7390,12 @@ bool Spell::CheckTarget(Unit* target, SpellEffectIndex eff)
         if (target->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE))
             return false;
 
-        // unselectable targets skipped in all cases except TARGET_SCRIPT targeting
+        // unselectable targets skipped in all cases except TARGET_SCRIPT targeting or vehicle passengers
         // in case TARGET_SCRIPT target selected by server always and can't be cheated
         if ((!m_IsTriggeredSpell || target != m_targets.getUnitTarget()) &&
             target->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE) &&
+            (!target->GetTransportInfo() || (target->GetTransportInfo() &&
+            !((Unit*)target->GetTransportInfo()->GetTransport())->IsVehicle())) &&
             spellEffect->EffectImplicitTargetA != TARGET_SCRIPT &&
             spellEffect->EffectImplicitTargetB != TARGET_SCRIPT &&
             spellEffect->EffectImplicitTargetA != TARGET_AREAEFFECT_INSTANT &&
