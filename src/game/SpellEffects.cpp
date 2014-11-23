@@ -4019,6 +4019,13 @@ void Spell::EffectTriggerSpell(SpellEffectEntry const* effect)
             }
             return;
         }
+        case 58832:                                         // Mirror Image
+        {
+            // Glyph of Mirror Image
+            if (m_caster->HasAura(63093))
+               m_caster->CastSpell(m_caster, 65047, true, m_CastItem, NULL, m_originalCasterGUID);
+            break;
+        }
     }
 
     // normal case
@@ -7579,6 +7586,8 @@ void Spell::EffectScriptEffect(SpellEffectEntry const* effect)
                     return;
                 }
                 case 41055:                                 // Copy Weapon
+                case 63416:                                 // Copy Weapon
+                case 69891:                                 // Copy Weapon (No Threat)
                 {
                     if (m_caster->GetTypeId() != TYPEID_UNIT || !unitTarget || unitTarget->GetTypeId() != TYPEID_PLAYER)
                         return;
@@ -7809,6 +7818,7 @@ void Spell::EffectScriptEffect(SpellEffectEntry const* effect)
                     return;
                 }
                 case 45206:                                 // Copy Off-hand Weapon
+                case 69892:                                 // Copy Off-hand Weapon (No Threat)
                 {
                     if (m_caster->GetTypeId() != TYPEID_UNIT || !unitTarget || unitTarget->GetTypeId() != TYPEID_PLAYER)
                         return;

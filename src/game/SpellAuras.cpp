@@ -336,7 +336,7 @@ pAuraHandler AuraHandler[TOTAL_AURAS] =
     &Aura::HandleNULL,                                      //276 SPELL_AURA_MOD_DAMAGE_DONE_BY_MECHANIC
     &Aura::HandleUnused,                                    //277 old SPELL_AURA_MOD_MAX_AFFECTED_TARGETS
     &Aura::HandleAuraModDisarm,                             //278 SPELL_AURA_MOD_DISARM_RANGED disarm ranged weapon
-    &Aura::HandleNULL,                                      //279 SPELL_AURA_INITIALIZE_IMAGES 9 spells in 4.3.4 visual effects?
+    &Aura::HandleMirrorName,                                //279 SPELL_AURA_MIRROR_NAME                target receives the casters name
     &Aura::HandleUnused,                                    //280 old SPELL_AURA_MOD_TARGET_ARMOR_PCT
     &Aura::HandleNoImmediateEffect,                         //281 SPELL_AURA_MOD_HONOR_GAIN             implemented in Player::RewardHonor
     &Aura::HandleAuraIncreaseBaseHealthPercent,             //282 SPELL_AURA_INCREASE_BASE_HEALTH_PERCENT
@@ -8493,9 +8493,19 @@ void Aura::PeriodicDummyTick()
         }
         case SPELLFAMILY_MAGE:
         {
-            // Mirror Image
-//            if (spell->Id == 55342)
-//                return;
+            switch (spell->Id)
+            {
+                case 55342:                                 // Mirror Image
+                {
+                    if (GetAuraTicks() != 1)
+                        return;
+                    if (Unit* pCaster = GetCaster())
+                        pCaster->CastSpell(pCaster, GetSpellProto()->CalculateSimpleValue(m_effIndex), true, NULL, this);
+                    return;
+                }
+                default:
+                    break;
+            }
             break;
         }
         case SPELLFAMILY_DRUID:
@@ -8856,6 +8866,29 @@ void Aura::HandleAuraMirrorImage(bool apply, bool Real)
         pCreature->RemoveFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_CLONED);
 
         pCreature->SetDisplayId(pCreature->GetNativeDisplayId());
+    }
+}
+
+void Aura::HandleMirrorName(bool apply, bool Real)
+{
+    if (!Real)
+        return;
+
+    Unit* caster = GetCaster();
+    Unit* target = GetTarget();
+
+    if (!target || !caster || target->GetTypeId() != TYPEID_UNIT)
+        return;
+
+    if (apply)
+        target->SetName(caster->GetName());
+    else
+    {
+        CreatureInfo const* cinfo = ((Creature*)target)->GetCreatureInfo();
+        if (!cinfo)
+            return;
+
+        target->SetName(cinfo->Name);
     }
 }
 
