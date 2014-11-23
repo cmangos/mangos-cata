@@ -3486,7 +3486,11 @@ void SpellMgr::LoadSpellScriptTarget()
                 spellEffect->EffectImplicitTargetA == TARGET_AREAEFFECT_GO_AROUND_SOURCE ||
                 spellEffect->EffectImplicitTargetB == TARGET_AREAEFFECT_GO_AROUND_SOURCE ||
                 spellEffect->EffectImplicitTargetA == TARGET_AREAEFFECT_GO_AROUND_DEST ||
-                spellEffect->EffectImplicitTargetB == TARGET_AREAEFFECT_GO_AROUND_DEST)
+                spellEffect->EffectImplicitTargetB == TARGET_AREAEFFECT_GO_AROUND_DEST ||
+                spellEffect->EffectImplicitTargetA == TARGET_NARROW_FRONTAL_CONE ||
+                spellEffect->EffectImplicitTargetB == TARGET_NARROW_FRONTAL_CONE ||
+                spellEffect->EffectImplicitTargetA == TARGET_NARROW_FRONTAL_CONE_2 ||
+                spellEffect->EffectImplicitTargetB == TARGET_NARROW_FRONTAL_CONE_2)
             {
                 targetfound = true;
                 break;

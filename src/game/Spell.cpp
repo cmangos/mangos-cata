@@ -2392,8 +2392,53 @@ void Spell::SetTargetMap(SpellEffectIndex effIndex, uint32 targetMode, UnitList&
             FillAreaTargets(targetUnitMap, radius, PUSH_IN_FRONT_30, SPELL_TARGETS_FRIENDLY);
             break;
         case TARGET_NARROW_FRONTAL_CONE:
-            FillAreaTargets(targetUnitMap, radius, PUSH_IN_FRONT_15, SPELL_TARGETS_AOE_DAMAGE);
+        case TARGET_NARROW_FRONTAL_CONE_2:
+        {
+            SpellTargets targetB = SPELL_TARGETS_AOE_DAMAGE;
+
+            if (spellEffect->Effect == SPELL_EFFECT_SCRIPT_EFFECT)
+                targetB = SPELL_TARGETS_ALL;
+
+            UnitList tempTargetUnitMap;
+            SQLMultiStorage::SQLMSIteratorBounds<SpellTargetEntry> bounds = sSpellScriptTargetStorage.getBounds<SpellTargetEntry>(m_spellInfo->Id);
+
+            // fill real target list if no spell script target defined
+            FillAreaTargets(bounds.first != bounds.second ? tempTargetUnitMap : targetUnitMap,
+                            radius, PUSH_IN_FRONT_15, bounds.first != bounds.second ? SPELL_TARGETS_ALL : targetB);
+
+            if (!tempTargetUnitMap.empty())
+            {
+                for (UnitList::const_iterator iter = tempTargetUnitMap.begin(); iter != tempTargetUnitMap.end(); ++iter)
+                {
+                    if ((*iter)->GetTypeId() != TYPEID_UNIT)
+                        continue;
+
+                    for (SQLMultiStorage::SQLMultiSIterator<SpellTargetEntry> i_spellST = bounds.first; i_spellST != bounds.second; ++i_spellST)
+                    {
+                        if (i_spellST->CanNotHitWithSpellEffect(effIndex))
+                            continue;
+
+                        // only creature entries supported for this target type
+                        if (i_spellST->type == SPELL_TARGET_TYPE_GAMEOBJECT)
+                            continue;
+
+                        if ((*iter)->GetEntry() == i_spellST->targetEntry)
+                        {
+                            if (i_spellST->type == SPELL_TARGET_TYPE_DEAD && ((Creature*)(*iter))->IsCorpse())
+                            {
+                                targetUnitMap.push_back((*iter));
+                            }
+                            else if (i_spellST->type == SPELL_TARGET_TYPE_CREATURE && (*iter)->isAlive())
+                            {
+                                targetUnitMap.push_back((*iter));
+                            }
+                            break;
+                        }
+                    }
+                }
+            }
             break;
+        }
         case TARGET_IN_FRONT_OF_CASTER_30:
             FillAreaTargets(targetUnitMap, radius, PUSH_IN_FRONT_30, SPELL_TARGETS_AOE_DAMAGE);
             break;
@@ -7354,7 +7399,11 @@ bool Spell::CheckTarget(Unit* target, SpellEffectIndex eff)
             spellEffect->EffectImplicitTargetA != TARGET_AREAEFFECT_INSTANT &&
             spellEffect->EffectImplicitTargetB != TARGET_AREAEFFECT_INSTANT &&
             spellEffect->EffectImplicitTargetA != TARGET_AREAEFFECT_CUSTOM &&
-            spellEffect->EffectImplicitTargetB != TARGET_AREAEFFECT_CUSTOM )
+            spellEffect->EffectImplicitTargetB != TARGET_AREAEFFECT_CUSTOM &&
+            spellEffect->EffectImplicitTargetA != TARGET_NARROW_FRONTAL_CONE &&
+            spellEffect->EffectImplicitTargetB != TARGET_NARROW_FRONTAL_CONE &&
+            spellEffect->EffectImplicitTargetA != TARGET_NARROW_FRONTAL_CONE_2 &&
+            spellEffect->EffectImplicitTargetB != TARGET_NARROW_FRONTAL_CONE_2)
             return false;
     }
 

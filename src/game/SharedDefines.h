@@ -1482,7 +1482,7 @@ enum Targets
     TARGET_107                         = 107,               // possible TARGET_WMO(GO?)_IN_FRONT_OF_CASTER(_30 ?) TODO: Verify the angle!
     TARGET_GO_IN_FRONT_OF_CASTER_90    = 108,
     TARGET_109                         = 109,               // spell 89008
-    TARGET_110                         = 110,               // front enemy aoe
+    TARGET_NARROW_FRONTAL_CONE_2       = 110,
     TARGET_111                         = 111,               // not used
     TARGET_112                         = 112,               // spell 89549
     TARGET_113                         = 113,               // not used
