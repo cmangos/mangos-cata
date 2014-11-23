@@ -1443,6 +1443,7 @@ void BattleGroundMgr::BuildPvpLogDataPacket(WorldPacket* data, BattleGround* bg)
     {
         ObjectGuid memberGuid = itr->first;
         Player* player = sObjectMgr.GetPlayer(itr->first);
+        const BattleGroundScore* score = itr->second;
 
         data->WriteBit(0);                  // unk1
         data->WriteBit(0);                  // unk2
@@ -1458,18 +1459,18 @@ void BattleGroundMgr::BuildPvpLogDataPacket(WorldPacket* data, BattleGround* bg)
         data->WriteBit(team == ALLIANCE);   // unk7
         data->WriteGuidMask<7>(memberGuid);
 
-        buffer << uint32(itr->second->HealingDone);         // healing done
-        buffer << uint32(itr->second->DamageDone);          // damage done
+        buffer << uint32(score->HealingDone);         // healing done
+        buffer << uint32(score->DamageDone);          // damage done
 
         if (!bg->isArena())
         {
-            buffer << uint32(itr->second->BonusHonor);
-            buffer << uint32(itr->second->Deaths);
-            buffer << uint32(itr->second->HonorableKills);
+            buffer << uint32(score->BonusHonor);
+            buffer << uint32(score->Deaths);
+            buffer << uint32(score->HonorableKills);
         }
 
         buffer.WriteGuidBytes<4>(memberGuid);
-        buffer << uint32(itr->second->KillingBlows);
+        buffer << uint32(score->KillingBlows);
         // if (unk5) << uint32() unk
         buffer.WriteGuidBytes<5>(memberGuid);
         // if (unk6) << uint32() unk
@@ -1485,25 +1486,25 @@ void BattleGroundMgr::BuildPvpLogDataPacket(WorldPacket* data, BattleGround* bg)
         {
             case BATTLEGROUND_AV:
                 data->WriteBits(5, 24);                     // count of next fields
-                buffer << uint32(((BattleGroundAVScore*)itr->second)->GraveyardsAssaulted); // GraveyardsAssaulted
-                buffer << uint32(((BattleGroundAVScore*)itr->second)->GraveyardsDefended);  // GraveyardsDefended
-                buffer << uint32(((BattleGroundAVScore*)itr->second)->TowersAssaulted);     // TowersAssaulted
-                buffer << uint32(((BattleGroundAVScore*)itr->second)->TowersDefended);      // TowersDefended
-                buffer << uint32(((BattleGroundAVScore*)itr->second)->SecondaryObjectives); // SecondaryObjectives - free some of the Lieutnants
+                buffer << uint32(((BattleGroundAVScore*)score)->GraveyardsAssaulted); // GraveyardsAssaulted
+                buffer << uint32(((BattleGroundAVScore*)score)->GraveyardsDefended);  // GraveyardsDefended
+                buffer << uint32(((BattleGroundAVScore*)score)->TowersAssaulted);     // TowersAssaulted
+                buffer << uint32(((BattleGroundAVScore*)score)->TowersDefended);      // TowersDefended
+                buffer << uint32(((BattleGroundAVScore*)score)->SecondaryObjectives); // SecondaryObjectives - free some of the Lieutnants
                 break;
             case BATTLEGROUND_WS:
                 data->WriteBits(2, 24);                     // count of next fields
-                buffer << uint32(((BattleGroundWGScore*)itr->second)->FlagCaptures);        // flag captures
-                buffer << uint32(((BattleGroundWGScore*)itr->second)->FlagReturns);         // flag returns
+                buffer << uint32(((BattleGroundWGScore*)score)->FlagCaptures);        // flag captures
+                buffer << uint32(((BattleGroundWGScore*)score)->FlagReturns);         // flag returns
                 break;
             case BATTLEGROUND_AB:
                 data->WriteBits(2, 24);                     // count of next fields
-                buffer << uint32(((BattleGroundABScore*)itr->second)->BasesAssaulted);      // bases asssulted
-                buffer << uint32(((BattleGroundABScore*)itr->second)->BasesDefended);       // bases defended
+                buffer << uint32(((BattleGroundABScore*)score)->BasesAssaulted);      // bases asssulted
+                buffer << uint32(((BattleGroundABScore*)score)->BasesDefended);       // bases defended
                 break;
             case BATTLEGROUND_EY:
                 data->WriteBits(1, 24);                     // count of next fields
-                buffer << uint32(((BattleGroundEYScore*)itr->second)->FlagCaptures);        // flag captures
+                buffer << uint32(((BattleGroundEYScore*)score)->FlagCaptures);        // flag captures
                 break;
             case BATTLEGROUND_NA:
             case BATTLEGROUND_BE:
