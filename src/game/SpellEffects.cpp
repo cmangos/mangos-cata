@@ -595,7 +595,7 @@ void Spell::EffectSchoolDMG(SpellEffectEntry const* effect)
                 {
                     // converts up to 30 points of energy into ($f1+$AP/410) additional damage
                     float ap = m_caster->GetTotalAttackPowerValue(BASE_ATTACK);
-                    float multiple = ap / 410 + effect->DmgMultiplier;
+                    float multiple = ap / 410 + effect->EffectDamageMultiplier;
                     damage += int32(((Player*)m_caster)->GetComboPoints() * ap * 7 / 100);
                     uint32 energy = m_caster->GetPower(POWER_ENERGY);
                     uint32 used_energy = energy > 30 ? 30 : energy;
@@ -3146,7 +3146,7 @@ void Spell::EffectDummy(SpellEffectEntry const* effect)
                 if (Aura* aura = m_caster->GetDummyAura(58367))
                     rage_modified +=  aura->GetModifier()->m_amount * 10;
 
-                int32 basePoints0 = damage+int32(rage_modified * effect->DmgMultiplier +
+                int32 basePoints0 = damage+int32(rage_modified * effect->EffectDamageMultiplier +
                                                  m_caster->GetTotalAttackPowerValue(BASE_ATTACK)*0.2f);
 
                 m_caster->CastCustomSpell(unitTarget, 20647, &basePoints0, NULL, NULL, true, 0);
@@ -3813,7 +3813,7 @@ void Spell::EffectDummy(SpellEffectEntry const* effect)
                 }
 
                 SpellEffectEntry const* dsSpellEffect = m_spellInfo->GetSpellEffect(EFFECT_INDEX_0);
-                int32 bp = int32(count * m_caster->GetMaxHealth() * (dsSpellEffect ? dsSpellEffect->DmgMultiplier : 0.0f) / 100);
+                int32 bp = int32(count * m_caster->GetMaxHealth() * (dsSpellEffect ? dsSpellEffect->EffectDamageMultiplier : 0.0f) / 100);
 
                 // Improved Death Strike (percent stored in nonexistent EFFECT_INDEX_2 effect base points)
                 Unit::AuraList const& auraMod = m_caster->GetAurasByType(SPELL_AURA_ADD_FLAT_MODIFIER);
