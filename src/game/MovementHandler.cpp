@@ -421,13 +421,19 @@ void WorldSession::HandleSetActiveMoverOpcode(WorldPacket& recv_data)
     recv_data.hexlike();
 
     ObjectGuid guid;
-    recv_data >> guid;
+    recv_data.ReadGuidMask<7, 2, 1, 0, 4, 5, 6, 3>(guid);
+    recv_data.ReadGuidBytes<3, 2, 4, 0, 5, 1, 6, 7>(guid);
 
     if (_player->GetMover()->GetObjectGuid() != guid)
     {
         sLog.outError("HandleSetActiveMoverOpcode: incorrect mover guid: mover is %s and should be %s",
                       _player->GetMover()->GetGuidStr().c_str(), guid.GetString().c_str());
         return;
+    }
+    else
+    {
+        if (Unit* mover = ObjectAccessor::GetUnit(*GetPlayer(), guid))
+            _player->SetMover(mover);
     }
 }
 

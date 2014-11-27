@@ -33,6 +33,14 @@ enum MovementStatusElements
     MSEGuidBit5,
     MSEGuidBit6,
     MSEGuidBit7,
+    MSEGuid2Bit0,
+    MSEGuid2Bit1,
+    MSEGuid2Bit2,
+    MSEGuid2Bit3,
+    MSEGuid2Bit4,
+    MSEGuid2Bit5,
+    MSEGuid2Bit6,
+    MSEGuid2Bit7,
     MSEHasUnknownBit,
     MSEHasMovementFlags,
     MSEHasMovementFlags2,
@@ -65,6 +73,14 @@ enum MovementStatusElements
     MSEGuidByte5,
     MSEGuidByte6,
     MSEGuidByte7,
+    MSEGuid2Byte0,
+    MSEGuid2Byte1,
+    MSEGuid2Byte2,
+    MSEGuid2Byte3,
+    MSEGuid2Byte4,
+    MSEGuid2Byte5,
+    MSEGuid2Byte6,
+    MSEGuid2Byte7,
     MSEPitch,
     MSEFallTime,
     MSETransportGuidByte0,
@@ -89,6 +105,7 @@ enum MovementStatusElements
     MSETransportTime2,
     MSETransportTime3,
     MSEMovementCounter,
+    MSEByteParam,
     MSEEnd,
     MSE_COUNT
 };
@@ -2555,6 +2572,108 @@ MovementStatusElements DismissControlledVehicleSequence[] =
     MSEEnd,
 };
 
+MovementStatusElements ChangeSeatsOnControlledVehicleSequence[] =
+{
+    MSEPositionY,
+    MSEPositionX,
+    MSEPositionZ,
+    MSEByteParam,
+
+    MSEHasMovementFlags,
+    MSEHasTransportData,
+    MSEGuidBit2,
+    MSEGuidBit6,
+    MSEGuidBit4,
+    MSEGuid2Bit2,
+    MSEGuid2Bit4,
+    MSEHasOrientation,
+
+    MSEHasUnknownBit,
+    MSEGuid2Bit7,
+    MSEGuidBit7,
+    MSEGuid2Bit6,
+    MSEHasTimestamp,
+    MSEHasSplineElevation,
+    MSEGuidBit5,
+    MSEGuid2Bit5,
+
+    MSEHasMovementFlags2,
+    MSEHasPitch,
+    MSEGuid2Bit0,
+    MSEGuidBit0,
+    MSEGuid2Bit1,
+    MSEHasFallData,
+    MSEGuidBit1,
+    MSEHasSpline,
+
+    MSEFlags,
+    MSEGuid2Bit3,
+    MSEGuidBit3,
+
+    MSETransportGuidBit3,
+    MSETransportGuidBit0,
+    MSETransportGuidBit7,
+    MSETransportGuidBit5,
+    MSEHasTransportTime3,
+    MSETransportGuidBit1,
+
+    MSETransportGuidBit2,
+    MSEHasTransportTime2,
+    MSETransportGuidBit4,
+    MSETransportGuidBit6,
+    MSEFlags2,
+
+    MSEHasFallDirection,
+
+    MSEGuid2Byte6,
+    MSEGuidByte7,
+    MSEGuidByte5,
+    MSEGuid2Byte1,
+    MSEGuid2Byte2,
+    MSEGuidByte6,
+    MSEGuid2Byte5,
+    MSEGuid2Byte3,
+    MSEGuidByte3,
+    MSEGuid2Byte0,
+    MSEGuidByte0,
+    MSEGuid2Byte4,
+    MSEGuidByte4,
+    MSEGuidByte1,
+    MSEGuid2Byte7,
+    MSEGuidByte2,
+
+    MSEPitch,
+    MSEFallSinAngle,
+    MSEFallCosAngle,
+    MSEFallHorizontalSpeed,
+
+    MSEFallTime,
+    MSEFallVerticalSpeed,
+
+    MSETransportGuidByte2,
+    MSETransportTime2,
+    MSETransportTime3,
+    MSETransportGuidByte0,
+    MSETransportTime,
+    MSETransportSeat,
+    MSETransportPositionX,
+    MSETransportPositionO,
+    MSETransportGuidByte7,
+    MSETransportGuidByte4,
+    MSETransportGuidByte3,
+    MSETransportGuidByte5,
+    MSETransportPositionZ,
+    MSETransportGuidByte1,
+    MSETransportGuidByte6,
+    MSETransportPositionY,
+
+    MSESplineElevation,
+    MSEPositionO,
+    MSETimestamp,
+
+    MSEEnd,
+};
+
 MovementStatusElements* GetMovementStatusElementsSequence(uint16 opcode)
 {
     switch (opcode)
@@ -2629,6 +2748,8 @@ MovementStatusElements* GetMovementStatusElementsSequence(uint16 opcode)
             return MoveNotActiveMoverSequence;
         case CMSG_DISMISS_CONTROLLED_VEHICLE:
             return DismissControlledVehicleSequence;
+        case CMSG_CHANGE_SEATS_ON_CONTROLLED_VEHICLE:
+            return ChangeSeatsOnControlledVehicleSequence;
     }
     return NULL;
 }

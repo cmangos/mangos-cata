@@ -671,7 +671,7 @@ enum Opcodes
     SMSG_SET_PCT_SPELL_MODIFIER                           = 0x0224, // 4.3.4 15595
     CMSG_SET_AMMO                                         = 0x1269,
     SMSG_CORPSE_RECLAIM_DELAY                             = 0x0D34, // 4.3.4 15595
-    CMSG_SET_ACTIVE_MOVER                                 = 0x126B,
+    CMSG_SET_ACTIVE_MOVER                                 = 0x3314, // 4.3.4 15595
     CMSG_PET_CANCEL_AURA                                  = 0x4B25, // 4.3.4 15595
     CMSG_PLAYER_AI_CHEAT                                  = 0x126D,
     CMSG_CANCEL_AUTO_REPEAT_SPELL                         = 0x6C35, // 4.3.4 15595
@@ -1205,10 +1205,10 @@ enum Opcodes
     CMSG_CHAR_CUSTOMIZE                                   = 0x2C34, // 4.3.4 15595
     SMSG_CHAR_CUSTOMIZE                                   = 0x4F16, // 4.3.4 15595
     SMSG_PET_RENAMEABLE                                   = 0x1476,
-    CMSG_REQUEST_VEHICLE_EXIT                             = 0x1477,
-    CMSG_REQUEST_VEHICLE_PREV_SEAT                        = 0x1478,
-    CMSG_REQUEST_VEHICLE_NEXT_SEAT                        = 0x1479,
-    CMSG_REQUEST_VEHICLE_SWITCH_SEAT                      = 0x147A,
+    CMSG_REQUEST_VEHICLE_EXIT                             = 0x2B35, // 4.3.4 15595
+    CMSG_REQUEST_VEHICLE_PREV_SEAT                        = 0x4C04, // 4.3.4 15595
+    CMSG_REQUEST_VEHICLE_NEXT_SEAT                        = 0x4434, // 4.3.4 15595
+    CMSG_REQUEST_VEHICLE_SWITCH_SEAT                      = 0x4C14, // 4.3.4 15595
     CMSG_PET_LEARN_TALENT                                 = 0x6725, // 4.3.4 15595
     CMSG_PET_UNLEARN_TALENTS                              = 0x147C,
     SMSG_SET_PHASE_SHIFT                                  = 0x70A0, // 4.3.4 15595
@@ -1254,9 +1254,9 @@ enum Opcodes
     CMSG_SET_BREATH                                       = 0x14A5,
     CMSG_QUERY_VEHICLE_STATUS                             = 0x14A6,
     SMSG_BATTLEGROUND_INFO_THROTTLED                      = 0x14A7,
-    SMSG_SET_VEHICLE_REC_ID                               = 0x14A8,
-    CMSG_RIDE_VEHICLE_INTERACT                            = 0x14A9,
-    CMSG_CONTROLLER_EJECT_PASSENGER                       = 0x14AA,
+    SMSG_SET_VEHICLE_REC_ID                               = 0x4115, // 4.3.4 15595
+    CMSG_RIDE_VEHICLE_INTERACT                            = 0x2705, // 4.3.4 15595
+    CMSG_CONTROLLER_EJECT_PASSENGER                       = 0x6927, // 4.3.4 15595
     SMSG_PET_GUIDS                                        = 0x2D26, // 4.3.4 15595
     SMSG_CLIENTCACHE_VERSION                              = 0x2734, // 4.3.4 15595
     CMSG_CHANGE_GDF_ARENA_RATING                          = 0x14AD,

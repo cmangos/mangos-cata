@@ -31,7 +31,7 @@ void WorldSession::HandleDismissControlledVehicle(WorldPacket& recvPacket)
     DEBUG_LOG("WORLD: Received opcode CMSG_DISMISS_CONTROLLED_VEHICLE");
     recvPacket.hexlike();
 
-    MovementInfo movementInfo;                              // Not used at the moment
+    MovementInfo movementInfo;
 
     recvPacket >> movementInfo;
 
@@ -100,10 +100,11 @@ void WorldSession::HandleChangeSeatsOnControlledVehicle(WorldPacket& recvPacket)
     ObjectGuid destVehicleGuid;
     uint8 seat;
 
-    recvPacket >> srcVehicleGuid.ReadAsPacked();
-    recvPacket >> movementInfo;                             // Not used at the moment
-    recvPacket >> destVehicleGuid.ReadAsPacked();
-    recvPacket >> seat;
+    recvPacket >> movementInfo;
+
+    srcVehicleGuid = movementInfo.GetGuid();
+    destVehicleGuid = movementInfo.GetGuid2();
+    seat = movementInfo.GetByteParam();
 
     TransportInfo* transportInfo = _player->GetTransportInfo();
     if (!transportInfo || !transportInfo->IsOnVehicle())
@@ -133,6 +134,20 @@ void WorldSession::HandleChangeSeatsOnControlledVehicle(WorldPacket& recvPacket)
     }
     else
         srcVehicle->GetVehicleInfo()->SwitchSeat(_player, seat);
+}
+
+void WorldSession::HandleRequestVehiclePrevSeat(WorldPacket& recv_data)
+{
+    DEBUG_LOG("WORLD: Received CMSG_REQUEST_VEHICLE_PREV_SEAT");
+
+    // ToDo
+}
+
+void WorldSession::HandleRequestVehicleNextSeat(WorldPacket& recv_data)
+{
+    DEBUG_LOG("WORLD: Received CMSG_REQUEST_VEHICLE_NEXT_SEAT");
+
+    // ToDo
 }
 
 void WorldSession::HandleRideVehicleInteract(WorldPacket& recvPacket)
