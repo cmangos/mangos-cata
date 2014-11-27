@@ -1196,7 +1196,7 @@ enum Opcodes
     SMSG_CRITERIA_UPDATE                                  = 0x6E37, // 4.3.4 15595
     CMSG_QUERY_INSPECT_ACHIEVEMENTS                       = 0x4D27, // 4.3.4 15595
     SMSG_RESPOND_INSPECT_ACHIEVEMENTS                     = 0x15B0, // 4.3.4 15595
-    CMSG_DISMISS_CONTROLLED_VEHICLE                       = 0x146E,
+    CMSG_DISMISS_CONTROLLED_VEHICLE                       = 0x3218, // 4.3.4 15595
     CMSG_COMPLETE_ACHIEVEMENT_CHEAT                       = 0x146F,
     SMSG_QUESTUPDATE_ADD_PVP_KILL                         = 0x4416, // 4.3.4 15595
     CMSG_SET_CRITERIA_CHEAT                               = 0x1471,
