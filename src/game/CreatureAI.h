@@ -69,8 +69,12 @@ enum AIEventType
     AI_EVENT_GOT_FULL_HEALTH    = 4,                        // Sender = Healed Npc, Invoker = Healer
     AI_EVENT_CUSTOM_EVENTAI_A   = 5,                        // Sender = Npc that throws custom event, Invoker = TARGET_T_ACTION_INVOKER (if exists)
     AI_EVENT_CUSTOM_EVENTAI_B   = 6,                        // Sender = Npc that throws custom event, Invoker = TARGET_T_ACTION_INVOKER (if exists)
-    AI_EVENT_GOT_CCED           = 7,                        // Sender = CCed Npc, Invoker = Caster that CCed
-    MAXIMAL_AI_EVENT_EVENTAI    = 8,
+	AI_EVENT_CUSTOM_EVENTAI_C   = 7,                        // Sender = Npc that throws custom event, Invoker = TARGET_T_ACTION_INVOKER (if exists)
+	AI_EVENT_CUSTOM_EVENTAI_D   = 8,                        // Sender = Npc that throws custom event, Invoker = TARGET_T_ACTION_INVOKER (if exists)
+	AI_EVENT_CUSTOM_EVENTAI_E   = 9,                        // Sender = Npc that throws custom event, Invoker = TARGET_T_ACTION_INVOKER (if exists)
+	AI_EVENT_CUSTOM_EVENTAI_F   = 10,                       // Sender = Npc that throws custom event, Invoker = TARGET_T_ACTION_INVOKER (if exists)
+    AI_EVENT_GOT_CCED           = 11,                       // Sender = CCed Npc, Invoker = Caster that CCed
+    MAXIMAL_AI_EVENT_EVENTAI    = 12,
 
     // Internal Use
     AI_EVENT_CALL_ASSISTANCE    = 10,                       // Sender = Attacked Npc, Invoker = Enemy
