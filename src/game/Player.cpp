@@ -5634,7 +5634,7 @@ bool Player::UpdateFishingSkill()
 // levels sync. with spell requirement for skill levels to learn
 // bonus abilities in sSkillLineAbilityStore
 // Used only to avoid scan DBC at each skill grow
-static uint32 bonusSkillLevels[] = {75, 150, 225, 300, 375, 450};
+static uint32 bonusSkillLevels[] = {75, 150, 225, 300, 375, 450, 525};
 
 bool Player::UpdateSkillPro(uint16 SkillId, int32 Chance, uint32 step)
 {
@@ -5665,32 +5665,32 @@ bool Player::UpdateSkillPro(uint16 SkillId, int32 Chance, uint32 step)
     if (!MaxValue || !SkillValue || SkillValue >= MaxValue)
         return false;
 
-    int32 Roll = irand(1, 1000);
-
-    if (Roll <= Chance)
+    if (irand(1, 1000) > Chance)
     {
-        uint16 new_value = SkillValue + step;
-        if (new_value > MaxValue)
-            new_value = MaxValue;
-
-        SetUInt16Value(PLAYER_SKILL_RANK_0 + field, offset, new_value);
-        if (skillStatus.uState != SKILL_NEW)
-            skillStatus.uState = SKILL_CHANGED;
-        for (uint32* bsl = &bonusSkillLevels[0]; *bsl; ++bsl)
-        {
-            if (SkillValue < *bsl && new_value >= *bsl)
-            {
-                learnSkillRewardedSpells(SkillId, new_value);
-                break;
-            }
-        }
-        GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_REACH_SKILL_LEVEL, SkillId);
-        DEBUG_LOG("Player::UpdateSkillPro Chance=%3.1f%% taken", Chance / 10.0);
-        return true;
+        DEBUG_LOG("Player::UpdateSkillPro Chance=%3.1f%% missed", Chance / 10.0);
+        return false;
     }
 
-    DEBUG_LOG("Player::UpdateSkillPro Chance=%3.1f%% missed", Chance / 10.0);
-    return false;
+    uint16 new_value = SkillValue + step;
+    if (new_value > MaxValue)
+        new_value = MaxValue;
+
+    SetUInt16Value(PLAYER_SKILL_RANK_0 + field, offset, new_value);
+    if (skillStatus.uState != SKILL_NEW)
+        skillStatus.uState = SKILL_CHANGED;
+
+    for (uint32* bsl = &bonusSkillLevels[0]; *bsl; ++bsl)
+    {
+        if (SkillValue < *bsl && new_value >= *bsl)
+        {
+            learnSkillRewardedSpells(SkillId, new_value);
+            break;
+        }
+    }
+
+    GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_REACH_SKILL_LEVEL, SkillId);
+    DEBUG_LOG("Player::UpdateSkillPro Chance=%3.1f%% taken", Chance / 10.0);
+    return true;
 }
 
 void Player::ModifySkillBonus(uint32 skillid, int32 val, bool talent)
