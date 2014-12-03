@@ -353,7 +353,9 @@ void Spell::EffectSchoolDMG(SpellEffectEntry const* effect)
                     case 88942: case 95172:                 // Meteor Slash
                     case 89348: case 95178:                 // Demon Repellent Ray
                     case 98474: case 100212: case 100213: case 100214:  //Flame Scythe
+                    case 103414: case 108571: case 109033: case 109034: //Stomp
                     case 105069: case 108094:               // Seething Hate
+                    case 106375: case 109182: case 109183: case 109184: //Twilight Unstable
                     {
                         uint32 count = 0;
                         for(TargetList::const_iterator ihit = m_UniqueTargetInfo.begin(); ihit != m_UniqueTargetInfo.end(); ++ihit)
