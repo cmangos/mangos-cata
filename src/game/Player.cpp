@@ -5594,6 +5594,10 @@ bool Player::UpdateCraftSkill(uint32 spellid)
             }
 
             uint32 craft_skill_gain = sWorld.getConfig(CONFIG_UINT32_SKILL_GAIN_CRAFTING);
+            if (!_spell_idx->second->characterPoints)
+                sLog.outError("Player::UpdateCraftSkill spell %u has characterPoints == 0!");
+            else
+                craft_skill_gain += _spell_idx->second->characterPoints - 1;
 
             return UpdateSkillPro(skill->skillId, SkillGainChance(SkillValue,
                                   skill->max_value,
