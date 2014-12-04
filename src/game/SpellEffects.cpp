@@ -4048,18 +4048,6 @@ void Spell::EffectTriggerSpell(SpellEffectEntry const* effect)
                 pet->CastSpell(pet, 28305, true);
             return;
         }
-        case 53258:                                         // Empower Rune Weapon
-        {
-            // remove cooldown of frost/death, undead/blood activated in main spell
-            if (unitTarget->GetTypeId() == TYPEID_PLAYER)
-            {
-                bool res1 = ((Player*)unitTarget)->ActivateRunes(RUNE_FROST, 2);
-                bool res2 = ((Player*)unitTarget)->ActivateRunes(RUNE_DEATH, 2);
-                if (res1 || res2)
-                    ((Player*)unitTarget)->ResyncRunes();
-            }
-            return;
-        }
         case 58832:                                         // Mirror Image
         {
             // Glyph of Mirror Image
@@ -11013,8 +11001,8 @@ void Spell::EffectActivateRune(SpellEffectEntry const* effect)
         return;
 
     int32 count = damage;                                   // max amount of reset runes
-    if (plr->ActivateRunes(RuneType(effect->EffectMiscValue), count))
-        plr->ResyncRunes();
+
+    plr->ResyncRunes();
 }
 
 void Spell::EffectTitanGrip(SpellEffectEntry const* effect)
