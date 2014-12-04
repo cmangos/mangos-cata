@@ -28,6 +28,7 @@
 #include "Util.h"
 #include "Pet.h"
 #include "SpellAuras.h"
+#include "TemporarySummon.h"
 
 void WorldSession::HandlePetAction(WorldPacket& recv_data)
 {
@@ -760,4 +761,26 @@ void WorldSession::HandleLearnPreviewTalentsPet(WorldPacket& recv_data)
     }
 
     _player->SendTalentsInfoData(true);
+}
+
+void WorldSession::HandleDismissCritter(WorldPacket& recvData)
+{
+    ObjectGuid guid;
+    recvData >> guid;
+
+    DEBUG_LOG("WORLD: Received CMSG_DISMISS_CRITTER for %s", guid.GetString().c_str());
+
+    Unit* pet = _player->GetMap()->GetAnyTypeCreature(guid);
+    if (!pet)
+    {
+        DEBUG_LOG("Vanitypet %s does not exist - Player %s (guid %u, account: %u) attempted to dismiss it (possibly lagged out)",
+            guid.GetString().c_str(), GetPlayer()->GetName(), GetPlayer()->GetGUIDLow(), GetAccountId());
+        return;
+    }
+
+    if (_player->GetCritterGuid() == guid)
+    {
+        if (pet->GetTypeId() == TYPEID_UNIT && ((Creature*)pet)->IsTemporarySummon())
+            ((TemporarySummon*)pet)->UnSummon();
+    }
 }
