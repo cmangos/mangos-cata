@@ -1370,7 +1370,7 @@ void InitializeOpcodes()
     OPCODE(CMSG_LOW_LEVEL_RAID,                          STATUS_LOGGEDIN, PROCESS_INPLACE,      &WorldSession::HandleSetAllowLowLevelRaidOpcode);
     OPCODE(CMSG_LOW_LEVEL_RAID_USER,                     STATUS_LOGGEDIN, PROCESS_INPLACE,      &WorldSession::HandleSetAllowLowLevelRaidOpcode);
     //OPCODE(SMSG_CAMERA_SHAKE,                            STATUS_NEVER,    PROCESS_INPLACE,      &WorldSession::Handle_ServerSide               );
-    //OPCODE(SMSG_SOCKET_GEMS,                             STATUS_NEVER,    PROCESS_INPLACE,      &WorldSession::Handle_ServerSide               );
+    OPCODE(SMSG_SOCKET_GEMS,                             STATUS_NEVER,    PROCESS_INPLACE,      &WorldSession::Handle_ServerSide               );
     //OPCODE(CMSG_SET_CHARACTER_MODEL,                     STATUS_NEVER,    PROCESS_INPLACE,      &WorldSession::Handle_NULL                     );
     OPCODE(SMSG_CONNECT_TO,                              STATUS_NEVER,    PROCESS_INPLACE,      &WorldSession::Handle_ServerSide               );
     //OPCODE(CMSG_CONNECT_TO_FAILED,                       STATUS_NEVER,    PROCESS_INPLACE,      &WorldSession::Handle_NULL                     );
