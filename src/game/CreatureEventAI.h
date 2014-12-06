@@ -65,6 +65,7 @@ enum EventAI_Type
     EVENT_T_TIMER_GENERIC           = 29,                   // InitialMin, InitialMax, RepeatMin, RepeatMax
     EVENT_T_RECEIVE_AI_EVENT        = 30,                   // AIEventType, Sender-Entry, unused, unused
     EVENT_T_ENERGY                  = 31,                   // EnergyMax%, EnergyMin%, RepeatMin, RepeatMax
+    EVENT_T_IC_LOS                  = 32,                   // Nohostile, MaxRange, RepeatMin, RepeatMax
 
     EVENT_T_END,
 };
@@ -483,6 +484,7 @@ struct CreatureEventAI_Event
             uint32 repeatMax;
         } range;
         // EVENT_T_OOC_LOS                                  = 10
+        // EVENT_T_IC_LOS                                   = 32
         struct
         {
             uint32 noHostile;

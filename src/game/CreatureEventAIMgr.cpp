@@ -223,6 +223,7 @@ bool IsValidTargetType(EventAI_Type eventType, EventAI_ActionType actionType, ui
                 case EVENT_T_FRIENDLY_MISSING_BUFF:
                 case EVENT_T_RECEIVE_EMOTE:
                 case EVENT_T_RECEIVE_AI_EVENT:
+                case EVENT_T_IC_LOS:
                     return true;
                 default:
                     sLog.outErrorEventAI("Event %u Action%u uses incorrect Target type %u for event-type %u", eventId, action, targetType, eventType);
@@ -364,6 +365,10 @@ void CreatureEventAIMgr::LoadCreatureEventAI_Scripts()
                     if (temp.ooc_los.repeatMax < temp.ooc_los.repeatMin)
                         sLog.outErrorEventAI("Creature %u are using repeatable event(%u) with param4 < param3 (RepeatMax < RepeatMin). Event will never repeat.", temp.creature_id, i);
                     break;
+                case EVENT_T_IC_LOS:
+                    if (temp.ic_los.repeatMax < temp.ic_los.repeatMin)
+                        sLog.outErrorEventAI("Creature %u are using repeatable event(%u) with param4 < param3 (RepeatMax < RepeatMin). Evemt will never repeat.", temp.creature_id, i);
+                    break;    
                 case EVENT_T_SPAWNED:
                     switch (temp.spawned.condition)
                     {

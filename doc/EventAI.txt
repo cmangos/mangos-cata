@@ -94,6 +94,7 @@ Some events such as EVENT_T_AGGRO, EVENT_T_DEATH, EVENT_T_SPAWNED, and EVENT_T_E
 29   EVENT_T_TIMER_GENERIC         InitialMin, InitialMax, RepeatMin, RepeatMax            Expires at first between (Param1) and (Param2) and then will repeat between every (Param3) and (Param4).
 30   EVENT_T_RECEIVE_AI_EVENT      AIEventType, Sender-Entry, unused, unused               Expires when the creature receives an AIEvent of type (Param1), sent by creature (Param2 != 0). If (Param2 = 0) then sent by any creature
 31   EVENT_T_ENERGY                EnergyMax%, EnergyMin%, RepeatMin, RepeatMax            Expires when the NPC's Energy% is between (Param1) and (Param2). Will repeat between every (Param3) and (Param4) If Event Conditions Are Still Met.
+32   EVENT_T_IC_LOS                Hostile-or-Not, MaxAllowedRange, RepeatMin, RepeatMax   Expires when a unit moves within distance (MaxAllowedRange) of the NPC. If (Param1) is 0 it will expire only when unit is hostile, If (Param1) is 1 it will expire only when unit is friendly. This depends generally on faction relations. Will repeat every (Param3) and (Param4). Does expire when the NPC is in combat.
 
 =========================================
 Action Types
@@ -471,6 +472,17 @@ Parameter 4: RepeatMax - Maximum Time used to calculate Random Repeat Event Expi
 
 BOTH - Expires once Energy% is between (Param1) and (Param2). Will repeat every (Param3) and (Param4).
 This is commonly used for events where an NPC low on Energy will do something (Such as stop casting spells and switch to melee).
+
+---------------------
+32 = EVENT_T_IC_LOS:
+---------------------
+Parameter 1: Hostile-or-Not   - This will expire if Unit are hostile. If Param1=1 it will only expire if Unit are not Hostile(generally determined by faction)
+Parameter 2: MaxAllowedRange  - Expires when a Unit moves within this distance to creature
+Parameter 3: RepeatMin        - Minimum Time used to calculate Random Repeat Expire
+Parameter 4: RepeatMax        - Maximum Time used to calculate Random Repeat Expire
+
+COMBAT ONLY
+This Event is commonly used for NPC's who do something or say something to you when you walk past them Combat.
 
 =========================================
 Action Types
