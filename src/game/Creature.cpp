@@ -1251,7 +1251,7 @@ void Creature::SelectLevel(const CreatureInfo* cinfo, float percentHealth, float
     // all power types
     for (int i = POWER_MANA; i <= POWER_RUNIC_POWER; ++i)
     {
-        uint32 maxValue;
+        uint32 maxValue = 0;
 
         switch (i)
         {
