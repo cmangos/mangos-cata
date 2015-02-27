@@ -2836,6 +2836,15 @@ void Spell::EffectDummy(SpellEffectEntry const* effect)
                     m_caster->CastSpell(unitTarget, effect->CalculateSimpleValue(), true);
                     return;
                 }
+                case 63984:                                 // Hate to Zero
+                {
+                    if (!unitTarget)
+                        return;
+
+                    if (m_caster->getThreatManager().getThreat(unitTarget))
+                        m_caster->getThreatManager().modifyThreatPercent(unitTarget, -100);
+                    return;
+                }
                 case 64172:                                 // Titanic Storm
                 {
                     if (!unitTarget || !unitTarget->HasAura(effect->CalculateSimpleValue()))
