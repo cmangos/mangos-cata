@@ -2720,6 +2720,73 @@ void Creature::SetLevitate(bool enable)
     }
 }
 
+void Creature::SetSwim(bool enable)
+{
+    if (enable)
+        m_movementInfo.AddMovementFlag(MOVEFLAG_SWIMMING);
+    else
+        m_movementInfo.RemoveMovementFlag(MOVEFLAG_SWIMMING);
+
+    // ToDo: fix this!
+    /*WorldPacket data(enable ? SMSG_SPLINE_MOVE_START_SWIM : SMSG_SPLINE_MOVE_STOP_SWIM);
+    data << GetPackGUID();
+    SendMessageToSet(&data, true);*/
+}
+
+void Creature::SetCanFly(bool enable)
+{
+    if (enable)
+        m_movementInfo.AddMovementFlag(MOVEFLAG_CAN_FLY);
+    else
+        m_movementInfo.RemoveMovementFlag(MOVEFLAG_CAN_FLY);
+
+    // ToDo: fix this!
+    /*WorldPacket data(enable ? SMSG_SPLINE_MOVE_SET_FLYING : SMSG_SPLINE_MOVE_UNSET_FLYING, 9);
+    data << GetPackGUID();
+    SendMessageToSet(&data, true);*/
+}
+
+void Creature::SetFeatherFall(bool enable)
+{
+    if (enable)
+        m_movementInfo.AddMovementFlag(MOVEFLAG_SAFE_FALL);
+    else
+        m_movementInfo.RemoveMovementFlag(MOVEFLAG_SAFE_FALL);
+
+    // ToDo: fix this!
+    /*WorldPacket data(enable ? SMSG_SPLINE_MOVE_FEATHER_FALL : SMSG_SPLINE_MOVE_NORMAL_FALL);
+    data << GetPackGUID();
+    SendMessageToSet(&data, true);*/
+}
+
+void Creature::SetHover(bool enable)
+{
+    if (enable)
+        m_movementInfo.AddMovementFlag(MOVEFLAG_HOVER);
+    else
+        m_movementInfo.RemoveMovementFlag(MOVEFLAG_HOVER);
+
+    WorldPacket data;
+    if (IsInWorld())
+    {
+        WorldPacket data(enable ? SMSG_SPLINE_MOVE_SET_HOVER : SMSG_SPLINE_MOVE_UNSET_HOVER, 9);
+        if (enable)
+        {
+            data.WriteGuidMask<3, 7, 0, 1, 4, 6, 2, 5>(GetObjectGuid());
+            data.WriteGuidBytes<2, 4, 3, 1, 7, 0, 5, 6>(GetObjectGuid());
+            SetByteFlag(UNIT_FIELD_BYTES_1, 3, UNIT_BYTE1_FLAG_FLY_ANIM);
+        }
+        else
+        {
+            data.WriteGuidMask<6, 7, 4, 0, 3, 1, 5, 2>(GetObjectGuid());
+            data.WriteGuidBytes<4, 5, 3, 0, 2, 7, 6, 1>(GetObjectGuid());
+            RemoveByteFlag(UNIT_FIELD_BYTES_1, 3, UNIT_BYTE1_FLAG_FLY_ANIM);
+        }
+
+        SendMessageToSet(&data, true);
+    }
+}
+
 void Creature::SetRoot(bool enable)
 {
     if (enable)

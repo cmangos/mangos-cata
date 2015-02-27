@@ -3526,14 +3526,8 @@ void Aura::HandleAuraFeatherFall(bool apply, bool Real)
     // only at real add/remove aura
     if (!Real)
         return;
-    Unit* target = GetTarget();
-    WorldPacket data;
-    target->BuildMoveFeatherFallPacket(&data, apply, 0);
-    target->SendMessageToSet(&data, true);
 
-    // start fall from current height
-    if (!apply && target->GetTypeId() == TYPEID_PLAYER)
-        ((Player*)target)->SetFallInformation(0, target->GetPositionZ());
+    GetTarget()->SetFeatherFall(apply);
 }
 
 void Aura::HandleAuraHover(bool apply, bool Real)
@@ -3542,45 +3536,7 @@ void Aura::HandleAuraHover(bool apply, bool Real)
     if (!Real)
         return;
 
-    WorldPacket data;
-    if (apply)
-    {
-        GetTarget()->m_movementInfo.AddMovementFlag(MOVEFLAG_HOVER);
-        if (GetTarget()->GetTypeId() == TYPEID_PLAYER)
-        {
-            data.Initialize(SMSG_MOVE_SET_HOVER, 8 + 4 + 1);
-            data.WriteGuidMask<1, 4, 2, 3, 0, 5, 6, 7>(GetTarget()->GetObjectGuid());
-            data.WriteGuidBytes<5, 4, 1, 2, 3, 6, 0, 7>(GetTarget()->GetObjectGuid());
-            data << uint32(0);
-        }
-        else
-        {
-            data.Initialize(SMSG_SPLINE_MOVE_SET_HOVER, 8 + 4 + 1);
-            data.WriteGuidMask<3, 7, 0, 1, 4, 6, 2, 5>(GetTarget()->GetObjectGuid());
-            data.WriteGuidBytes<2, 4, 3, 1, 7, 0, 5, 6>(GetTarget()->GetObjectGuid());
-            GetTarget()->SetByteFlag(UNIT_FIELD_BYTES_1, 3, UNIT_BYTE1_FLAG_UNK_2);
-        }
-    }
-    else
-    {
-        GetTarget()->m_movementInfo.RemoveMovementFlag(MOVEFLAG_HOVER);
-        data.Initialize(GetTarget()->GetTypeId() == TYPEID_PLAYER ? SMSG_MOVE_UNSET_HOVER : SMSG_SPLINE_MOVE_UNSET_HOVER, 8+4);
-        if (GetTarget()->GetTypeId() == TYPEID_PLAYER)
-        {
-            data.Initialize(SMSG_MOVE_UNSET_HOVER, 8 + 4 + 1);
-            data.WriteGuidMask<4, 6, 3, 1, 2, 7, 5, 0>(GetTarget()->GetObjectGuid());
-            data.WriteGuidBytes<4, 5, 3, 6, 7, 1, 2, 0>(GetTarget()->GetObjectGuid());
-            data << uint32(0);
-        }
-        else
-        {
-            data.Initialize(SMSG_SPLINE_MOVE_UNSET_HOVER, 8 + 4 + 1);
-            data.WriteGuidMask<6, 7, 4, 0, 3, 1, 5, 2>(GetTarget()->GetObjectGuid());
-            data.WriteGuidBytes<4, 5, 3, 0, 2, 7, 6, 1>(GetTarget()->GetObjectGuid());
-            GetTarget()->RemoveByteFlag(UNIT_FIELD_BYTES_1, 3, UNIT_BYTE1_FLAG_UNK_2);
-        }
-    }
-    GetTarget()->SendMessageToSet(&data, true);
+    GetTarget()->SetHover(apply);
 }
 
 void Aura::HandleWaterBreathing(bool /*apply*/, bool /*Real*/)
@@ -5204,9 +5160,7 @@ void Aura::HandleAuraModIncreaseFlightSpeed(bool apply, bool Real)
     // Enable Fly mode for flying mounts
     if (m_modifier.m_auraname == SPELL_AURA_MOD_FLIGHT_SPEED_MOUNTED)
     {
-        WorldPacket data;
-        target->BuildMoveSetCanFlyPacket(&data, apply, 0);
-        target->SendMessageToSet(&data, true);
+        target->SetCanFly(apply);
 
         // Players on flying mounts must be immune to polymorph
         if (target->GetTypeId() == TYPEID_PLAYER)
@@ -7102,10 +7056,7 @@ void Aura::HandleAuraAllowFlight(bool apply, bool Real)
     if (!Real)
         return;
 
-    // allow fly
-    WorldPacket data;
-    GetTarget()->BuildMoveSetCanFlyPacket(&data, apply, 0);
-    GetTarget()->SendMessageToSet(&data, true);
+    GetTarget()->SetCanFly(apply);
 }
 
 void Aura::HandleModRating(bool apply, bool Real)

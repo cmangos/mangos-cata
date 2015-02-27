@@ -12006,6 +12006,48 @@ void Unit::BuildMoveFeatherFallPacket(WorldPacket* data, bool apply, uint32 valu
     }
 }
 
+void Unit::BuildMoveHoverPacket(WorldPacket* data, bool apply, uint32 value)
+{
+    ObjectGuid guid = GetObjectGuid();
+
+    if (apply)
+    {
+        data->Initialize(SMSG_MOVE_SET_HOVER, 8 + 4 + 1);
+        data->WriteGuidMask<1, 4, 2, 3, 0, 5, 6, 7>(guid);
+        data->WriteGuidBytes<5, 4, 1, 2, 3, 6, 0, 7>(guid);
+        *data << uint32(0);
+    }
+    else
+    {
+        data->Initialize(SMSG_MOVE_UNSET_HOVER, 8 + 4 + 1);
+        data->WriteGuidMask<4, 6, 3, 1, 2, 7, 5, 0>(guid);
+        data->WriteGuidBytes<4, 5, 3, 6, 7, 1, 2, 0>(guid);
+        *data << uint32(0);
+    }
+}
+
+void Unit::BuildMoveLevitatePacket(WorldPacket* data, bool apply, uint32 value)
+{
+    ObjectGuid guid = GetObjectGuid();
+
+    if (apply)
+    {
+        data->Initialize(SMSG_MOVE_GRAVITY_ENABLE);
+        data->WriteGuidMask<1, 4, 7, 5, 2, 0, 3, 6>(GetObjectGuid());
+        data->WriteGuidBytes<3>(GetObjectGuid());
+        *data << uint32(value);
+        data->WriteGuidBytes<7, 6, 4, 0, 1, 5, 2>(GetObjectGuid());
+    }
+    else
+    {
+        data->Initialize(SMSG_MOVE_GRAVITY_DISABLE);
+        data->WriteGuidMask<0, 1, 5, 7, 6, 4, 3, 2>(GetObjectGuid());
+        data->WriteGuidBytes<7, 2, 0>(GetObjectGuid());
+        *data << uint32(value);
+        data->WriteGuidBytes<5, 1, 3, 4, 6>(GetObjectGuid());
+    }
+}
+
 void Unit::SendCollisionHeightUpdate(float height)
 {
     if (GetTypeId() == TYPEID_PLAYER)

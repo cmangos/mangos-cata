@@ -4583,6 +4583,38 @@ void Player::SetWaterWalk(bool enable)
     GetSession()->SendPacket(&data);
 }
 
+void Player::SetLevitate(bool enable)
+{
+    WorldPacket data;
+    BuildMoveLevitatePacket(&data, enable, 0);
+    GetSession()->SendPacket(&data);
+}
+
+void Player::SetCanFly(bool enable)
+{
+    WorldPacket data;
+    BuildMoveSetCanFlyPacket(&data, enable, 0);
+    GetSession()->SendPacket(&data);
+}
+
+void Player::SetFeatherFall(bool enable)
+{
+    WorldPacket data;
+    BuildMoveFeatherFallPacket(&data, enable, 0);
+    SendMessageToSet(&data, true);
+
+    // start fall from current height
+    if (!enable)
+        SetFallInformation(0, GetPositionZ());
+}
+
+void Player::SetHover(bool enable)
+{
+    WorldPacket data;
+    BuildMoveHoverPacket(&data, enable, 0);
+    GetSession()->SendPacket(&data);
+}
+
 /* Preconditions:
   - a resurrectable corpse must not be loaded for the player (only bones)
   - the player must be in world

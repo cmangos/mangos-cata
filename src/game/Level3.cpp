@@ -6097,9 +6097,7 @@ bool ChatHandler::HandleGMFlyCommand(char* args)
     if (!target)
         target = m_session->GetPlayer();
 
-    WorldPacket data;
-    target->BuildMoveSetCanFlyPacket(&data, value, 0);
-    target->SendMessageToSet(&data, true);
+    target->SetCanFly(value);
     PSendSysMessage(LANG_COMMAND_FLYMODE_STATUS, GetNameLink(target).c_str(), args);
     return true;
 }
