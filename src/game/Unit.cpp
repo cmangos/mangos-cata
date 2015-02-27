@@ -10735,8 +10735,8 @@ void Unit::ProcDamageAndSpellFor(bool isVictim, Unit* pTarget, uint32 procFlag, 
 
             const SpellEntry* se = itr->second->GetSpellProto();
 
-            // check if the aura is interruptible by damage
-            if (se->GetAuraInterruptFlags() & AURA_INTERRUPT_FLAG_DAMAGE)
+            // check if the aura is interruptible by damage and if its not just added by this spell (spell who is responsible for this damage is procSpell)
+            if (se->GetAuraInterruptFlags() & AURA_INTERRUPT_FLAG_DAMAGE && (!procSpell || procSpell->Id != se->Id))
             {
                 DEBUG_FILTER_LOG(LOG_FILTER_SPELL_CAST, "ProcDamageAndSpell: Added Spell %u to 'remove aura due to spell' list! Reason: Damage received.", se->Id);
                 removedSpells.push_back(se->Id);
