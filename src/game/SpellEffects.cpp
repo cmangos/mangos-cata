@@ -9199,6 +9199,15 @@ void Spell::EffectScriptEffect(SpellEffectEntry const* effect)
 
                     return;
                 }
+                case 67751:                                 // Ghoul Explode
+                {
+                    if (!unitTarget)
+                        return;
+
+                    unitTarget->InterruptNonMeleeSpells(false);
+                    unitTarget->CastSpell(unitTarget, 67729, false);
+                    return;
+                }
                 case 68861:                                 // Consume Soul (ICC FoS: Bronjahm)
                     if (unitTarget)
                         unitTarget->CastSpell(unitTarget, effect->CalculateSimpleValue(), true);
