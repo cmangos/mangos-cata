@@ -1382,7 +1382,7 @@ void InitializeOpcodes()
     //OPCODE(SMSG_SEND_ALL_COMBAT_LOG,                     STATUS_NEVER,    PROCESS_INPLACE,      &WorldSession::Handle_ServerSide               );
     //OPCODE(SMSG_OPEN_LFG_DUNGEON_FINDER,                 STATUS_NEVER,    PROCESS_INPLACE,      &WorldSession::Handle_ServerSide               );
     OPCODE(SMSG_MOVE_SET_COLLISION_HGT,                  STATUS_NEVER,    PROCESS_INPLACE,      &WorldSession::Handle_ServerSide               );
-    //OPCODE(CMSG_MOVE_SET_COLLISION_HGT_ACK,              STATUS_NEVER,    PROCESS_INPLACE,      &WorldSession::Handle_NULL                     );
+    OPCODE(CMSG_MOVE_SET_COLLISION_HGT_ACK,              STATUS_UNHANDLED,PROCESS_INPLACE,      &WorldSession::Handle_NULL                     );
     //OPCODE(MSG_MOVE_SET_COLLISION_HGT,                   STATUS_NEVER,    PROCESS_INPLACE,      &WorldSession::Handle_ServerSide               );
     //OPCODE(CMSG_CLEAR_RANDOM_BG_WIN_TIME,                STATUS_NEVER,    PROCESS_INPLACE,      &WorldSession::Handle_NULL                     );
     //OPCODE(CMSG_CLEAR_HOLIDAY_BG_WIN_TIME,               STATUS_NEVER,    PROCESS_INPLACE,      &WorldSession::Handle_NULL                     );

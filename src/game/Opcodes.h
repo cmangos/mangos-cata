@@ -1367,7 +1367,7 @@ enum Opcodes
     SMSG_SEND_ALL_COMBAT_LOG                              = 0x1515,
     SMSG_OPEN_LFG_DUNGEON_FINDER                          = 0x1516,
     SMSG_MOVE_SET_COLLISION_HGT                           = 0x11B0, // 4.3.4 15595
-    CMSG_MOVE_SET_COLLISION_HGT_ACK                       = 0x1518,
+    CMSG_MOVE_SET_COLLISION_HGT_ACK                       = 0x7114, // 4.3.4 15595
     MSG_MOVE_SET_COLLISION_HGT                            = 0x1519,
     CMSG_CLEAR_RANDOM_BG_WIN_TIME                         = 0x151A,
     CMSG_CLEAR_HOLIDAY_BG_WIN_TIME                        = 0x151B,
