@@ -110,7 +110,7 @@ uint8 GetSpellStartDBScriptPriority(SpellEntry const* spellinfo, SpellEffectInde
         return 5;
 
     // NonExisting trigger missile spells can also start DB-Spell-Scripts
-    if (spellinfo->Effect[effIdx] == SPELL_EFFECT_TRIGGER_MISSILE && !sSpellStore.LookupEntry(spellinfo->EffectTriggerSpell[effIdx]))
+    if (spellEffect->Effect == SPELL_EFFECT_TRIGGER_MISSILE && !sSpellStore.LookupEntry(spellEffect->EffectTriggerSpell))
         return 4;
 
     // Can not start script
