@@ -760,28 +760,6 @@ struct CreatureDisplayInfoEntry
                                                             // 16       all 0
 };
 
-struct CreatureModelDataEntry
-{
-    uint32      Id;
-    uint32      Flags;
-    // char*    ModelPath[16]
-    // uint32   Unk1;
-    float       Scale;                                      // Used in calculation of unit collision data
-    // int32    Unk2
-    // int32    Unk3
-    // uint32   Unk4
-    // uint32   Unk5
-    // float    Unk6
-    // uint32   Unk7
-    // float    Unk8
-    // uint32   Unk9
-    // uint32   Unk10
-    // float    CollisionWidth;
-    float       CollisionHeight;
-    float       MountHeight;                                // Used in calculation of unit collision data when mounted
-    // float Unks[11]
-};
-
 struct CreatureDisplayInfoExtraEntry
 {
     uint32      DisplayExtraId;                             // 0        m_ID CreatureDisplayInfoEntry::m_extendedDisplayInfoID
@@ -810,6 +788,28 @@ struct CreatureFamilyEntry
                                                             // 9        m_categoryEnumID
     DBCString Name;                                         // 10       m_name_lang
                                                             // 11       m_iconFile
+};
+
+struct CreatureModelDataEntry
+{
+    uint32 Id;                                              // 0
+    //uint32 Flags;                                         // 1
+    //char* ModelPath                                       // 2
+    //uint32 InhabitType;                                   // 3 model inhabit type
+    //float Scale;                                          // 4 Used in calculation of unit collision data
+    //int32 Unk2                                            // 5
+    //int32 Unk3                                            // 6
+    //uint32 Unk4                                           // 7
+    //uint32 Unk5                                           // 8
+    //float Unk6                                            // 9
+    //uint32 Unk7                                           // 10
+    //float Unk8                                            // 11
+    //uint32 Unk9                                           // 12
+    //uint32 Unk10                                          // 13
+    //float CollisionWidth;                                 // 14
+    float CollisionHeight;                                  // 15
+    float MountHeight;                                      // 16 Used in calculation of unit collision data when mounted
+    //float Unks[14]                                        // 17-30
 };
 
 #define MAX_CREATURE_SPELL_DATA_SLOT 4
