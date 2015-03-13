@@ -1414,7 +1414,7 @@ void LoadLootTemplates_Pickpocketing()
     {
         if (CreatureInfo const* cInfo = sCreatureStorage.LookupEntry<CreatureInfo>(i))
         {
-            if (uint32 lootid = cInfo->pickpocketLootId)
+            if (uint32 lootid = cInfo->PickpocketLootId)
             {
                 if (ids_set.find(lootid) == ids_set.end())
                     LootTemplates_Pickpocketing.ReportNotExistedId(lootid);

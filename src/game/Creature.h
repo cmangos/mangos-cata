@@ -120,8 +120,8 @@ struct CreatureInfo
     uint32  DamageSchool;
     uint32  MinLootGold;
     uint32  MaxLootGold;
-    uint32  pickpocketLootId;
     uint32  LootId;
+    uint32  PickpocketLootId;
     uint32  SkinningLootId;
     uint32  KillCredit[MAX_KILL_CREDIT];
     uint32  QuestItems[6];

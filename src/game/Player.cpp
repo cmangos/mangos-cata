@@ -8402,7 +8402,7 @@ void Player::SendLoot(ObjectGuid guid, LootType loot_type)
                     creature->lootForPickPocketed = true;
                     loot->clear();
 
-                    if (uint32 lootid = creatureInfo->pickpocketLootId)
+                    if (uint32 lootid = creatureInfo->PickpocketLootId)
                         loot->FillLoot(lootid, LootTemplates_Pickpocketing, this, false);
 
                     // Generate extra money for pick pocket loot
