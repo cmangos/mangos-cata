@@ -738,6 +738,8 @@ void ScriptMgr::LoadScripts(ScriptMapMapName& scripts, const char* tablename)
                 sLog.outErrorDb("Table `%s` unknown command %u, skipping.", tablename, tmp.command);
                 continue;
             }
+            case SCRIPT_COMMAND_FOLLOW:                 // 39
+                break;
         }
 
         if (scripts.second.find(tmp.id) == scripts.second.end())
@@ -1961,6 +1963,14 @@ bool ScriptAction::HandleScriptStep()
         }
         default:
             sLog.outErrorDb(" DB-SCRIPTS: Process table `%s` id %u, command %u unknown command used.", m_table, m_script->id, m_script->command);
+            break;
+        case SCRIPT_COMMAND_FOLLOW:                   // 39
+        {
+            if (LogIfNotCreature(pSource))
+                return false;
+            if (LogIfNotUnit(pTarget))
+                return false;
+            ((Creature*)pSource)->GetMotionMaster()->MoveFollow(pTarget, distance, angle);
             break;
     }
 
