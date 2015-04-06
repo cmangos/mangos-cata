@@ -1972,6 +1972,7 @@ bool ScriptAction::HandleScriptStep()
                 return false;
             ((Creature*)pSource)->GetMotionMaster()->MoveFollow(pTarget, distance, angle);
             break;
+        }
     }
 
     return false;
