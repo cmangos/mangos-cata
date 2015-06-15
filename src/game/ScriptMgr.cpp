@@ -878,6 +878,30 @@ void ScriptMgr::LoadCreatureDeathScripts()
     }
 }
 
+void ScriptMgr::LoadCreatureEvadeScripts()
+{
+    LoadScripts(sCreatureEvadeScripts, "dbscripts_on_creature_evade");
+
+    // check ids
+    for (ScriptMapMap::const_iterator itr = sCreatureEvadeScripts.second.begin(); itr != sCreatureEvadeScripts.second.end(); ++itr)
+    {
+        if (!sObjectMgr.GetCreatureTemplate(itr->first))
+            sLog.outErrorDb("Table `dbscripts_on_creature_evade` has not existing creature (Entry: %u) as script id", itr->first);
+    }
+}
+
+void ScriptMgr::LoadCreatureEnterCombatScripts()
+{
+    LoadScripts(sCreatureEnterCombatScripts, "dbscripts_on_creature_enter_combat");
+
+    // check ids
+    for (ScriptMapMap::const_iterator itr = sCreatureEnterCombatScripts.second.begin(); itr != sCreatureEnterCombatScripts.second.end(); ++itr)
+    {
+        if (!sObjectMgr.GetCreatureTemplate(itr->first))
+            sLog.outErrorDb("Table `dbscripts_on_creature_enter_combat` has not existing creature (Entry: %u) as script id", itr->first);
+    }
+}
+
 void ScriptMgr::LoadDbScriptStrings()
 {
     sObjectMgr.LoadMangosStrings(WorldDatabase, "db_script_string", MIN_DB_SCRIPT_STRING_ID, MAX_DB_SCRIPT_STRING_ID, true);

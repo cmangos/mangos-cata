@@ -1328,7 +1328,7 @@ UNLOCK TABLES;
 --
 -- Table structure of `dbscripts_on_event`, `dbscripts_on_go_use`, `dbscripts_on_go_template_use`,
 --                    `dbscripts_on_gossip`, `dbscripts_on_quest_end`, `dbscripts_on_quest_start`,
---                    `dbscripts_on_spell`, `dbscripts_on_creature_death`
+--                    `dbscripts_on_spell`, `dbscripts_on_creature_death`, `dbscripts_on_creature_evade` , `dbscripts_on_creature_enter_combat`
 DROP TABLE IF EXISTS dbscripts_on_event;
 CREATE TABLE dbscripts_on_event LIKE dbscripts_on_creature_movement;
 DROP TABLE IF EXISTS dbscripts_on_go_use;
@@ -1343,8 +1343,10 @@ DROP TABLE IF EXISTS dbscripts_on_quest_start;
 CREATE TABLE dbscripts_on_quest_start LIKE dbscripts_on_creature_movement;
 DROP TABLE IF EXISTS dbscripts_on_spell;
 CREATE TABLE dbscripts_on_spell LIKE dbscripts_on_creature_movement;
-DROP TABLE IF EXISTS dbscripts_on_creature_death;
-CREATE TABLE dbscripts_on_creature_death LIKE dbscripts_on_creature_movement;
+DROP TABLE IF EXISTS dbscripts_on_creature_evade;
+CREATE TABLE dbscripts_on_creature_evade LIKE dbscripts_on_creature_movement;
+DROP TABLE IF EXISTS dbscripts_on_creature_enter_combat;
+CREATE TABLE dbscripts_on_creature_enter_combat LIKE dbscripts_on_creature_movement;
 
 --
 -- Table structure for table `disenchant_loot_template`

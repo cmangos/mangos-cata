@@ -1029,6 +1029,47 @@ bool ChatHandler::HandleReloadDBScriptsOnCreatureDeathCommand(char* args)
     return true;
 }
 
+bool ChatHandler::HandleReloadDBScriptsOnCreatureEvadeCommand(char* args)
+{
+    if (sScriptMgr.IsScriptScheduled())
+    {
+        SendSysMessage("DB scripts used currently, please attempt reload later.");
+        SetSentErrorMessage(true);
+        return false;
+    }
+
+    if (*args != 'a')
+        sLog.outString("Re-Loading Scripts from `dbscripts_on_creature_evade`...");
+
+    sScriptMgr.LoadCreatureEvadeScripts();
+
+    if (*args != 'a')
+        SendGlobalSysMessage("DB table `dbscripts_on_creature_evade` reloaded.");
+
+    return true;
+}
+
+bool ChatHandler::HandleReloadDBScriptsOnCreatureEnterCombatCommand(char* args)
+{
+    if (sScriptMgr.IsScriptScheduled())
+    {
+        SendSysMessage("DB scripts used currently, please attempt reload later.");
+        SetSentErrorMessage(true);
+        return false;
+    }
+
+    if (*args != 'a')
+        sLog.outString("Re-Loading Scripts from `dbscripts_on_creature_enter_combat`...");
+
+    sScriptMgr.LoadCreatureEnterCombatScripts();
+
+    if (*args != 'a')
+        SendGlobalSysMessage("DB table `dbscripts_on_creature_enter_combat` reloaded.");
+
+    return true;
+}
+
+
 bool ChatHandler::HandleReloadGameGraveyardZoneCommand(char* /*args*/)
 {
     sLog.outString("Re-Loading Graveyard-zone links...");
