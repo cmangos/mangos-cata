@@ -120,6 +120,12 @@ enum EventAI_ActionType
     ACTION_T_SET_THROW_MASK             = 46,               // EventTypeMask, unused, unused
     ACTION_T_SET_STAND_STATE            = 47,               // StandState, unused, unused
     ACTION_T_CHANGE_MOVEMENT            = 48,               // MovementType, WanderDistance, unused
+    ACTION_T_DELETE_THREAT              = 50,               // Force creature delete threat list.
+    ACTION_T_COMBAT_STOP                = 51,               // Force creature combat stop.
+    ACTION_T_LOAD_ADDON                 = 52,               // Force creature load creature addon.
+    ACTION_T_MOVE_HOME                  = 53,               // Force creature move targeted home.
+    ACTION_T_REMOVE_EVADE_AURA          = 54,               // Force creature remove all auras on evade.
+    ACTION_T_MOVEMENT_CLEAR             = 55,               // Force creature clear all movement state(including waypoint motion type)
 
     ACTION_T_END,
 };
