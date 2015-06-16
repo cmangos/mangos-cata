@@ -1019,6 +1019,9 @@ void CreatureEventAI::ProcessAction(CreatureEventAI_Action const& action, uint32
             }
             break;
         }
+        case ACTION_T_EVADE_OVERRIDE:
+            EnterEvadeMode(action.enter_evade.overrideEvade == 1);
+            break;
     }
 }
 
@@ -1079,8 +1082,11 @@ void CreatureEventAI::JustReachedHome()
     Reset();
 }
 
-void CreatureEventAI::EnterEvadeMode()
+void CreatureEventAI::EnterEvadeMode(bool isOverrideEvade)
 {
+    if (isOverrideEvade)
+        return;
+    
     m_creature->RemoveAllAurasOnEvade();
     m_creature->DeleteThreatList();
     m_creature->CombatStop(true);

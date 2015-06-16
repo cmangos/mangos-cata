@@ -836,6 +836,7 @@ void CreatureEventAIMgr::LoadCreatureEventAI_Scripts()
                     case ACTION_T_COMBAT_MOVEMENT:          // AllowCombatMovement (0 = stop combat based movement, anything else continue attacking)
                     case ACTION_T_RANGED_MOVEMENT:          // Distance, Angle
                     case ACTION_T_CALL_FOR_HELP:            // Distance
+                    case ACTION_T_EVADE_OVERRIDE:           // No Params. Override Enter Evade System. You can custom handled evade mode if needed.
                         break;
 
                     case ACTION_T_RANDOM_SAY:
