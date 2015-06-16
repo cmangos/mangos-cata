@@ -363,6 +363,12 @@ struct ScriptInfo
             uint32 mailTemplateId;                          // datalong
             uint32 altSender;                               // datalong2;
         } sendMail;
+        
+        struct                                              // SCRIPT_COMMAND_SET_NEXT_WAYPOINT (xxx)
+        {
+            uint32 pointId;                                 // datalong
+            uint32 empty;                                   // datalong2
+        } setNextWaypoint;
 
         struct
         {

@@ -733,6 +733,8 @@ void ScriptMgr::LoadScripts(ScriptMapMapName& scripts, const char* tablename)
                 }
                 break;
             }
+            case SCRIPT_COMMAND_SET_NEXT_WAYPOINT:            // xxx
+                break;
             default:
             {
                 sLog.outErrorDb("Table `%s` unknown command %u, skipping.", tablename, tmp.command);
@@ -1957,6 +1959,14 @@ bool ScriptAction::HandleScriptStep()
             uint32 deliverDelay = m_script->textId[0] > 0 ? (uint32)m_script->textId[0] : 0;
 
             MailDraft(m_script->sendMail.mailTemplateId).SendMailTo(static_cast<Player*>(pTarget), sender, MAIL_CHECK_MASK_HAS_BODY, deliverDelay);
+            break;
+        }
+        case SCRIPT_COMMAND_SET_NEXT_WAYPOINT:               // xxx
+        {
+            if (LogIfNotCreature(pSource))
+                break;
+
+            ((Unit*)pSource)->GetMotionMaster()->SetNextWaypoint(m_script->setNextWaypoint.pointId);
             break;
         }
         default:
