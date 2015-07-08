@@ -402,8 +402,7 @@ class MANGOS_DLL_SPEC WorldSession
         void SetLatency(uint32 latency) { m_latency = latency; }
         uint32 getDialogStatus(Player* pPlayer, Object* questgiver, uint32 defstatus);
 
-    public:                                                 // opcodes handlers
-
+        // opcodes handlers
         void Handle_NULL(WorldPacket& recvPacket);          // not used
         void Handle_EarlyProccess(WorldPacket& recvPacket); // just mark packets processed in WorldSocket::OnRead
         void Handle_ServerSide(WorldPacket& recvPacket);    // sever side only, can't be accepted from client
