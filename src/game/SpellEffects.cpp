@@ -5997,7 +5997,7 @@ void Spell::EffectDispel(SpellEffectEntry const* effect)
             if (Unit* caster = holder->GetCaster())
             {
                 if (Player* modOwner = caster->GetSpellModOwner())
-                    modOwner->ApplySpellMod(spellInfo->Id, SPELLMOD_RESIST_DISPEL_CHANCE, miss_chance, this);
+                    modOwner->ApplySpellMod(spellInfo->Id, SPELLMOD_RESIST_DISPEL_CHANCE, miss_chance);
             }
             // Try dispel
             if (roll_chance_i(miss_chance))
@@ -11174,7 +11174,7 @@ void Spell::EffectWMORepair(SpellEffectEntry const* /*effect*/)
         return;
 
     DEBUG_LOG("Spell::EffectWMORepair, spell Id %u, go entry %u", m_spellInfo->Id, gameObjTarget->GetEntry());
-    gameObjTarget->RebuildGameObject(m_spellInfo->Id, caster);
+    gameObjTarget->RebuildGameObject(caster);
 }
 
 void Spell::EffectWMOChange(SpellEffectEntry const* effect)

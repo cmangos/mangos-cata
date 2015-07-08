@@ -1405,7 +1405,7 @@ void Spell::DoSpellHitOnUnit(Unit* unit, uint32 effectMask)
                 // Apply multiplier mods
                 if (realCaster)
                     if (Player* modOwner = realCaster->GetSpellModOwner())
-                        modOwner->ApplySpellMod(m_spellInfo->Id, SPELLMOD_EFFECT_PAST_FIRST, multiplier, this);
+                        modOwner->ApplySpellMod(m_spellInfo->Id, SPELLMOD_EFFECT_PAST_FIRST, multiplier);
                 m_damageMultipliers[effectNumber] *= multiplier;
             }
         }
@@ -1528,7 +1528,7 @@ void Spell::HandleDelayedSpellLaunch(TargetInfo* target)
                     // Apply multiplier mods
                     if (real_caster)
                         if (Player* modOwner = real_caster->GetSpellModOwner())
-                            modOwner->ApplySpellMod(m_spellInfo->Id, SPELLMOD_EFFECT_PAST_FIRST, multiplier, this);
+                            modOwner->ApplySpellMod(m_spellInfo->Id, SPELLMOD_EFFECT_PAST_FIRST, multiplier);
                     m_damageMultipliers[effectNumber] *= multiplier;
                 }
             }
@@ -1555,7 +1555,7 @@ void Spell::InitializeDamageMultipliers()
         uint32 EffectChainTarget = spellEffect->EffectChainTarget;
         if (Unit* realCaster = GetAffectiveCaster())
             if (Player* modOwner = realCaster->GetSpellModOwner())
-                modOwner->ApplySpellMod(m_spellInfo->Id, SPELLMOD_JUMP_TARGETS, EffectChainTarget, this);
+                modOwner->ApplySpellMod(m_spellInfo->Id, SPELLMOD_JUMP_TARGETS, EffectChainTarget);
 
         m_damageMultipliers[i] = 1.0f;
         if( (spellEffect->EffectImplicitTargetA == TARGET_CHAIN_DAMAGE || spellEffect->EffectImplicitTargetA == TARGET_CHAIN_HEAL) &&
@@ -4742,7 +4742,7 @@ SpellCastResult Spell::CheckRunePower()
     {
         runeCost[i] = src->RuneCost[i];
         if (Player* modOwner = m_caster->GetSpellModOwner())
-            modOwner->ApplySpellMod(m_spellInfo->Id, SPELLMOD_COST, runeCost[i], this);
+            modOwner->ApplySpellMod(m_spellInfo->Id, SPELLMOD_COST, runeCost[i]);
     }
 
     runeCost[RUNE_DEATH] = MAX_RUNES;                       // calculated later
@@ -4790,7 +4790,7 @@ void Spell::TakeRunePower(bool hit)
     {
         runeCost[i] = src->RuneCost[i];
         if (Player* modOwner = m_caster->GetSpellModOwner())
-            modOwner->ApplySpellMod(m_spellInfo->Id, SPELLMOD_COST, runeCost[i], this);
+            modOwner->ApplySpellMod(m_spellInfo->Id, SPELLMOD_COST, runeCost[i]);
     }
 
     runeCost[RUNE_DEATH] = 0;                               // calculated later
@@ -4842,7 +4842,7 @@ void Spell::TakeRunePower(bool hit)
         if (rp)
         {
             if (Player* modOwner = m_caster->GetSpellModOwner())
-                modOwner->ApplySpellMod(m_spellInfo->Id, SPELLMOD_COST, rp, this);
+                modOwner->ApplySpellMod(m_spellInfo->Id, SPELLMOD_COST, rp);
 
             rp = int32(sWorld.getConfig(CONFIG_FLOAT_RATE_POWER_RUNICPOWER_INCOME) * rp);
             rp += m_caster->GetTotalAuraModifier(SPELL_AURA_MOD_RUNIC_POWER_REGEN) * rp / 100;
@@ -6702,7 +6702,7 @@ SpellCastResult Spell::CheckRange(bool strict)
                 if (Player* modOwner = m_caster->GetSpellModOwner())
                 {
                     float base = ATTACK_DISTANCE;
-                    range_mod += modOwner->ApplySpellMod(m_spellInfo->Id, SPELLMOD_RANGE, base, this);
+                    range_mod += modOwner->ApplySpellMod(m_spellInfo->Id, SPELLMOD_RANGE, base);
                 }
 
                 // with additional 5 dist for non stricted case (some melee spells have delay in apply
@@ -6721,7 +6721,7 @@ SpellCastResult Spell::CheckRange(bool strict)
     float min_range = GetSpellMinRange(srange, friendly);
 
     if (Player* modOwner = m_caster->GetSpellModOwner())
-        modOwner->ApplySpellMod(m_spellInfo->Id, SPELLMOD_RANGE, max_range, this);
+        modOwner->ApplySpellMod(m_spellInfo->Id, SPELLMOD_RANGE, max_range);
 
     if (target && target != m_caster)
     {
@@ -6814,7 +6814,7 @@ uint32 Spell::CalculatePowerCost(SpellEntry const* spellInfo, Unit* caster, Spel
     // Apply cost mod by spell
     if (spell)
         if (Player* modOwner = caster->GetSpellModOwner())
-            modOwner->ApplySpellMod(spellInfo->Id, SPELLMOD_COST, powerCost, spell);
+            modOwner->ApplySpellMod(spellInfo->Id, SPELLMOD_COST, powerCost);
 
     if (spellInfo->HasAttribute(SPELL_ATTR_LEVEL_DAMAGE_CALCULATION))
         powerCost = int32(powerCost / (1.117f * spellInfo->GetSpellLevel() / caster->getLevel() - 0.1327f));
@@ -7311,7 +7311,7 @@ void Spell::Delayed()
     // check pushback reduce
     int32 delaytime = 500;                                  // spellcasting delay is normally 500ms
     int32 delayReduce = 100;                                // must be initialized to 100 for percent modifiers
-    ((Player*)m_caster)->ApplySpellMod(m_spellInfo->Id, SPELLMOD_NOT_LOSE_CASTING_TIME, delayReduce, this);
+    ((Player*)m_caster)->ApplySpellMod(m_spellInfo->Id, SPELLMOD_NOT_LOSE_CASTING_TIME, delayReduce);
     delayReduce += m_caster->GetTotalAuraModifier(SPELL_AURA_REDUCE_PUSHBACK) - 100;
     if (delayReduce >= 100)
         return;
@@ -7346,7 +7346,7 @@ void Spell::DelayedChannel()
     // check pushback reduce
     int32 delaytime = GetSpellDuration(m_spellInfo) * 25 / 100;// channeling delay is normally 25% of its time per hit
     int32 delayReduce = 100;                                // must be initialized to 100 for percent modifiers
-    ((Player*)m_caster)->ApplySpellMod(m_spellInfo->Id, SPELLMOD_NOT_LOSE_CASTING_TIME, delayReduce, this);
+    ((Player*)m_caster)->ApplySpellMod(m_spellInfo->Id, SPELLMOD_NOT_LOSE_CASTING_TIME, delayReduce);
     delayReduce += m_caster->GetTotalAuraModifier(SPELL_AURA_REDUCE_PUSHBACK) - 100;
     if (delayReduce >= 100)
         return;
@@ -7995,7 +7995,7 @@ void Spell::TriggerGlobalCooldown()
     {
         // gcd modifier auras applied only to self spells and only player have mods for this
         if (m_caster->GetTypeId() == TYPEID_PLAYER)
-            ((Player*)m_caster)->ApplySpellMod(m_spellInfo->Id, SPELLMOD_GLOBAL_COOLDOWN, gcd, this);
+            ((Player*)m_caster)->ApplySpellMod(m_spellInfo->Id, SPELLMOD_GLOBAL_COOLDOWN, gcd);
 
         // apply haste rating
         gcd = int32(float(gcd) * m_caster->GetFloatValue(UNIT_MOD_CAST_SPEED));
@@ -8039,8 +8039,8 @@ void Spell::GetSpellRangeAndRadius(SpellEffectEntry const* spellEffect, float& r
     {
         if (Player* modOwner = realCaster->GetSpellModOwner())
         {
-            modOwner->ApplySpellMod(m_spellInfo->Id, SPELLMOD_RADIUS, radius, this);
-            modOwner->ApplySpellMod(m_spellInfo->Id, SPELLMOD_JUMP_TARGETS, EffectChainTarget, this);
+            modOwner->ApplySpellMod(m_spellInfo->Id, SPELLMOD_RADIUS, radius);
+            modOwner->ApplySpellMod(m_spellInfo->Id, SPELLMOD_JUMP_TARGETS, EffectChainTarget);
         }
     }
 
