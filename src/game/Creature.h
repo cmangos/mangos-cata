@@ -56,7 +56,7 @@ enum CreatureExtraFlags
     CREATURE_EXTRA_FLAG_GUARD               = 0x00000400,       // creature is a guard
     CREATURE_EXTRA_FLAG_NO_CALL_ASSIST      = 0x00000800,       // creature shouldn't call for assistance on aggro
     CREATURE_EXTRA_FLAG_ACTIVE              = 0x00001000,       // creature is active object. Grid of this creature will be loaded and creature set as active
-    CREATURE_EXTRA_FLAG_MMAP_FORCE_ENABLE   = 0x00002000,       // creature is force to use MMaps
+    CREATURE_EXTRA_FLAG_MMAP_FORCE_ENABLE   = 0x00002000,       // creature is forced to use MMaps
     CREATURE_EXTRA_FLAG_MMAP_FORCE_DISABLE  = 0x00004000,       // creature is forced to NOT use MMaps
 };
 
