@@ -1018,6 +1018,11 @@ void CreatureEventAI::ProcessAction(CreatureEventAI_Action const& action, uint32
                     break;
             }
             break;
+        case ACTION_T_SET_NEXT_WAYPOINT:
+        {
+            m_creature->GetMotionMaster()->SetNextWaypoint(action.setNextWaypoint.pointId);
+            break;
+        }
         }
     }
 }
