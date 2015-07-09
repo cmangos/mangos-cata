@@ -2228,7 +2228,7 @@ bool ChatHandler::HandleNpcUnFollowCommand(char* /*args*/)
 
     MotionMaster* creatureMotion = creature->GetMotionMaster();
     if (creatureMotion->empty() ||
-        creatureMotion->GetCurrentMovementGeneratorType() != FOLLOW_MOTION_TYPE)
+            creatureMotion->GetCurrentMovementGeneratorType() != FOLLOW_MOTION_TYPE)
     {
         PSendSysMessage(LANG_CREATURE_NOT_FOLLOW_YOU, creature->GetName());
         SetSentErrorMessage(true);
@@ -2885,7 +2885,7 @@ inline Creature* Helper_CreateWaypointFor(Creature* wpOwner, WaypointPathOrigin 
 
     wpCreature->SetActiveObjectState(true);
 
-    wpCreature->Summon(TEMPSUMMON_TIMED_DESPAWN, 5*MINUTE*IN_MILLISECONDS);// Also initializes the AI and MMGen
+    wpCreature->Summon(TEMPSUMMON_TIMED_DESPAWN, 5 * MINUTE * IN_MILLISECONDS); // Also initializes the AI and MMGen
     return wpCreature;
 }
 inline void UnsummonVisualWaypoints(Player const* player, ObjectGuid ownerGuid)
@@ -3041,7 +3041,7 @@ bool ChatHandler::HandleWpAddCommand(char* args)
     // All arguments parsed
     // wpOwner will get a new waypoint inserted into wpPath = GetPathFromOrigin(wpOwner, wpDestination, wpPathId) at wpPointId
 
-    float x, y,z;
+    float x, y, z;
     m_session->GetPlayer()->GetPosition(x, y, z);
     if (!sWaypointMgr.AddNode(wpOwner->GetEntry(), wpOwner->GetGUIDLow(), wpPointId, wpDestination, x, y, z))
     {
@@ -3263,7 +3263,7 @@ bool ChatHandler::HandleWpModifyCommand(char* args)
     }
     else if (subCmd == "move")                              // Move to player position, no additional command required
     {
-        float x,y,z;
+        float x, y, z;
         m_session->GetPlayer()->GetPosition(x, y, z);
 
         // Move visual waypoint
