@@ -357,7 +357,7 @@ pAuraHandler AuraHandler[TOTAL_AURAS] =
     &Aura::HandleNULL,                                      //297 14 spells in 4.3.4
     &Aura::HandleUnused,                                    //298 6 spells in 4.3.4
     &Aura::HandleUnused,                                    //299 unused (3.2.2a-4.3.4)
-    &Aura::HandleNULL,                                      //300 21 spells (share damage?)
+    &Aura::HandleNoImmediateEffect,                         //300 SPELL_AURA_SHARE_DAMAGE_PCT 21 spells
     &Aura::HandleNULL,                                      //301 SPELL_AURA_HEAL_ABSORB 31 spells
     &Aura::HandleUnused,                                    //302 unused (3.2.2a-4.3.4)
     &Aura::HandleNULL,                                      //303 35 spells increases damage done vs. creature type
