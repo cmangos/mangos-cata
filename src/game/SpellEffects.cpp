@@ -2958,6 +2958,14 @@ void Spell::EffectDummy(SpellEffectEntry const* effect)
                     m_caster->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
                     return;
                 }
+                case 65869:                                 // Disengage
+                {
+                    if (!unitTarget)
+                        return;
+
+                    unitTarget->CastSpell(unitTarget, 65870, true);
+                    return;
+                }
                 case 66390:                                 // Read Last Rites
                 {
                     if (!unitTarget || unitTarget->GetTypeId() != TYPEID_UNIT || m_caster->GetTypeId() != TYPEID_PLAYER)
