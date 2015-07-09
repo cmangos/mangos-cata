@@ -513,10 +513,10 @@ void Spell::FillTargetMap()
         // targets for TARGET_SCRIPT_COORDINATES (A) and TARGET_SCRIPT
         // for TARGET_FOCUS_OR_SCRIPTED_GAMEOBJECT (A) all is checked in Spell::CheckCast and in Spell::CheckItem
         // filled in Spell::CheckCast call
-        if(spellEffect->EffectImplicitTargetA == TARGET_SCRIPT_COORDINATES ||
-           spellEffect->EffectImplicitTargetA == TARGET_SCRIPT ||
-           spellEffect->EffectImplicitTargetA == TARGET_FOCUS_OR_SCRIPTED_GAMEOBJECT ||
-           (spellEffect->EffectImplicitTargetB == TARGET_SCRIPT && spellEffect->EffectImplicitTargetA != TARGET_SELF))
+        if (spellEffect->EffectImplicitTargetA == TARGET_SCRIPT_COORDINATES ||
+            spellEffect->EffectImplicitTargetA == TARGET_FOCUS_OR_SCRIPTED_GAMEOBJECT ||
+            (spellEffect->EffectImplicitTargetA == TARGET_SCRIPT && spellEffect->EffectImplicitTargetB != TARGET_SELF) ||
+            (spellEffect->EffectImplicitTargetB == TARGET_SCRIPT && spellEffect->EffectImplicitTargetA != TARGET_SELF))
             continue;
 
         // TODO: find a way so this is not needed?
@@ -708,6 +708,17 @@ void Spell::FillTargetMap()
                         default:
                             SetTargetMap(SpellEffectIndex(i), spellEffect->EffectImplicitTargetA, tmpUnitLists[i /*==effToIndex[i]*/]);
                             SetTargetMap(SpellEffectIndex(i), spellEffect->EffectImplicitTargetB, tmpUnitLists[i /*==effToIndex[i]*/]);
+                            break;
+                    }
+                    break;
+                case TARGET_SCRIPT:
+                    switch (spellEffect->EffectImplicitTargetB)
+                    {
+                        case TARGET_SELF:
+                            // Fill target based on B only, A is only used with CheckCast here.
+                            SetTargetMap(SpellEffectIndex(i), spellEffect->EffectImplicitTargetB, tmpUnitLists[i /*==effToIndex[i]*/]);
+                            break;
+                        default:
                             break;
                     }
                     break;
