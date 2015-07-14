@@ -1019,6 +1019,24 @@ void CreatureEventAI::ProcessAction(CreatureEventAI_Action const& action, uint32
             }
             break;
         }
+        case ACTION_T_FOLLOW_TARGET:
+            m_followDistance = (float)action.follow_movement.distance;
+            m_followAngle = action.follow_movement.angle.angle;
+            Unit* target = GetTargetByType(action.follow_movement, pActionInvoker, pAIEventSender, reportTargetError);
+            if (!target)
+            {
+                if (reportTargetError)
+                    sLog.outErrorEventAI("NULL target for ACTION_T_FOLLOW_TARGET creature entry %u follow target %u", m_creature->GetEntry(), action.follow_movement);
+                return;
+            }
+                if (m_creature->GetMotionMaster()->GetCurrentMovementGeneratorType() == WAYPOINT_MOTION_TYPE)
+                {
+                    // Drop current movement gen
+                    m_creature->GetMotionMaster()->Clear;
+                    m_creature->GetMotionMaster()->MoveFollow(target, m_followDistance, m_followAngle);
+                }
+            }
+            break;
     }
 }
 

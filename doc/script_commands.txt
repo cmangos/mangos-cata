@@ -319,3 +319,7 @@ Where "A  ->  B" means that the command is executed from A with B as target.
                                             * datalong = mailTemplateId
                                             * datalong2: AlternativeSenderEntry. Use as sender-Entry of the sent mail
                                             * dataint1: Delay (>= 0) in Seconds
+                                            
+39 SCRIPT_COMMAND_FOLLOW                    Move Follow resultingSource = Creature, resultingTarget = Unit
+                                            * datalong = distance
+                                            * datalong2 = angle

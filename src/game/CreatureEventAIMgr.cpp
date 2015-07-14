@@ -881,7 +881,12 @@ void CreatureEventAIMgr::LoadCreatureEventAI_Scripts()
                             continue;
                         }
                         break;
-
+                    case ACTION_T_FOLLOW_TARGET:
+                        if (action.follow_movement == TARGET_T_SELF)
+                        {
+                            sLog.outErrorEventAI("Event %u Action %u uses invalid target_type %u.", i, j + 1, action.follow_movement.follow);
+                            continue;
+                        }
                     default:
                         sLog.outErrorEventAI("Event %u Action %u have currently not checked at load action type (%u). Need check code update?", i, j + 1, temp.action[j].type);
                         break;
