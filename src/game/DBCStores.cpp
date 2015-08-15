@@ -985,7 +985,7 @@ ContentLevels GetContentLevelsForMap(uint32 mapid)
         return CONTENT_1_60;
 
     // exceptions for 648 - Goblin Starter area and 654 - Worgen Starter area
-    if (mapid = 648 || mapid == 654)
+    if (mapid == 648 || mapid == 654)
         return CONTENT_1_60;
 
     switch (mapEntry->Expansion())
