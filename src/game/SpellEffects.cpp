@@ -6661,7 +6661,7 @@ void Spell::EffectSummonPet(SpellEffectEntry const* effect)
 
     NewSummon->SetRespawnCoord(pos);
 
-    uint32 petlevel = m_caster->getLevel();
+    uint32 petlevel = std::max(m_caster->getLevel() + effect->EffectMultipleValue, 1.0f);
     NewSummon->setPetType(SUMMON_PET);
 
     uint32 faction = m_caster->getFaction();
