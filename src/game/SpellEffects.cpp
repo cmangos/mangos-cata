@@ -8741,6 +8741,15 @@ void Spell::EffectScriptEffect(SpellEffectEntry const* effect)
 
                     break;
                 }
+                case 53110:                                 // Devour Humanoid
+                {
+                    if (!unitTarget || unitTarget->GetTypeId() != TYPEID_UNIT)
+                        return;
+
+                    unitTarget->CastSpell(m_caster, effect->CalculateSimpleValue(), true);
+                    ((Creature*)unitTarget)->ForcedDespawn(8000);
+                    return;
+                }
                 case 54182:                                 // An End to the Suffering: Quest Completion Script
                 {
                     if (!unitTarget)
