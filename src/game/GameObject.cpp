@@ -1244,7 +1244,7 @@ void GameObject::Use(Unit* user)
             if (!scriptReturnValue)
                 GetMap()->ScriptsStart(sGameObjectScripts, GetGUIDLow(), spellCaster, this);
             else
-               return;
+                return;
 
             // cast this spell later if provided
             spellId = info->goober.spellId;
