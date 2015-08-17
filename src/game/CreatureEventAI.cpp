@@ -1022,7 +1022,7 @@ void CreatureEventAI::ProcessAction(CreatureEventAI_Action const& action, uint32
         }
         case ACTION_T_SET_ATTACK_START:
         {
-            m_IsDisableAttackStart = action.setAttackStart.state != 0;
+            m_IsDisableAttackStart = action.disableAttackStart.state != 0;
             break;
         }
     }
