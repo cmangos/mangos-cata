@@ -575,7 +575,7 @@ struct CreatureEventAI_Event
             uint32 state;                                   // 0 = Allow Attack Start on Aggro and other, 1 = Don't allow.
             uint32 unused1;
             uint32 unused2;
-        } setAttackStart;
+        } disableAttackStart;
         // RAW
         struct
         {
