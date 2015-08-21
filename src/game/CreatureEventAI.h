@@ -120,7 +120,7 @@ enum EventAI_ActionType
     ACTION_T_SET_THROW_MASK             = 46,               // EventTypeMask, unused, unused
     ACTION_T_SET_STAND_STATE            = 47,               // StandState, unused, unused
     ACTION_T_CHANGE_MOVEMENT            = 48,               // MovementType, WanderDistance, unused
-    ACTION_T_SET_NEXT_WAYPOINT          = //49,             // PointId
+    ACTION_T_SET_NEXT_WAYPOINT          = 49,               // PointId
 
     ACTION_T_END,
 };
@@ -415,7 +415,7 @@ struct CreatureEventAI_Action
             uint32 wanderDistance;
             uint32 unused1;
         } changeMovement;
-        // ACTION_T_SET_NEXT_WAYPOINT                        = xxx,
+        // ACTION_T_SET_NEXT_WAYPOINT                        = 49,
         struct
         {
             uint32 pointId;
