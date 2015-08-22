@@ -625,7 +625,8 @@ void Map::Remove(Player* player, bool remove)
     SendRemoveTransports(player);
     UpdateObjectVisibility(player, cell, p);
 
-    player->ResetMap();
+    // Playerbot: Fix for instance teleportation issue (from commit cmangos-wotlk 01ab2c51...)
+    // player->ResetMap();
     if (remove)
         DeleteFromWorld(player);
 }

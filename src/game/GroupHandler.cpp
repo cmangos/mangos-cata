@@ -225,7 +225,8 @@ void WorldSession::HandleGroupInviteResponseOpcode(WorldPacket& recv_data)
     bool unk = recv_data.ReadBit();
     bool accepted = recv_data.ReadBit();
     if (unk)
-        recv_data.read_skip<uint32>();
+		// Playerbot mod
+        //recv_data.read_skip<uint32>();
 
     Group* group = GetPlayer()->GetGroupInvite();
     if (!group)
