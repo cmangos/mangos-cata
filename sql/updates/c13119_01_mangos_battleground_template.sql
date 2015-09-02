@@ -1,4 +1,4 @@
-ALTER TABLE db_version CHANGE COLUMN required_12864_01_mangos_spell_template required_12916_01_mangos_battleground_template bit;
+ALTER TABLE db_version CHANGE COLUMN required_c13077_01_mangos_spell_template required_c13119_01_mangos_battleground_template bit;
 
 ALTER TABLE `battleground_template` ADD `StartMaxDist` float NOT NULL DEFAULT 0 AFTER `HordeStartO`;
 
