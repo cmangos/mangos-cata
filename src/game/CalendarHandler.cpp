@@ -557,7 +557,7 @@ void WorldSession::HandleCalendarEventRsvp(WorldPacket& recv_data)
             invite->Status = CalendarInviteStatus(status);
             invite->LastUpdateTime = time(NULL);
 
-            CharacterDatabase.PExecute("UPDATE calendar_invites SET status=%u, lastUpdateTime=%u WHERE inviteId = "UI64FMTD, status, uint32(invite->LastUpdateTime), invite->InviteId);
+            CharacterDatabase.PExecute("UPDATE calendar_invites SET status=%u, lastUpdateTime=%u WHERE inviteId = " UI64FMTD , status, uint32(invite->LastUpdateTime), invite->InviteId);
             sCalendarMgr.SendCalendarEventStatus(invite);
             sCalendarMgr.SendCalendarClearPendingAction(_player);
         }
@@ -892,7 +892,7 @@ void CalendarMgr::SendCalendarEvent(Player* player, CalendarEvent const* event, 
         data << secsToTimeBitFields(invite->LastUpdateTime);
         data << invite->Text;
 
-        DEBUG_FILTER_LOG(LOG_FILTER_CALENDAR, "Invite> InviteId["UI64FMTD"], InviteLvl[%u], Status[%u], Rank[%u],  GuildEvent[%s], Text[%s]",
+        DEBUG_FILTER_LOG(LOG_FILTER_CALENDAR, "Invite> InviteId[" UI64FMTD "], InviteLvl[%u], Status[%u], Rank[%u],  GuildEvent[%s], Text[%s]",
                          invite->InviteId, uint32(inviteeLevel), uint32(invite->Status), uint32(invite->Rank),
                          (event->IsGuildEvent() && event->GuildId == inviteeGuildId) ? "true" : "false", invite->Text.c_str());
     }

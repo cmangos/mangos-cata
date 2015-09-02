@@ -311,7 +311,7 @@ CalendarEvent* CalendarMgr::AddEvent(ObjectGuid const& guid, std::string title, 
 
     CharacterDatabase.escape_string(title);
     CharacterDatabase.escape_string(description);
-    CharacterDatabase.PExecute("INSERT INTO calendar_events VALUES ("UI64FMTD", %u, %u, %u, %u, %d, %u, '%s', '%s')",
+    CharacterDatabase.PExecute("INSERT INTO calendar_events VALUES (" UI64FMTD ", %u, %u, %u, %u, %d, %u, '%s', '%s')",
                                nId,
                                guid.GetCounter(),
                                guildId,
@@ -405,7 +405,7 @@ CalendarInvite* CalendarMgr::AddInvite(CalendarEvent* event, ObjectGuid const& s
         return NULL;
     }
 
-    CharacterDatabase.PExecute("INSERT INTO calendar_invites VALUES ("UI64FMTD", "UI64FMTD", %u, %u, %u, %u, %u)",
+    CharacterDatabase.PExecute("INSERT INTO calendar_invites VALUES (" UI64FMTD ", " UI64FMTD ", %u, %u, %u, %u, %u)",
                                invite->InviteId,
                                event->EventId,
                                inviteeGuid.GetCounter(),
@@ -669,7 +669,7 @@ void CalendarMgr::LoadCalendarsFromDB()
             }
             while (invitesQuery->NextRow());
 
-            sLog.outString(">> Loaded "UI64FMTD" invites! %s", totalInvites, (deletedInvites != 0) ? "(deleted some invites without corresponding event!)" : "");
+            sLog.outString(">> Loaded " UI64FMTD " invites! %s", totalInvites, (deletedInvites != 0) ? "(deleted some invites without corresponding event!)" : "");
         }
         else
         {
