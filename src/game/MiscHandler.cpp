@@ -1070,6 +1070,9 @@ void WorldSession::HandleInspectOpcode(WorldPacket& recv_data)
     if (!_player->IsWithinDistInMap(plr, INSPECT_DISTANCE, false))
         return;
 
+    if (_player->IsHostileTo(plr))
+        return;
+
     WorldPacket data(SMSG_INSPECT_RESULTS, 50);
     data << plr->GetObjectGuid();
 
@@ -1108,6 +1111,9 @@ void WorldSession::HandleInspectHonorStatsOpcode(WorldPacket& recv_data)
     }
 
     if (!_player->IsWithinDistInMap(player, INSPECT_DISTANCE, false))
+        return;
+
+    if (_player->IsHostileTo(player))
         return;
 
     WorldPacket data(SMSG_INSPECT_HONOR_STATS, 18);
@@ -1509,6 +1515,9 @@ void WorldSession::HandleQueryInspectAchievementsOpcode(WorldPacket& recv_data)
         return;
 
     if (!_player->IsWithinDistInMap(player, INSPECT_DISTANCE, false))
+        return;
+
+    if (_player->IsHostileTo(player))
         return;
 
     player->GetAchievementMgr().SendRespondInspectAchievements(_player);
