@@ -479,7 +479,7 @@ bool scan_patches(char* scanmatch, std::vector<std::string>& pArchiveNames)
         }
     }
 
-    return(true);
+    return (true);
 }
 
 bool processArgv(int argc, char** argv)
