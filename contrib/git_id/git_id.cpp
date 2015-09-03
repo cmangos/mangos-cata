@@ -26,7 +26,6 @@
 #include <set>
 #include <list>
 #include <sstream>
-#include <algorithm>
 
 #ifdef WIN32
 #include <direct.h>
@@ -91,13 +90,6 @@ char db_sql_rev_field[NUM_DATABASES][MAX_PATH] =
     "REVISION_DB_CHARACTERS",
     "REVISION_DB_MANGOS",
     "REVISION_DB_REALMD"
-};
-
-bool db_sql_rev_parent[NUM_DATABASES] =
-{
-    false,
-    false,
-    true
 };
 
 #define REV_PREFIX "c"
@@ -369,7 +361,6 @@ bool amend_commit()
 struct sql_update_info
 {
     int rev;
-    char parentRev[MAX_BUF];
     int nr;
     int db_idx;
     char db[MAX_BUF];
@@ -381,14 +372,14 @@ bool get_sql_update_info(const char* buffer, sql_update_info& info)
 {
     info.table[0] = '\0';
     int dummy[3];
-    if (sscanf(buffer, REV_SCAN "_%[^_]_%d_%d", &dummy[0], &dummy[1], &dummy[2]) == 3)
+    if (sscanf(buffer, REV_SCAN "_%d_%d", &dummy[0], &dummy[1], &dummy[2]) == 3)
         return false;
 
     if (sscanf(buffer, REV_SCAN "_%d_%[^_]_%[^.].sql", &info.rev, &info.nr, info.db, info.table) != 4 &&
             sscanf(buffer, REV_SCAN "_%d_%[^.].sql", &info.rev, &info.nr, info.db) != 3)
     {
-        if (sscanf(buffer, "%d_%[^_]_%[^.].sql", &info.nr, info.db, info.table) != 3 &&
-                sscanf(buffer, "%d_%[^.].sql", &info.nr, info.db) != 2)
+        if (sscanf(buffer, REV_SCAN "_%[^_]_%[^.].sql", &info.nr, info.db, info.table) != 3 &&
+                sscanf(buffer, REV_SCAN "_%[^.].sql", &info.nr, info.db) != 2)
             return false;
     }
 
@@ -428,12 +419,12 @@ bool find_sql_updates()
     pclose(cmd_pipe);
 
     // Add last milestone's file information
-    last_sql_rev[0] = 12300;
-    last_sql_nr[0] = 2;
-    sscanf("12300_02_characters_mail", "%s", last_sql_update[0]);
-    last_sql_rev[2] = 12112;
-    last_sql_nr[2] = 1;
-    sscanf("12112_01_realmd_account_access", "%s", last_sql_update[2]);
+    last_sql_rev[0] = 13120;
+    last_sql_nr[0] = 3;
+    sscanf("c13120_03_characters_guild_member", "%s", last_sql_update[0]);
+    last_sql_rev[2] = 12484;
+    last_sql_nr[2] = 2;
+    sscanf("c12484_02_realmd_account_access", "%s", last_sql_update[2]);
 
     // remove updates from the last commit also found on origin
     snprintf(cmd, MAX_CMD, "git show %s:%s", origin_hash, sql_update_dir);
@@ -502,7 +493,7 @@ bool convert_sql_updates()
         // generating the new name should work for updates with or without a rev
         char src_file[MAX_PATH], new_name[MAX_PATH], dst_file[MAX_PATH];
         snprintf(src_file, MAX_PATH, "%s%s/%s", path_prefix, sql_update_dir, itr->c_str());
-        snprintf(new_name, MAX_PATH, REV_PREFIX "%d_%0*d_%s%s%s", rev, 2, info.nr, info.db, info.has_table ? "_" : "", info.table);
+        snprintf(new_name, MAX_PATH, REV_PRINT "_%0*d_%s%s%s", rev, 2, info.nr, info.db, info.has_table ? "_" : "", info.table);
         snprintf(dst_file, MAX_PATH, "%s%s/%s.sql", path_prefix, sql_update_dir, new_name);
 
         FILE* fin = fopen(src_file, "r");
