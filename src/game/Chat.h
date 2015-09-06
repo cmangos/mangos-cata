@@ -439,6 +439,8 @@ class MANGOS_DLL_SPEC ChatHandler
         bool HandleReloadDBScriptsOnQuestEndCommand(char* args);
         bool HandleReloadDBScriptsOnQuestStartCommand(char* args);
         bool HandleReloadDBScriptsOnSpellCommand(char* args);
+        bool HandleReloadDBScriptsOnCreatureEvadeCommand(char* args);
+        bool HandleReloadDBScriptsOnCreatureEnterCombatCommand(char* args);
 
         bool HandleReloadEventAITextsCommand(char* args);
         bool HandleReloadEventAISummonsCommand(char* args);

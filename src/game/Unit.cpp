@@ -8401,6 +8401,10 @@ void Unit::SetInCombatState(bool PvP, Unit* enemy)
 
         if (m_isCreatureLinkingTrigger)
             GetMap()->GetCreatureLinkingHolder()->DoCreatureLinkingEvent(LINKING_EVENT_AGGRO, pCreature, enemy);
+         
+         // Start creature aggro script.
+         GetMap()->ScriptsStart(sCreatureEnterCombatScripts, victim->GetEntry(), victim, responsiblePlayer ? responsiblePlayer : this);
+
     }
 }
 
@@ -9326,6 +9330,9 @@ void Unit::TauntFadeOut(Unit* taunter)
 
         if (m_isCreatureLinkingTrigger)
             GetMap()->GetCreatureLinkingHolder()->DoCreatureLinkingEvent(LINKING_EVENT_EVADE, (Creature*)this);
+        
+        // Start creature evade script
+        GetMap()->ScriptsStart(sCreatureEvadeScripts, GetEntry(),this);
 
         return;
     }
@@ -9487,6 +9494,9 @@ bool Unit::SelectHostileTarget()
 
     if (m_isCreatureLinkingTrigger)
         GetMap()->GetCreatureLinkingHolder()->DoCreatureLinkingEvent(LINKING_EVENT_EVADE, (Creature*)this);
+    
+     // Start creature evade script
+     GetMap()->ScriptsStart(sCreatureEvadeScripts, GetEntry(),this);
 
     return false;
 }
