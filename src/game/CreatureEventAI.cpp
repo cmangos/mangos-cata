@@ -86,6 +86,7 @@ CreatureEventAI::CreatureEventAI(Creature* c) : CreatureAI(c),
     m_Phase(0),
     m_MeleeEnabled(true),
     m_HasOOCLoSEvent(false),
+    m_IsDisableAttackStart(false),
     m_InvinceabilityHpLevel(0),
     m_throwAIEventMask(0),
     m_throwAIEventStep(0)
@@ -1019,6 +1020,11 @@ void CreatureEventAI::ProcessAction(CreatureEventAI_Action const& action, uint32
             }
             break;
         }
+        case ACTION_T_SET_ATTACK_START:
+        {
+            m_IsDisableAttackStart = action.disableAttackStart.state != 0;
+            break;
+        }
     }
 }
 
@@ -1206,7 +1212,7 @@ void CreatureEventAI::EnterCombat(Unit* enemy)
 
 void CreatureEventAI::AttackStart(Unit* who)
 {
-    if (!who || !m_creature->CanAttackByItself())
+    if (!who || !m_creature->CanAttackByItself() || m_IsDisableAttackStart)
         return;
 
     if (m_creature->Attack(who, m_MeleeEnabled))

@@ -836,6 +836,7 @@ void CreatureEventAIMgr::LoadCreatureEventAI_Scripts()
                     case ACTION_T_COMBAT_MOVEMENT:          // AllowCombatMovement (0 = stop combat based movement, anything else continue attacking)
                     case ACTION_T_RANGED_MOVEMENT:          // Distance, Angle
                     case ACTION_T_CALL_FOR_HELP:            // Distance
+                    case ACTION_T_SET_ATTACK_START:         // 0 = Allow Attack Start on Aggro and other, 1 = Don't allow.
                         break;
 
                     case ACTION_T_RANDOM_SAY:
