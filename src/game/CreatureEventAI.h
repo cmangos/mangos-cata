@@ -120,6 +120,14 @@ enum EventAI_ActionType
     ACTION_T_SET_THROW_MASK             = 46,               // EventTypeMask, unused, unused
     ACTION_T_SET_STAND_STATE            = 47,               // StandState, unused, unused
     ACTION_T_CHANGE_MOVEMENT            = 48,               // MovementType, WanderDistance, unused
+    
+    
+    
+    
+    
+    
+    ACTION_T_PAUSE_MOVEMENT             = 56,               // No Params. Force creature pause waypoint movement.
+    ACTION_T_UNPAUSE_MOVEMENT           = 57,               // No Params. Allow creature resume waypoint movement.
 
     ACTION_T_END,
 };

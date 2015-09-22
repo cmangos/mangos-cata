@@ -1019,6 +1019,47 @@ void CreatureEventAI::ProcessAction(CreatureEventAI_Action const& action, uint32
             }
             break;
         }
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        case ACTION_T_PAUSE_MOVEMENT:
+        {
+            m_creature->addUnitState(UNIT_STAT_WAYPOINT_PAUSED);
+            break;
+        }
+        case ACTION_T_UNPAUSE_MOVEMENT:
+        {
+            m_creature->clearUnitState(UNIT_STAT_WAYPOINT_PAUSED);
+            break;
+        }
     }
 }
 
