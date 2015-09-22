@@ -1019,6 +1019,38 @@ void CreatureEventAI::ProcessAction(CreatureEventAI_Action const& action, uint32
             }
             break;
         }
+        case ACTION_T_DELETE_THREAT:
+        {
+            m_creature->DeleteThreatList();
+            break;
+        }
+        case ACTION_T_COMBAT_STOP:
+        {
+            m_creature->CombatStop(true);
+            break;
+        }
+        case ACTION_T_LOAD_ADDON:
+        {
+            m_creature->LoadCreatureAddon(true);
+            break;
+        }
+        case ACTION_T_MOVE_HOME:
+        {
+            m_creature->GetMotionMaster()->MoveTargetedHome();
+            break;
+        }
+        case ACTION_T_REMOVE_EVADE_AURA:
+        {
+            m_creature->RemoveAllAurasOnEvade();
+            break;
+        }
+        case ACTION_T_MOVEMENT_CLEAR:
+        {
+            m_creature->GetMotionMaster()->Clear();
+            m_creature->GetMotionMaster()->MoveIdle();
+            break;
+        }
+
     }
 }
 
