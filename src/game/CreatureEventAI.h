@@ -120,6 +120,25 @@ enum EventAI_ActionType
     ACTION_T_SET_THROW_MASK             = 46,               // EventTypeMask, unused, unused
     ACTION_T_SET_STAND_STATE            = 47,               // StandState, unused, unused
     ACTION_T_CHANGE_MOVEMENT            = 48,               // MovementType, WanderDistance, unused
+    ACTION_T_DELETE_THREAT              = 49,               // No Params
+    ACTION_T_MOVE_HOME                  = 50,               // No Params
+    ACTION_T_LOAD_ADDON                 = 51,               // No Params
+    ACTION_T_UNLOAD_ADDON               = 52,               // No Params
+    ACTION_T_CLEAR_MOVEMENT             = 53,               // No Params
+    ACTION_T_COMBAT_STOP                = 54,               // No Params
+    ACTION_T_REMOVE_EVADE_AURA          = 55,               // No Params
+    ACTION_T_CLEAR_HEALTH               = 56,               // No Params
+    ACTION_T_CLEAR_REACTION             = 57,               // No Params
+    ACTION_T_STOP_MOVING                = 58,               // No Params
+    ACTION_T_INTERRUPT_CAST             = 59,               // No Params
+    ACTION_T_REMOVE_DEATH_AURA          = 60,               // No Params
+    ACTION_T_ENABLE_FLY                 = 61,               // No Params
+    ACTION_T_DISABLE_FLY                = 62,               // No Params
+    ACTION_T_SET_RUN                    = 63,               // No Params
+    ACTION_T_DISABLE_RUN                = 64,               // No Params
+    ACTION_T_PAUSE_MOVEMENT             = 65,               // No Params
+    ACTION_T_UNPAUSE_MOVEMENT           = 66,               // No Params
+    ACTION_T_DISABLE_COMBAT_STOP        = 67,               // No Params
 
     ACTION_T_END,
 };

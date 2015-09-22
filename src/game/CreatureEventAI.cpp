@@ -1019,6 +1019,104 @@ void CreatureEventAI::ProcessAction(CreatureEventAI_Action const& action, uint32
             }
             break;
         }
+        case ACTION_T_DELETE_THREAT:
+        {
+            m_creature->DeleteThreatList();
+            break;
+        }
+        case ACTION_T_MOVE_HOME:
+        {
+            m_creature->GetMotionMaster()->MoveTargetedHome();
+            break;
+        }
+        case ACTION_T_LOAD_ADDON:
+        {
+            m_creature->LoadCreatureAddon(true);
+            break;
+        }
+        case ACTION_T_UNLOAD_ADDON:
+        {
+            m_creature->LoadCreatureAddon(false);
+            break;
+        }
+        case ACTION_T_CLEAR_MOVEMENT:
+        {
+            m_creature->GetMotionMaster()->Clear();
+            m_creature->GetMotionMaster()->MoveIdle();
+            break;
+        }
+        case ACTION_T_COMBAT_STOP:
+        {
+            m_creature->CombatStop(true);
+            break;
+        }
+        case ACTION_T_REMOVE_EVADE_AURA:
+        {
+            m_creature->RemoveAllAurasOnEvade();
+            break;
+        }
+        case ACTION_T_CLEAR_HEALTH:
+        {
+            m_creature->SetHealth(0);
+            break;
+        }
+        case ACTION_T_CLEAR_REACTION:
+        {
+            m_creature->ClearAllReactives();
+            break;
+        }
+        case ACTION_T_STOP_MOVING:
+        {
+            m_creature->StopMoving();
+            break;
+        }
+        case ACTION_T_INTERRUPT_CAST:
+        {
+            m_creature->InterruptNonMeleeSpells(true);
+            break;
+        }
+        case ACTION_T_REMOVE_DEATH_AURA:
+        {
+            m_creature->RemoveAllAurasOnDeath();
+            break;
+        }
+        case ACTION_T_ENABLE_FLY:
+        {
+            m_creature->SetByteValue(UNIT_FIELD_BYTES_1, 3, UNIT_BYTE1_FLAG_FLY_ANIM);
+            m_creature->SetLevitate(true);
+            break;
+        }
+        case ACTION_T_DISABLE_FLY:
+        {
+            m_creature->RemoveByteFlag(UNIT_FIELD_BYTES_1, 3, UNIT_BYTE1_FLAG_FLY_ANIM);
+            m_creature->SetLevitate(false);
+            break;
+        }
+        case ACTION_T_SET_RUN:
+        {
+            m_creature->SetWalk(true);
+            break;
+        }
+        case ACTION_T_DISABLE_RUN:
+        {
+            m_creature->SetWalk(false);
+            break;
+        }
+        case ACTION_T_PAUSE_MOVEMENT:
+        {
+            m_creature->addUnitState(UNIT_STAT_WAYPOINT_PAUSED);
+            break;
+        }
+        case ACTION_T_UNPAUSE_MOVEMENT:
+        {
+            m_creature->clearUnitState(UNIT_STAT_WAYPOINT_PAUSED);
+            break;
+        }
+        case ACTION_T_DISABLE_COMBAT_STOP:
+        {
+            m_creature->CombatStop(false);
+            break;
+        }
     }
 }
 

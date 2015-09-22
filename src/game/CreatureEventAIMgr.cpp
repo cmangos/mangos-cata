@@ -836,6 +836,25 @@ void CreatureEventAIMgr::LoadCreatureEventAI_Scripts()
                     case ACTION_T_COMBAT_MOVEMENT:          // AllowCombatMovement (0 = stop combat based movement, anything else continue attacking)
                     case ACTION_T_RANGED_MOVEMENT:          // Distance, Angle
                     case ACTION_T_CALL_FOR_HELP:            // Distance
+                    case ACTION_T_DELETE_THREAT:            // No Params
+                    case ACTION_T_MOVE_HOME:                // No Params
+                    case ACTION_T_LOAD_ADDON:               // No Params
+                    case ACTION_T_UNLOAD_ADDON:             // No Params
+                    case ACTION_T_CLEAR_MOVEMENT:           // No Params
+                    case ACTION_T_COMBAT_STOP:              // No Params
+                    case ACTION_T_REMOVE_EVADE_AURA:        // No Params
+                    case ACTION_T_CLEAR_HEALTH:             // No Params
+                    case ACTION_T_CLEAR_REACTION:           // No Params
+                    case ACTION_T_STOP_MOVING:              // No Params
+                    case ACTION_T_INTERRUPT_CAST:           // No Params
+                    case ACTION_T_REMOVE_DEATH_AURA:        // No Params
+                    case ACTION_T_ENABLE_FLY:               // No Params
+                    case ACTION_T_DISABLE_FLY:              // No Params
+                    case ACTION_T_SET_RUN:                  // No Params
+                    case ACTION_T_DISABLE_RUN:              // No Params
+                    case ACTION_T_PAUSE_MOVEMENT:           // No Params
+                    case ACTION_T_UNPAUSE_MOVEMENT:         // No Params
+                    case ACTION_T_DISABLE_COMBAT_STOP:      // No Params
                         break;
 
                     case ACTION_T_RANDOM_SAY:
