@@ -139,6 +139,12 @@ enum EventAI_ActionType
     ACTION_T_PAUSE_MOVEMENT             = 65,               // No Params
     ACTION_T_UNPAUSE_MOVEMENT           = 66,               // No Params
     ACTION_T_DISABLE_COMBAT_STOP        = 67,               // No Params
+    ACTION_T_SET_HEALTH_ONE             = 68,               // No Params
+    ACTION_T_SET_STATE_ALIVE            = 69,               // No Params
+    ACTION_T_SET_STATE_DEATH            = 70,               // No Params
+    ACTION_T_SET_STEALTH                = 71,               // No Params
+    ACTION_T_REMOVE_STEALTH             = 72,               // No Params
+    ACTION_T_ATTACK_STOP                = 73,               // No Params
 
     ACTION_T_END,
 };

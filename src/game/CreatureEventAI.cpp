@@ -1098,6 +1098,36 @@ void CreatureEventAI::ProcessAction(CreatureEventAI_Action const& action, uint32
             m_creature->CombatStop(false);
             break;
         }
+        case ACTION_T_SET_HEALTH_ONE:
+        {
+            m_creature->SetHealth(1);
+            break;
+        }
+        case ACTION_T_SET_STATE_ALIVE:
+        {
+            m_creature->SetDeathState(ALIVE);
+            break;
+        }
+        case ACTION_T_SET_STATE_DEATH:
+        {
+            m_creature->SetDeathState(DEAD);
+            break;
+        }
+        case ACTION_T_SET_STEALTH:
+        {
+            m_creature->SetVisibility(VISIBILITY_ON);
+            break;
+        }
+        case ACTION_T_REMOVE_STEALTH:
+        {
+            m_creature->SetVisibility(VISIBILITY_OFF);
+            break;
+        }
+        case ACTION_T_ATTACK_STOP:
+        {
+            m_creature->AttackStop(true);
+            break;
+        }
     }
 }
 

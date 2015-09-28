@@ -855,6 +855,12 @@ void CreatureEventAIMgr::LoadCreatureEventAI_Scripts()
                     case ACTION_T_PAUSE_MOVEMENT:           // No Params
                     case ACTION_T_UNPAUSE_MOVEMENT:         // No Params
                     case ACTION_T_DISABLE_COMBAT_STOP:      // No Params
+                    case ACTION_T_SET_HEALTH_ONE:           // No Params
+                    case ACTION_T_SET_STATE_ALIVE:          // No Params
+                    case ACTION_T_SET_STATE_DEATH:          // No Params
+                    case ACTION_T_SET_STEALTH:              // No Params
+                    case ACTION_T_REMOVE_STEALTH:           // No Params
+                    case ACTION_T_ATTACK_STOP:              // No Params
                         break;
 
                     case ACTION_T_RANDOM_SAY:
