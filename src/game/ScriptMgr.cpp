@@ -733,6 +733,11 @@ void ScriptMgr::LoadScripts(ScriptMapMapName& scripts, const char* tablename)
             case SCRIPT_COMMAND_SET_FLY:                    // 39
             case SCRIPT_COMMAND_DESPAWN_GO:                 // 40
             case SCRIPT_COMMAND_RESPAWN:                    // 41
+            case SCRIPT_COMMAND_RESET_DOOR:                 // 42
+            case SCRIPT_COMMAND_GO_STATE_ACTIVE:            // 43
+            case SCRIPT_COMMAND_GO_STATE_READY:             // 44
+            case SCRIPT_COMMAND_GO_STATE_ALTERNATIVE:       // 45
+            case SCRIPT_COMMAND_FOLLOW:                     // 46
                 break;
             default:
             {
@@ -2009,6 +2014,52 @@ bool ScriptAction::HandleScriptStep()
             ((Creature*)pTarget)->Respawn();
             break;
         }
+        case SCRIPT_COMMAND_RESET_DOOR:                     // 42
+        {
+            if (LogIfNotGameObject(pTarget))
+                break;
+
+            ((GameObject*)pTarget)->ResetDoorOrButton();
+            break;
+        }
+        case SCRIPT_COMMAND_GO_STATE_ACTIVE:                // 43
+        {
+            if (LogIfNotGameObject(pTarget))
+                break;
+
+            ((GameObject*)pTarget)->SetGoState(GO_STATE_ACTIVE);
+            break;
+        }
+        case SCRIPT_COMMAND_GO_STATE_READY:                 // 44
+        {
+            if (LogIfNotGameObject(pTarget))
+                break;
+
+            ((GameObject*)pTarget)->SetGoState(GO_READY);
+            break;
+        }
+        case SCRIPT_COMMAND_GO_STATE_ALTERNATIVE:           // 45
+        {
+            if (LogIfNotGameObject(pTarget))
+                break;
+
+            ((GameObject*)pTarget)->SetGoState(GO_STATE_ACTIVE_ALTERNATIVE);
+            break;
+        }
+        case SCRIPT_COMMAND_FOLLOW:                         // 46
+        {
+            if (LogIfNotCreature(pSource))
+                break;
+            if (LogIfNotUnit(pTarget))
+                break;
+
+            Creature* pFollower = static_cast<Creature*>(pSource);
+            Unit* unitTarget = static_cast<Unit*>(pTarget);
+
+            pFollower->GetMotionMaster()->MoveFollow(unitTarget, Distance, Angle);
+            break;
+        }
+        
         default:
             sLog.outErrorDb(" DB-SCRIPTS: Process table `%s` id %u, command %u unknown command used.", m_table, m_script->id, m_script->command);
             break;
