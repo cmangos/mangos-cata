@@ -2035,7 +2035,7 @@ bool ScriptAction::HandleScriptStep()
             if (LogIfNotGameObject(pTarget))
                 break;
 
-            ((GameObject*)pTarget)->SetGoState(GO_READY);
+			((GameObject*)pTarget)->SetGoState(GO_STATE_READY);
             break;
         }
         case SCRIPT_COMMAND_GO_STATE_ALTERNATIVE:           // 45
@@ -2056,7 +2056,7 @@ bool ScriptAction::HandleScriptStep()
             Creature* pFollower = static_cast<Creature*>(pSource);
             Unit* unitTarget = static_cast<Unit*>(pTarget);
 
-            pFollower->GetMotionMaster()->MoveFollow(unitTarget, Distance, Angle);
+			pFollower->GetMotionMaster()->MoveFollow(unitTarget, CONTACT_DISTANCE, 0);
             break;
         }
         

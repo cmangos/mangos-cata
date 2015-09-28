@@ -381,18 +381,13 @@ struct ScriptInfo
             uint32 empty;                                   // datalong2
         } fly;
         
-        struct                                              // SCRIPT_COMMAND_FOLLOW (46)
-        {
-            uint32 Distance;                                // datalong
-            uint32 Angle;                                   // datalong2
-        } MoveFollow;
-
         // datalong unsed                                   // SCRIPT_COMMAND_DESPAWN_GO (40)
         // datalong unsed                                   // SCRIPT_COMMAND_RESPAWN (41)
         // datalong unused                                  // SCRIPT_COMMAND_RESET_DOOR (42)
         // datalong unused                                  // SCRIPT_COMMAND_GO_STATE_ACTIVE (43)
         // datalong unused                                  // SCRIPT_COMMAND_GO_STATE_READY (44)
         // datalong unused                                  // SCRIPT_COMMAND_GO_STATE_ACTIVE_ALTERNATIVE (45)
+        // datalong unused                                  // SCRIPT_COMMAND_FOLLOW (46)
         
         struct
         {
