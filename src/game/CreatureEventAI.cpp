@@ -86,6 +86,7 @@ CreatureEventAI::CreatureEventAI(Creature* c) : CreatureAI(c),
     m_Phase(0),
     m_MeleeEnabled(true),
     m_HasOOCLoSEvent(false),
+    m_IsControlAttackEnabled(false),
     m_InvinceabilityHpLevel(0),
     m_throwAIEventMask(0),
     m_throwAIEventStep(0)
@@ -1146,6 +1147,11 @@ void CreatureEventAI::ProcessAction(CreatureEventAI_Action const& action, uint32
             m_creature->AttackStop(true);
             break;
         }
+        case ACTION_T_SET_CONTROL_ATTACK:
+        {
+            m_IsControlAttackEnabled = action.setControlAttack.state != 0;
+            break;
+        }
     }
 }
 
@@ -1335,7 +1341,10 @@ void CreatureEventAI::AttackStart(Unit* who)
 {
     if (!who || !m_creature->CanAttackByItself())
         return;
-
+    
+    if (m_IsControlAttackEnabled)
+        return;
+    
     if (m_creature->Attack(who, m_MeleeEnabled))
     {
         m_creature->AddThreat(who);

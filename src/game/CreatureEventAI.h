@@ -145,6 +145,7 @@ enum EventAI_ActionType
     ACTION_T_SET_STEALTH                = 71,               // No Params
     ACTION_T_REMOVE_STEALTH             = 72,               // No Params
     ACTION_T_ATTACK_STOP                = 73,               // No Params
+    ACTION_T_SET_CONTROL_ATTACK         = 74,               // Allow Attack Start (0 = true, anything else passive react on aggro.)
 
     ACTION_T_END,
 };
@@ -439,6 +440,13 @@ struct CreatureEventAI_Action
             uint32 wanderDistance;
             uint32 unused1;
         } changeMovement;
+        // ACTION_T_SET_CONTROL_ATTACK                      = 74
+        struct
+        {
+            uint32 state;                                   // Allow Attack Start (0 = true, anything else passive react on aggro.)
+            uint32 unused1;
+            uint32 unused2;
+        } setControlAttack;
         // RAW
         struct
         {
@@ -695,6 +703,7 @@ class MANGOS_DLL_SPEC CreatureEventAI : public CreatureAI
         uint8  m_Phase;                                     // Current phase, max 32 phases
         bool   m_MeleeEnabled;                              // If we allow melee auto attack
         bool   m_HasOOCLoSEvent;                            // Cache if a OOC-LoS Event exists
+        bool   m_IsControlAttackEnabled;                    // Check if we allow attack start or not.
         uint32 m_InvinceabilityHpLevel;                     // Minimal health level allowed at damage apply
 
         uint32 m_throwAIEventMask;                          // Automatically throw AIEvents that are encoded into this mask

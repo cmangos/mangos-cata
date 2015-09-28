@@ -861,6 +861,7 @@ void CreatureEventAIMgr::LoadCreatureEventAI_Scripts()
                     case ACTION_T_SET_STEALTH:              // No Params
                     case ACTION_T_REMOVE_STEALTH:           // No Params
                     case ACTION_T_ATTACK_STOP:              // No Params
+                    case ACTION_T_SET_CONTROL_ATTACK:       // Allow Attack Start (0 = true, anything else passive react on aggro.)
                         break;
 
                     case ACTION_T_RANDOM_SAY:
