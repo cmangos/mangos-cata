@@ -1042,7 +1042,6 @@ void CreatureEventAI::ProcessAction(CreatureEventAI_Action const& action, uint32
         case ACTION_T_CLEAR_MOVEMENT:
         {
             m_creature->GetMotionMaster()->Clear();
-            m_creature->GetMotionMaster()->MoveIdle();
             break;
         }
         case ACTION_T_COMBAT_STOP:
