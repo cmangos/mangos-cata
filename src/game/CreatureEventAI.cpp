@@ -225,6 +225,9 @@ bool CreatureEventAI::ProcessEvent(CreatureEventAIHolder& pHolder, Unit* pAction
             break;
         case EVENT_T_HP:
         {
+            if (!m_creature->isInCombat() || !m_creature->GetMaxHealth())
+                return false;
+
             uint32 perc = (m_creature->GetHealth() * 100) / m_creature->GetMaxHealth();
 
             if (perc > event.percent_range.percentMax || perc < event.percent_range.percentMin)
@@ -237,6 +240,9 @@ bool CreatureEventAI::ProcessEvent(CreatureEventAIHolder& pHolder, Unit* pAction
         }
         case EVENT_T_MANA:
         {
+            if (!m_creature->isInCombat() || !m_creature->GetMaxPower(POWER_MANA))
+                return false;
+
             uint32 perc = (m_creature->GetPower(POWER_MANA) * 100) / m_creature->GetMaxPower(POWER_MANA);
 
             if (perc > event.percent_range.percentMax || perc < event.percent_range.percentMin)
@@ -304,6 +310,9 @@ bool CreatureEventAI::ProcessEvent(CreatureEventAIHolder& pHolder, Unit* pAction
             break;
         case EVENT_T_FRIENDLY_HP:
         {
+            if (!m_creature->isInCombat())
+                return false;
+
             Unit* pUnit = DoSelectLowestHpFriendly((float)event.friendly_hp.radius, event.friendly_hp.hpDeficit);
             if (!pUnit)
                 return false;
@@ -385,6 +394,9 @@ bool CreatureEventAI::ProcessEvent(CreatureEventAIHolder& pHolder, Unit* pAction
             break;
         case EVENT_T_AURA:
         {
+            if (!m_creature->isInCombat())
+                return false;
+
             SpellAuraHolder* holder = m_creature->GetSpellAuraHolder(event.buffed.spellId);
             if (!holder || holder->GetStackAmount() < event.buffed.amount)
                 return false;
@@ -410,6 +422,9 @@ bool CreatureEventAI::ProcessEvent(CreatureEventAIHolder& pHolder, Unit* pAction
         }
         case EVENT_T_MISSING_AURA:
         {
+            if (!m_creature->isInCombat())
+                return false;
+
             SpellAuraHolder* holder = m_creature->GetSpellAuraHolder(event.buffed.spellId);
             if (holder && holder->GetStackAmount() >= event.buffed.amount)
                 return false;
@@ -437,6 +452,9 @@ bool CreatureEventAI::ProcessEvent(CreatureEventAIHolder& pHolder, Unit* pAction
             break;
         case EVENT_T_ENERGY:
         {
+            if (!m_creature->isInCombat() || !m_creature->GetMaxPower(POWER_ENERGY))
+                return false;
+
             uint32 perc = (m_creature->GetPower(POWER_ENERGY) * 100) / m_creature->GetMaxPower(POWER_ENERGY);
 
             if (perc > event.percent_range.percentMax || perc < event.percent_range.percentMin)
@@ -1024,6 +1042,7 @@ void CreatureEventAI::ProcessAction(CreatureEventAI_Action const& action, uint32
         case ACTION_T_CLEAR_MOVEMENT:
         {
             m_creature->GetMotionMaster()->Clear();
+            m_creature->GetMotionMaster()->MoveIdle();
             break;
         }
         case ACTION_T_COMBAT_STOP:
