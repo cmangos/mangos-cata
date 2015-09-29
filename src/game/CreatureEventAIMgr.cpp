@@ -862,6 +862,7 @@ void CreatureEventAIMgr::LoadCreatureEventAI_Scripts()
                     case ACTION_T_REMOVE_STEALTH:           // No Params
                     case ACTION_T_ATTACK_STOP:              // No Params
                     case ACTION_T_SET_CONTROL_ATTACK:       // Allow Attack Start (0 = true, anything else passive react on aggro.)
+                    case ACTION_T_SET_CONTROL_EVADE:        // Allow control Enter Evade (0 = true, anything else don't allow run EnterEvade and allow override function)
                         break;
 
                     case ACTION_T_RANDOM_SAY:
@@ -883,8 +884,7 @@ void CreatureEventAIMgr::LoadCreatureEventAI_Scripts()
                         {
                             sLog.outErrorEventAI("Event %u Action %u uses unexpected radius 0 (set to %f of CONFIG_FLOAT_CREATURE_FAMILY_ASSISTANCE_RADIUS)", i, j + 1, sWorld.getConfig(CONFIG_FLOAT_CREATURE_FAMILY_ASSISTANCE_RADIUS));
                             action.throwEvent.radius = uint32(sWorld.getConfig(CONFIG_FLOAT_CREATURE_FAMILY_ASSISTANCE_RADIUS));
-                        }
-
+                        }                        
                         break;
                     case ACTION_T_SET_THROW_MASK:
                         if (action.setThrowMask.eventTypeMask & ~((1 << MAXIMAL_AI_EVENT_EVENTAI) - 1))
