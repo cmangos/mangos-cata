@@ -87,6 +87,7 @@ CreatureEventAI::CreatureEventAI(Creature* c) : CreatureAI(c),
     m_MeleeEnabled(true),
     m_HasOOCLoSEvent(false),
     m_IsControlAttackEnabled(false),
+    m_IsControlEvadeEnabled(false),
     m_InvinceabilityHpLevel(0),
     m_throwAIEventMask(0),
     m_throwAIEventStep(0)
@@ -1152,6 +1153,11 @@ void CreatureEventAI::ProcessAction(CreatureEventAI_Action const& action, uint32
             m_IsControlAttackEnabled = action.setControlAttack.state != 0;
             break;
         }
+        case ACTION_T_SET_CONTROL_EVADE:
+        {
+            m_IsControlEvadeEnabled = action.setControlEvade.state != 0;
+            break;
+        }
     }
 }
 
@@ -1214,6 +1220,9 @@ void CreatureEventAI::JustReachedHome()
 
 void CreatureEventAI::EnterEvadeMode()
 {
+    if (m_IsControlEvadeEnabled)
+        return;
+    
     m_creature->RemoveAllAurasOnEvade();
     m_creature->DeleteThreatList();
     m_creature->CombatStop(true);
