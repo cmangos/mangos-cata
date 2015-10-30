@@ -122,6 +122,21 @@ enum ScriptCommand                                          // resSource, resTar
                                                             // data_flags & SCRIPT_FLAG_COMMAND_ADDITIONAL set/unset byte flag UNIT_BYTE1_FLAG_FLY_ANIM
     SCRIPT_COMMAND_DESPAWN_GO               = 40,           // resTarget = GameObject
     SCRIPT_COMMAND_RESPAWN                  = 41,           // resSource = Creature. Requires SCRIPT_FLAG_BUDDY_IS_DESPAWNED to find dead or despawned targets
+    SCRIPT_COMMAND_RESET_DOOR               = 42,           // resSource = Gameobject
+    SCRIPT_COMMAND_GO_STATE_ACTIVE          = 43,           // resSource = Gameobject
+    SCRIPT_COMMAND_GO_STATE_READY           = 44,           // resSource = Gameobject
+    SCRIPT_COMMAND_GO_STATE_ALTERNATIVE     = 45,           // resSource = Gameobject
+    SCRIPT_COMMAND_FOLLOW                   = 46,           // resSource = Creature, resTarget = Unit
+    SCRIPT_COMMAND_RESPAWN_TIME             = 47,           // resSource = Creature, datalong = respawn time
+    SCRIPT_COMMAND_RESPAWN_DELAY            = 48,           // resSource = Creature, datalong = respawn delay
+    SCRIPT_COMMAND_CORPSE_DELAY             = 49,           // resSource = Creature, datalong = corpse delay
+    SCRIPT_COMMAND_COMBAT_PULSE             = 50,           // resSource = Creature.
+    SCRIPT_COMMAND_ENTER_EVADE              = 51,           // resSource = Creature.
+    SCRIPT_COMMAND_FOLLOW_DIST_ANGLE        = 52,           // resSource = Creature, resTarget = Unit
+    SCRIPT_COMMAND_MOVE_DYNAMIC_GO          = 53,           // resSource = Creature, resTarget GO.
+    SCRIPT_COMMAND_FACING_TO_GO             = 54,           // resSource = Creature, resTarget GO.
+    SCRIPT_COMMAND_REMOVE_AURAS             = 55,           // resSource = Creature.
+    SCRIPT_COMMAND_FACING_TO_CREATURE       = 56,           // resSource = Creature, resTarget Creature.
 };
 
 #define MAX_TEXT_ID 4                                       // used for SCRIPT_COMMAND_TALK, SCRIPT_COMMAND_EMOTE, SCRIPT_COMMAND_CAST_SPELL, SCRIPT_COMMAND_TERMINATE_SCRIPT
@@ -375,10 +390,50 @@ struct ScriptInfo
             uint32 fly;                                     // datalong
             uint32 empty;                                   // datalong2
         } fly;
-
+        
+        struct                                              // SCRIPT_COMMAND_RESPAWN_TIME (47)
+        {
+            uint32 respawnTime;                             // datalong
+            uint32 empty;                                   // datalong2
+        } respawnTime;
+        
+        struct                                              // SCRIPT_COMMAND_RESPAWN_DELAY (48)
+        {
+            uint32 respawnDelay;                            // datalong
+            uint32 empty;                                   // datalong2
+        } respawnDelay;
+        
+        struct                                              // SCRIPT_COMMAND_CORPSE_DELAY (49)
+        {
+            uint32 corpseDelay;                             // datalong
+            uint32 empty;                                   // datalong2
+        } corpseDelay;
+        
+        struct                                              // SCRIPT_COMMAND_FOLLOW_DIST_ANGLE (52)
+        {
+            uint32 distFollow;                              // datalong
+            uint32 angleFollow;                             // datalong2
+        } moveFollow;
+        
+        struct                                              // SCRIPT_COMMAND_MOVE_DYNAMIC_GO (53)
+        {
+            uint32 maxDist;                                 // datalong
+            uint32 minDist;                                 // datalong2
+        } moveDynamicGo;
+        
         // datalong unsed                                   // SCRIPT_COMMAND_DESPAWN_GO (40)
         // datalong unsed                                   // SCRIPT_COMMAND_RESPAWN (41)
-
+        // datalong unused                                  // SCRIPT_COMMAND_RESET_DOOR (42)
+        // datalong unused                                  // SCRIPT_COMMAND_GO_STATE_ACTIVE (43)
+        // datalong unused                                  // SCRIPT_COMMAND_GO_STATE_READY (44)
+        // datalong unused                                  // SCRIPT_COMMAND_GO_STATE_ACTIVE_ALTERNATIVE (45)
+        // datalong unused                                  // SCRIPT_COMMAND_FOLLOW (46)
+        // datalong unused                                  // SCRIPT_COMMAND_COMBAT_PULSE (50)
+        // datalong unused                                  // SCRIPT_COMMAND_ENTER_EVADE (51)
+        // datalong unused                                  // SCRIPT_COMMAND_FACING_TO_GO (54)
+        // datalong unused                                  // SCRIPT_COMMAND_FACING_TO_CREATURE (56)
+        // datalong unused                                  // SCRIPT_COMMAND_REMOVE_AURAS (57)
+        
         struct
         {
             uint32 data[2];
@@ -422,6 +477,12 @@ struct ScriptInfo
             case SCRIPT_COMMAND_ACTIVATE_OBJECT:
             case SCRIPT_COMMAND_GO_LOCK_STATE:
             case SCRIPT_COMMAND_DESPAWN_GO:
+            case SCRIPT_COMMAND_RESET_DOOR:
+            case SCRIPT_COMMAND_GO_STATE_ACTIVE:
+            case SCRIPT_COMMAND_GO_STATE_READY:
+            case SCRIPT_COMMAND_GO_STATE_ALTERNATIVE:
+            case SCRIPT_COMMAND_MOVE_DYNAMIC_GO:
+            case SCRIPT_COMMAND_FACING_TO_GO:
                 return false;
             default:
                 return true;
@@ -444,6 +505,7 @@ struct ScriptInfo
             case SCRIPT_COMMAND_SET_FACING:
             case SCRIPT_COMMAND_MOVE_DYNAMIC:
             case SCRIPT_COMMAND_SET_FLY:
+            case SCRIPT_COMMAND_MOVE_DYNAMIC_GO:
                 return true;
             default:
                 return false;
