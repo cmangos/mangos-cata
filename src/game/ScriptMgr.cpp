@@ -31,6 +31,7 @@
 #include "BattleGround/BattleGround.h"
 #include "OutdoorPvP/OutdoorPvP.h"
 #include "WaypointMovementGenerator.h"
+#include "MotionMaster.h"
 #include "Mail.h"
 
 ScriptMapMapName sQuestEndScripts;
@@ -730,9 +731,32 @@ void ScriptMgr::LoadScripts(ScriptMapMapName& scripts, const char* tablename)
                 }
                 break;
             }
+            case SCRIPT_COMMAND_MOVE_DYNAMIC_GO:               // 53
+            {
+                if (tmp.moveDynamic.maxDist < tmp.moveDynamic.minDist)
+                {
+                    sLog.outErrorDb("Table `%s` has invalid min-dist (datalong2 = %u) less than max-dist (datalong = %u) in SCRIPT_COMMAND_MOVE_DYNAMIC_GO for script id %u", tablename, tmp.moveDynamicGo.minDist, tmp.moveDynamicGo.maxDist, tmp.id);
+                    continue;
+                }
+                break;
+            }
             case SCRIPT_COMMAND_SET_FLY:                    // 39
             case SCRIPT_COMMAND_DESPAWN_GO:                 // 40
             case SCRIPT_COMMAND_RESPAWN:                    // 41
+            case SCRIPT_COMMAND_RESET_DOOR:                 // 42
+            case SCRIPT_COMMAND_GO_STATE_ACTIVE:            // 43
+            case SCRIPT_COMMAND_GO_STATE_READY:             // 44
+            case SCRIPT_COMMAND_GO_STATE_ALTERNATIVE:       // 45
+            case SCRIPT_COMMAND_FOLLOW:                     // 46
+            case SCRIPT_COMMAND_RESPAWN_TIME:               // 47
+            case SCRIPT_COMMAND_RESPAWN_DELAY:              // 48
+            case SCRIPT_COMMAND_CORPSE_DELAY:               // 49
+            case SCRIPT_COMMAND_COMBAT_PULSE:               // 50
+            case SCRIPT_COMMAND_ENTER_EVADE:                // 51
+            case SCRIPT_COMMAND_FOLLOW_DIST_ANGLE:          // 52
+            case SCRIPT_COMMAND_FACING_TO_GO:               // 54
+            case SCRIPT_COMMAND_REMOVE_AURAS:               // 55
+            case SCRIPT_COMMAND_FACING_TO_CREATURE:         // 56
                 break;
             default:
             {
@@ -1262,7 +1286,7 @@ bool ScriptAction::HandleScriptStep()
             else
             {
                 ((Unit*)pSource)->GetMotionMaster()->Clear();
-                ((Unit*)pSource)->GetMotionMaster()->MovePoint(0, m_script->x, m_script->y, m_script->z);
+                ((Unit*)pSource)->GetMotionMaster()->MovePoint(1, m_script->x, m_script->y, m_script->z);
             }
             break;
         }
@@ -1426,7 +1450,7 @@ bool ScriptAction::HandleScriptStep()
             float z = m_script->z;
             float o = m_script->o;
 
-            Creature* pCreature = pSource->SummonCreature(m_script->summonCreature.creatureEntry, x, y, z, o, m_script->summonCreature.despawnDelay ? TEMPSUMMON_TIMED_OOC_OR_DEAD_DESPAWN : TEMPSUMMON_DEAD_DESPAWN, m_script->summonCreature.despawnDelay, (m_script->data_flags & SCRIPT_FLAG_COMMAND_ADDITIONAL) ? true : false);
+            Creature* pCreature = pSource->SummonCreature(m_script->summonCreature.creatureEntry, x, y, z, o, m_script->summonCreature.despawnDelay ? TEMPSUMMON_TIMED_OR_DEAD_DESPAWN : TEMPSUMMON_DEAD_DESPAWN, m_script->summonCreature.despawnDelay, (m_script->data_flags & SCRIPT_FLAG_COMMAND_ADDITIONAL) ? true : false);
             if (!pCreature)
             {
                 sLog.outErrorDb(" DB-SCRIPTS: Process table `%s` id %u, command %u failed for creature (entry: %u).", m_table, m_script->id, m_script->command, m_script->summonCreature.creatureEntry);
@@ -1901,6 +1925,9 @@ bool ScriptAction::HandleScriptStep()
         {
             if (LogIfNotCreature(pSource))
                 return false;
+            if (LogIfNotUnit(pTarget))
+                return false;
+            
             Creature* pCSource = static_cast<Creature*>(pSource);
             if (!pTarget)
             {
@@ -1931,7 +1958,7 @@ bool ScriptAction::HandleScriptStep()
                 return false;
             if (LogIfNotUnit(pTarget))
                 return false;
-
+            
             float x, y, z;
             if (m_script->moveDynamic.maxDist == 0)         // Move to pTarget
             {
@@ -2009,6 +2036,204 @@ bool ScriptAction::HandleScriptStep()
             ((Creature*)pTarget)->Respawn();
             break;
         }
+        case SCRIPT_COMMAND_RESET_DOOR:                     // 42
+        {
+            if (LogIfNotGameObject(pTarget))
+                break;
+            
+            GameObject* pGo = static_cast<GameObject*>(pTarget);
+
+            pGo->ResetDoorOrButton();
+            break;
+        }
+        case SCRIPT_COMMAND_GO_STATE_ACTIVE:                // 43
+        {
+            if (LogIfNotGameObject(pTarget))
+                break;
+            
+            GameObject* pGo = static_cast<GameObject*>(pTarget);
+
+            pGo->SetGoState(GO_STATE_ACTIVE);
+            break;
+        }
+        case SCRIPT_COMMAND_GO_STATE_READY:                 // 44
+        {
+            if (LogIfNotGameObject(pTarget))
+                break;
+
+            GameObject* pGo = static_cast<GameObject*>(pTarget);
+            
+            pGo->SetGoState(GO_STATE_READY);
+            break;
+        }
+        case SCRIPT_COMMAND_GO_STATE_ALTERNATIVE:           // 45
+        {
+            if (LogIfNotGameObject(pTarget))
+                break;
+
+            GameObject* pGo = static_cast<GameObject*>(pTarget);
+            
+            pGo->SetGoState(GO_STATE_ACTIVE_ALTERNATIVE);
+            break;
+        }
+        case SCRIPT_COMMAND_FOLLOW:                         // 46
+        {
+            if (LogIfNotCreature(pSource))
+                break;
+            if (LogIfNotUnit(pTarget))
+                break;
+
+            Creature* pFollower = static_cast<Creature*>(pSource);
+            Unit* unitTarget = static_cast<Unit*>(pTarget);
+
+            pFollower->GetMotionMaster()->MoveFollow(unitTarget, CONTACT_DISTANCE, 0);
+            break;
+        }
+        case SCRIPT_COMMAND_RESPAWN_TIME:                   // 47
+        {
+            // TODO - Remove this check after a while
+            if (pTarget && pTarget->GetTypeId() != TYPEID_UNIT && pSource && pSource->GetTypeId() == TYPEID_UNIT)
+            {
+                sLog.outErrorDb("DB-SCRIPTS: Process table `%s` id %u, command %u target must be creature, but (only) source is, use data_flags to fix", m_table, m_script->id, m_script->command);
+                pTarget = pSource;
+            }
+
+            if (LogIfNotCreature(pTarget))
+                return false;
+
+            ((Creature*)pTarget)->SetRespawnTime(m_script->respawnTime.respawnTime);
+            break;
+        }
+        case SCRIPT_COMMAND_RESPAWN_DELAY:                  // 48
+        {
+            // TODO - Remove this check after a while
+            if (pTarget && pTarget->GetTypeId() != TYPEID_UNIT && pSource && pSource->GetTypeId() == TYPEID_UNIT)
+            {
+                sLog.outErrorDb("DB-SCRIPTS: Process table `%s` id %u, command %u target must be creature, but (only) source is, use data_flags to fix", m_table, m_script->id, m_script->command);
+                pTarget = pSource;
+            }
+
+            if (LogIfNotCreature(pTarget))
+                return false;
+
+            ((Creature*)pTarget)->SetRespawnDelay(m_script->respawnDelay.respawnDelay);
+            break;
+        }
+        case SCRIPT_COMMAND_CORPSE_DELAY:                  // 49
+        {
+            // TODO - Remove this check after a while
+            if (pTarget && pTarget->GetTypeId() != TYPEID_UNIT && pSource && pSource->GetTypeId() == TYPEID_UNIT)
+            {
+                sLog.outErrorDb("DB-SCRIPTS: Process table `%s` id %u, command %u target must be creature, but (only) source is, use data_flags to fix", m_table, m_script->id, m_script->command);
+                pTarget = pSource;
+            }
+
+            if (LogIfNotCreature(pTarget))
+                return false;
+
+            ((Creature*)pTarget)->SetCorpseDelay(m_script->corpseDelay.corpseDelay);
+            break;
+        }
+        case SCRIPT_COMMAND_COMBAT_PULSE:                 // 50
+        {
+            if (LogIfNotCreature(pTarget))
+                break;
+
+            ((Creature*)pTarget)->SetInCombatWithZone();
+            break;
+        }
+        case SCRIPT_COMMAND_ENTER_EVADE:                  // 51
+        {
+            if (LogIfNotCreature(pTarget))
+                break;
+
+            ((Creature*)pTarget)->AI()->EnterEvadeMode();
+            break;
+        }
+        case SCRIPT_COMMAND_FOLLOW_DIST_ANGLE:            // 52
+        {
+            if (LogIfNotCreature(pSource))
+                break;
+            if (LogIfNotUnit(pTarget))
+                break;
+
+            float dist = m_script->moveFollow.distFollow;
+            float angle = m_script->moveFollow.angleFollow / 180.0f * M_PI_F;
+
+            Creature* pFollower = static_cast<Creature*>(pSource);
+            Unit* unitTarget = static_cast<Unit*>(pTarget);
+
+            pFollower->GetMotionMaster()->MoveFollow(unitTarget, dist, angle);
+            break;
+        }
+        case SCRIPT_COMMAND_MOVE_DYNAMIC_GO:                // 53
+        {
+            if (LogIfNotCreature(pSource))
+                break;
+            if (LogIfNotGameObject(pTarget))
+                break;
+            
+            GameObject* pGo = static_cast<GameObject*>(pTarget);
+            
+            float x, y, z;
+            if (m_script->moveDynamicGo.maxDist == 0)         // Move to pTarget
+            {
+                if (pTarget == pSource)
+                {
+                    sLog.outErrorDb(" DB-SCRIPTS: Process table `%s` id %u, _MOVE_DYNAMIC_GO called with maxDist == 0, but resultingSource == resultingTarget (== %s)", m_table, m_script->id, pSource->GetGuidStr().c_str());
+                    break;
+                }
+                pGo->GetContactPoint(pSource, x, y, z);
+            }
+            else                                            // Calculate position
+            {
+                float orientation;
+                if (m_script->data_flags & SCRIPT_FLAG_COMMAND_ADDITIONAL)
+                    orientation = pSource->GetOrientation() + m_script->o + 2 * M_PI_F;
+                else
+                    orientation = m_script->o;
+
+                pSource->GetRandomPoint(pGo->GetPositionX(), pGo->GetPositionY(), pGo->GetPositionZ(), m_script->moveDynamicGo.maxDist, x, y, z,
+                                        m_script->moveDynamicGo.minDist, (orientation == 0.0f ? NULL : &orientation));
+                z = std::max(z, pGo->GetPositionZ());
+                pSource->UpdateAllowedPositionZ(x, y, z);
+            }
+            ((Creature*)pSource)->GetMotionMaster()->MovePoint(1, x, y, z);
+            break;
+        }
+        case SCRIPT_COMMAND_FACING_TO_GO:                  // 54
+        {
+            if (LogIfNotCreature(pSource))
+                break;
+            if (LogIfNotGameObject(pTarget))
+                break;
+
+            GameObject* pGo = static_cast<GameObject*>(pTarget);
+            
+           ((Creature*)pSource)->SetFacingToObject(pGo);
+            break;
+        }
+        case SCRIPT_COMMAND_REMOVE_AURAS:                 // 55
+        {
+            if (LogIfNotCreature(pSource))
+                break;
+
+           ((Unit*)pSource)->RemoveAllAuras();
+            break;
+        }
+        case SCRIPT_COMMAND_FACING_TO_CREATURE:           // 56
+        {
+            if (LogIfNotCreature(pSource))
+                break;
+            if (LogIfNotCreature(pTarget))
+                break;
+
+            Creature* pCreature = static_cast<Creature*>(pSource);
+            
+           ((Creature*)pSource)->SetFacingToObject(pCreature);
+            break;
+        }
+        
         default:
             sLog.outErrorDb(" DB-SCRIPTS: Process table `%s` id %u, command %u unknown command used.", m_table, m_script->id, m_script->command);
             break;
