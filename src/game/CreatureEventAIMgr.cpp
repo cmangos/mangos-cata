@@ -223,7 +223,6 @@ bool IsValidTargetType(EventAI_Type eventType, EventAI_ActionType actionType, ui
                 case EVENT_T_FRIENDLY_MISSING_BUFF:
                 case EVENT_T_RECEIVE_EMOTE:
                 case EVENT_T_RECEIVE_AI_EVENT:
-                case EVENT_T_SPELLHIT_TARGET:
                     return true;
                 default:
                     sLog.outErrorEventAI("Event %u Action%u uses incorrect Target type %u for event-type %u", eventId, action, targetType, eventType);
@@ -504,26 +503,6 @@ void CreatureEventAIMgr::LoadCreatureEventAI_Scripts()
                     }
                     break;
                 }
-                case EVENT_T_SPELLHIT_TARGET:
-                    if (temp.spell_hit_target.spellId)
-                    {
-                        SpellEntry const* pSpell = sSpellStore.LookupEntry(temp.spell_hit_target.spellId);
-                        if (!pSpell)
-                        {
-                            sLog.outErrorEventAI("Creature %u has nonexistent SpellID(%u) defined in event %u.", temp.creature_id, temp.spell_hit_target.spellId, i);
-                            continue;
-                        }
-
-                        if ((temp.spell_hit_target.schoolMask & pSpell->SchoolMask) != pSpell->SchoolMask)
-                            sLog.outErrorEventAI("Creature %u has param1(spellId %u) but param2 is not -1 and not equal to spell's school mask. Event %u can never trigger.", temp.creature_id, temp.spell_hit.schoolMask, i);
-                    }
-
-                    if (!temp.spell_hit_target.schoolMask)
-                        sLog.outErrorEventAI("Creature %u is using invalid SpellSchoolMask(%u) defined in event %u.", temp.creature_id, temp.spell_hit_target.schoolMask, i);
-
-                    if (temp.spell_hit_target.repeatMax < temp.spell_hit_target.repeatMin)
-                        sLog.outErrorEventAI("Creature %u are using repeatable event(%u) with param4 < param3 (RepeatMax < RepeatMin). Event will never repeat.", temp.creature_id, i);
-                    break;
                 default:
                     sLog.outErrorEventAI("Creature %u using not checked at load event (%u) in event %u. Need check code update?", temp.creature_id, temp.event_id, i);
                     break;
@@ -848,55 +827,15 @@ void CreatureEventAIMgr::LoadCreatureEventAI_Scripts()
                             }
                         }
                         break;
-                    case ACTION_T_EVADE:                             // No Params
-                    case ACTION_T_FLEE_FOR_ASSIST:                   // No Params
-                    case ACTION_T_DIE:                               // No Params
-                    case ACTION_T_ZONE_COMBAT_PULSE:                 // No Params
-                    case ACTION_T_FORCE_DESPAWN:                     // Delay
-                    case ACTION_T_AUTO_ATTACK:                       // AllowAttackState (0 = stop attack, anything else means continue attacking)
-                    case ACTION_T_COMBAT_MOVEMENT:                   // AllowCombatMovement (0 = stop combat based movement, anything else continue attacking)
-                    case ACTION_T_RANGED_MOVEMENT:                   // Distance, Angle
-                    case ACTION_T_CALL_FOR_HELP:                     // Distance
-                    case ACTION_T_DELETE_THREAT:                     // No Params
-                    case ACTION_T_MOVE_HOME:                         // No Params
-                    case ACTION_T_LOAD_ADDON:                        // No Params
-                    case ACTION_T_CONTROL_AGGRO:                     // No Params
-                    case ACTION_T_CLEAR_MOVEMENT:                    // No Params
-                    case ACTION_T_COMBAT_STOP:                       // No Params
-                    case ACTION_T_REMOVE_EVADE_AURA:                 // No Params
-                    case ACTION_T_CLEAR_HEALTH:                      // No Params
-                    case ACTION_T_CLEAR_REACTION:                    // No Params
-                    case ACTION_T_STOP_MOVING:                       // No Params
-                    case ACTION_T_INTERRUPT_CAST:                    // No Params
-                    case ACTION_T_REMOVE_DEATH_AURA:                 // No Params
-                    case ACTION_T_ENABLE_FLY:                        // No Params
-                    case ACTION_T_DISABLE_FLY:                       // No Params
-                    case ACTION_T_SET_RUN:                           // No Params
-                    case ACTION_T_DISABLE_RUN:                       // No Params
-                    case ACTION_T_PAUSE_MOVEMENT:                    // No Params
-                    case ACTION_T_UNPAUSE_MOVEMENT:                  // No Params
-                    case ACTION_T_INTERRUPT_CAST_FALSE:              // No Params
-                    case ACTION_T_SET_HEALTH_ONE:                    // No Params
-                    case ACTION_T_SET_STATE_ALIVE:                   // No Params
-                    case ACTION_T_SET_STATE_DEATH:                   // No Params
-                    case ACTION_T_SET_STEALTH:                       // No Params
-                    case ACTION_T_REMOVE_STEALTH:                    // No Params
-                    case ACTION_T_ATTACK_STOP:                       // No Params
-                    case ACTION_T_SET_CONTROL_ATTACK:                // Allow Attack Start (0 = true, anything else passive react on aggro.)
-                    case ACTION_T_SET_CONTROL_EVADE:                 // Allow control Enter Evade (0 = true, anything else don't allow run EnterEvade and allow override function)
-                    case ACTION_T_SET_CONTROL_DEATH:                 // Allow control death action (0 = true, anything else don't allow run JustDied and allow override function)
-                    case ACTION_T_SET_CONTROL_SPAWN:                 // Allow control spawn action (0 = true, anything else don't allow run JustRespawned and allow override function), note - useless for temporary summon creature.
-                    case ACTION_T_SET_CONTROL_REACHED:               // Allow control reached home action (0 = true, anything else don't allow run JustReachedHome and allow override function)
-                    case ACTION_T_SET_CONTROL_LOS:                   // Allow control ooc los action (0 = true, anything else don't allow run MoveInLineOfSight and allow override function)
-                    case ACTION_T_SET_CONTROL_SPELL_HIT:             // Allow control spell hit action (0 = true, anything else don't allow run SpellHit and allow override function)
-                    case ACTION_T_SET_CONTROL_KILLED:                // Allow control Killed Unit functions (0 = true, anything else passive don't react Killed Unit.)
-                    case ACTION_T_REMOVE_ALL_AURAS:                  // Remove All Auras.
-                    case ACTION_T_MOVEMENT_Z:                        // Increase Position Z.
-                    case ACTION_T_CONTROL_MOVEMENT_GROUND:           // Creature get Normalize Map Coord from damage dealer and movement ground on position z damage dealer.
-                    case ACTION_T_SET_CURRENT_WAYPOINT:              // Creature can set alternative waypoint.
-                    case ACTION_T_SCRIPT_RESET:                      // Creature can reset script.
-                    case ACTION_T_CONTROL_SPELL_TARGET:              // Allow control spell hit target action (0 = true, anything else don't allow run SpellHit and allow override function)
-                    case ACTION_T_MOVEMENT_Z_DECREASE:               // Decrease Position Z.
+                    case ACTION_T_EVADE:                    // No Params
+                    case ACTION_T_FLEE_FOR_ASSIST:          // No Params
+                    case ACTION_T_DIE:                      // No Params
+                    case ACTION_T_ZONE_COMBAT_PULSE:        // No Params
+                    case ACTION_T_FORCE_DESPAWN:            // Delay
+                    case ACTION_T_AUTO_ATTACK:              // AllowAttackState (0 = stop attack, anything else means continue attacking)
+                    case ACTION_T_COMBAT_MOVEMENT:          // AllowCombatMovement (0 = stop combat based movement, anything else continue attacking)
+                    case ACTION_T_RANGED_MOVEMENT:          // Distance, Angle
+                    case ACTION_T_CALL_FOR_HELP:            // Distance
                         break;
 
                     case ACTION_T_RANDOM_SAY:
@@ -918,7 +857,8 @@ void CreatureEventAIMgr::LoadCreatureEventAI_Scripts()
                         {
                             sLog.outErrorEventAI("Event %u Action %u uses unexpected radius 0 (set to %f of CONFIG_FLOAT_CREATURE_FAMILY_ASSISTANCE_RADIUS)", i, j + 1, sWorld.getConfig(CONFIG_FLOAT_CREATURE_FAMILY_ASSISTANCE_RADIUS));
                             action.throwEvent.radius = uint32(sWorld.getConfig(CONFIG_FLOAT_CREATURE_FAMILY_ASSISTANCE_RADIUS));
-                        }                        
+                        }
+
                         break;
                     case ACTION_T_SET_THROW_MASK:
                         if (action.setThrowMask.eventTypeMask & ~((1 << MAXIMAL_AI_EVENT_EVENTAI) - 1))
@@ -940,9 +880,6 @@ void CreatureEventAIMgr::LoadCreatureEventAI_Scripts()
                             sLog.outErrorEventAI("Event %u Action %u uses invalid movement type %u (must be smaller than %u)", i, j + 1, action.changeMovement.movementType, MAX_DB_MOTION_TYPE);
                             continue;
                         }
-                        break;
-                    case ACTION_T_ATTACK_START:
-                        IsValidTargetType(temp.event_type, action.type, action.attack_start_target.target, i, j + 1);
                         break;
 
                     default:

@@ -23,10 +23,6 @@
 #include "Creature.h"
 #include "CreatureAI.h"
 #include "Unit.h"
-#include "ObjectGuid.h"
-#include "WaypointManager.h"
-#include "WaypointMovementGenerator.h"
-#include "MotionMaster.h"
 
 class Player;
 class WorldObject;
@@ -37,39 +33,38 @@ class WorldObject;
 
 enum EventAI_Type
 {
-    EVENT_T_TIMER_IN_COMBAT               = 0,                    // InitialMin, InitialMax, RepeatMin, RepeatMax
-    EVENT_T_TIMER_OOC                     = 1,                    // InitialMin, InitialMax, RepeatMin, RepeatMax
-    EVENT_T_HP                            = 2,                    // HPMax%, HPMin%, RepeatMin, RepeatMax
-    EVENT_T_MANA                          = 3,                    // ManaMax%,ManaMin% RepeatMin, RepeatMax
-    EVENT_T_AGGRO                         = 4,                    // NONE
-    EVENT_T_KILL                          = 5,                    // RepeatMin, RepeatMax
-    EVENT_T_DEATH                         = 6,                    // NONE
-    EVENT_T_EVADE                         = 7,                    // NONE
-    EVENT_T_SPELLHIT                      = 8,                    // SpellID, School, RepeatMin, RepeatMax
-    EVENT_T_RANGE                         = 9,                    // MinDist, MaxDist, RepeatMin, RepeatMax
-    EVENT_T_OOC_LOS                       = 10,                   // NoHostile, MaxRnage, RepeatMin, RepeatMax
-    EVENT_T_SPAWNED                       = 11,                   // Condition, CondValue1
-    EVENT_T_TARGET_HP                     = 12,                   // HPMax%, HPMin%, RepeatMin, RepeatMax
-    EVENT_T_TARGET_CASTING                = 13,                   // RepeatMin, RepeatMax
-    EVENT_T_FRIENDLY_HP                   = 14,                   // HPDeficit, Radius, RepeatMin, RepeatMax
-    EVENT_T_FRIENDLY_IS_CC                = 15,                   // DispelType, Radius, RepeatMin, RepeatMax
-    EVENT_T_FRIENDLY_MISSING_BUFF         = 16,                   // SpellId, Radius, RepeatMin, RepeatMax
-    EVENT_T_SUMMONED_UNIT                 = 17,                   // CreatureId, RepeatMin, RepeatMax
-    EVENT_T_TARGET_MANA                   = 18,                   // ManaMax%, ManaMin%, RepeatMin, RepeatMax
-    EVENT_T_QUEST_ACCEPT                  = 19,                   // QuestID
-    EVENT_T_QUEST_COMPLETE                = 20,                   //
-    EVENT_T_REACHED_HOME                  = 21,                   // NONE
-    EVENT_T_RECEIVE_EMOTE                 = 22,                   // EmoteId, Condition, CondValue1, CondValue2
-    EVENT_T_AURA                          = 23,                   // Param1 = SpellID, Param2 = Number of time stacked, Param3/4 Repeat Min/Max
-    EVENT_T_TARGET_AURA                   = 24,                   // Param1 = SpellID, Param2 = Number of time stacked, Param3/4 Repeat Min/Max
-    EVENT_T_SUMMONED_JUST_DIED            = 25,                   // CreatureId, RepeatMin, RepeatMax
-    EVENT_T_SUMMONED_JUST_DESPAWN         = 26,                   // CreatureId, RepeatMin, RepeatMax
-    EVENT_T_MISSING_AURA                  = 27,                   // Param1 = SpellID, Param2 = Number of time stacked expected, Param3/4 Repeat Min/Max
-    EVENT_T_TARGET_MISSING_AURA           = 28,                   // Param1 = SpellID, Param2 = Number of time stacked expected, Param3/4 Repeat Min/Max
-    EVENT_T_TIMER_GENERIC                 = 29,                   // InitialMin, InitialMax, RepeatMin, RepeatMax
-    EVENT_T_RECEIVE_AI_EVENT              = 30,                   // AIEventType, Sender-Entry, unused, unused
-    EVENT_T_ENERGY                        = 31,                   // EnergyMax%, EnergyMin%, RepeatMin, RepeatMax
-    EVENT_T_SPELLHIT_TARGET               = 32,                   // SpellID, School, RepeatMin, RepeatMax
+    EVENT_T_TIMER_IN_COMBAT         = 0,                    // InitialMin, InitialMax, RepeatMin, RepeatMax
+    EVENT_T_TIMER_OOC               = 1,                    // InitialMin, InitialMax, RepeatMin, RepeatMax
+    EVENT_T_HP                      = 2,                    // HPMax%, HPMin%, RepeatMin, RepeatMax
+    EVENT_T_MANA                    = 3,                    // ManaMax%,ManaMin% RepeatMin, RepeatMax
+    EVENT_T_AGGRO                   = 4,                    // NONE
+    EVENT_T_KILL                    = 5,                    // RepeatMin, RepeatMax
+    EVENT_T_DEATH                   = 6,                    // NONE
+    EVENT_T_EVADE                   = 7,                    // NONE
+    EVENT_T_SPELLHIT                = 8,                    // SpellID, School, RepeatMin, RepeatMax
+    EVENT_T_RANGE                   = 9,                    // MinDist, MaxDist, RepeatMin, RepeatMax
+    EVENT_T_OOC_LOS                 = 10,                   // NoHostile, MaxRnage, RepeatMin, RepeatMax
+    EVENT_T_SPAWNED                 = 11,                   // Condition, CondValue1
+    EVENT_T_TARGET_HP               = 12,                   // HPMax%, HPMin%, RepeatMin, RepeatMax
+    EVENT_T_TARGET_CASTING          = 13,                   // RepeatMin, RepeatMax
+    EVENT_T_FRIENDLY_HP             = 14,                   // HPDeficit, Radius, RepeatMin, RepeatMax
+    EVENT_T_FRIENDLY_IS_CC          = 15,                   // DispelType, Radius, RepeatMin, RepeatMax
+    EVENT_T_FRIENDLY_MISSING_BUFF   = 16,                   // SpellId, Radius, RepeatMin, RepeatMax
+    EVENT_T_SUMMONED_UNIT           = 17,                   // CreatureId, RepeatMin, RepeatMax
+    EVENT_T_TARGET_MANA             = 18,                   // ManaMax%, ManaMin%, RepeatMin, RepeatMax
+    EVENT_T_QUEST_ACCEPT            = 19,                   // QuestID
+    EVENT_T_QUEST_COMPLETE          = 20,                   //
+    EVENT_T_REACHED_HOME            = 21,                   // NONE
+    EVENT_T_RECEIVE_EMOTE           = 22,                   // EmoteId, Condition, CondValue1, CondValue2
+    EVENT_T_AURA                    = 23,                   // Param1 = SpellID, Param2 = Number of time stacked, Param3/4 Repeat Min/Max
+    EVENT_T_TARGET_AURA             = 24,                   // Param1 = SpellID, Param2 = Number of time stacked, Param3/4 Repeat Min/Max
+    EVENT_T_SUMMONED_JUST_DIED      = 25,                   // CreatureId, RepeatMin, RepeatMax
+    EVENT_T_SUMMONED_JUST_DESPAWN   = 26,                   // CreatureId, RepeatMin, RepeatMax
+    EVENT_T_MISSING_AURA            = 27,                   // Param1 = SpellID, Param2 = Number of time stacked expected, Param3/4 Repeat Min/Max
+    EVENT_T_TARGET_MISSING_AURA     = 28,                   // Param1 = SpellID, Param2 = Number of time stacked expected, Param3/4 Repeat Min/Max
+    EVENT_T_TIMER_GENERIC           = 29,                   // InitialMin, InitialMax, RepeatMin, RepeatMax
+    EVENT_T_RECEIVE_AI_EVENT        = 30,                   // AIEventType, Sender-Entry, unused, unused
+    EVENT_T_ENERGY                  = 31,                   // EnergyMax%, EnergyMin%, RepeatMin, RepeatMax
 
     EVENT_T_END,
 };
@@ -125,47 +120,6 @@ enum EventAI_ActionType
     ACTION_T_SET_THROW_MASK             = 46,               // EventTypeMask, unused, unused
     ACTION_T_SET_STAND_STATE            = 47,               // StandState, unused, unused
     ACTION_T_CHANGE_MOVEMENT            = 48,               // MovementType, WanderDistance, unused
-    ACTION_T_DELETE_THREAT              = 49,               // No Params
-    ACTION_T_MOVE_HOME                  = 50,               // No Params
-    ACTION_T_LOAD_ADDON                 = 51,               // No Params
-    ACTION_T_CONTROL_AGGRO              = 52,               // Allow run Aggro action (0 = true, anything else passive react on aggro.)
-    ACTION_T_CLEAR_MOVEMENT             = 53,               // No Params
-    ACTION_T_COMBAT_STOP                = 54,               // No Params
-    ACTION_T_REMOVE_EVADE_AURA          = 55,               // No Params
-    ACTION_T_CLEAR_HEALTH               = 56,               // No Params
-    ACTION_T_CLEAR_REACTION             = 57,               // No Params
-    ACTION_T_STOP_MOVING                = 58,               // No Params
-    ACTION_T_INTERRUPT_CAST             = 59,               // No Params
-    ACTION_T_REMOVE_DEATH_AURA          = 60,               // No Params
-    ACTION_T_ENABLE_FLY                 = 61,               // No Params
-    ACTION_T_DISABLE_FLY                = 62,               // No Params
-    ACTION_T_SET_RUN                    = 63,               // No Params
-    ACTION_T_DISABLE_RUN                = 64,               // No Params
-    ACTION_T_PAUSE_MOVEMENT             = 65,               // No Params
-    ACTION_T_UNPAUSE_MOVEMENT           = 66,               // No Params
-    ACTION_T_INTERRUPT_CAST_FALSE       = 67,               // No Params
-    ACTION_T_SET_HEALTH_ONE             = 68,               // No Params
-    ACTION_T_SET_STATE_ALIVE            = 69,               // No Params
-    ACTION_T_SET_STATE_DEATH            = 70,               // No Params
-    ACTION_T_SET_STEALTH                = 71,               // No Params
-    ACTION_T_REMOVE_STEALTH             = 72,               // No Params
-    ACTION_T_ATTACK_STOP                = 73,               // No Params
-    ACTION_T_SET_CONTROL_ATTACK         = 74,               // Allow Attack Start (0 = true, anything else passive react on aggro.)
-    ACTION_T_SET_CONTROL_EVADE          = 75,               // Allow control Enter Evade (0 = true, anything else don't allow run EnterEvade and allow override function)
-    ACTION_T_SET_CONTROL_DEATH          = 76,               // Allow control death action (0 = true, anything else don't allow run JustDied and allow override function)
-    ACTION_T_SET_CONTROL_SPAWN          = 77,               // Allow control spawn action (0 = true, anything else don't allow run JustRespawned and allow override function), note - useless for temporary summon creature.
-    ACTION_T_SET_CONTROL_REACHED        = 78,               // Allow control reached home action (0 = true, anything else don't allow run JustReachedHome and allow override function)
-    ACTION_T_SET_CONTROL_LOS            = 79,               // Allow control ooc los action (0 = true, anything else don't allow run MoveInLineOfSight and allow override function)
-    ACTION_T_SET_CONTROL_SPELL_HIT      = 80,               // Allow control spell hit action (0 = true, anything else don't allow run SpellHit and allow override function)
-    ACTION_T_SET_CONTROL_KILLED         = 81,               // Allow control Killed Unit functions (0 = true, anything else passive don't react Killed Unit.)
-    ACTION_T_REMOVE_ALL_AURAS           = 82,               // Remove All Auras.
-    ACTION_T_MOVEMENT_Z                 = 83,               // Increase Position Z.
-    ACTION_T_CONTROL_MOVEMENT_GROUND    = 84,               // Creature get Normalize Map Coord from damage dealer and movement ground on position z damage dealer.
-    ACTION_T_SET_CURRENT_WAYPOINT       = 85,               // Creature can set alternative waypoint.
-    ACTION_T_SCRIPT_RESET               = 86,               // Force creature call script reset.
-    ACTION_T_ATTACK_START               = 87,               // Target.
-    ACTION_T_CONTROL_SPELL_TARGET       = 88,               // Allow control spell hit target action (0 = true, anything else don't allow run SpellHit and allow override function)
-    ACTION_T_MOVEMENT_Z_DECREASE        = 89,               // Decrease Position Z.
 
     ACTION_T_END,
 };
@@ -185,7 +139,7 @@ enum Target
     // Invoker targets
     TARGET_T_ACTION_INVOKER                 = 6,            // Unit who caused this Event to occur (only works for EVENT_T_AGGRO, EVENT_T_KILL, EVENT_T_DEATH, EVENT_T_SPELLHIT, EVENT_T_OOC_LOS, EVENT_T_FRIENDLY_HP, EVENT_T_FRIENDLY_IS_CC, EVENT_T_FRIENDLY_MISSING_BUFF, EVENT_T_RECEIVE_EMOTE, EVENT_T_RECEIVE_AI_EVENT)
     TARGET_T_ACTION_INVOKER_OWNER           = 7,            // Unit who is responsible for Event to occur (only works for EVENT_T_AGGRO, EVENT_T_KILL, EVENT_T_DEATH, EVENT_T_SPELLHIT, EVENT_T_OOC_LOS, EVENT_T_FRIENDLY_HP, EVENT_T_FRIENDLY_IS_CC, EVENT_T_FRIENDLY_MISSING_BUFF, EVENT_T_RECEIVE_EMOTE, EVENT_T_RECEIVE_AI_EVENT)
-    TARGET_T_EVENT_SENDER                   = 10,           // Unit who sent an AIEvent that was received with EVENT_T_RECEIVE_AI_EVENT 
+    TARGET_T_EVENT_SENDER                   = 10,           // Unit who sent an AIEvent that was received with EVENT_T_RECEIVE_AI_EVENT
 
     // Hostile players
     TARGET_T_HOSTILE_RANDOM_PLAYER          = 8,            // Just any random player on our threat list
@@ -460,109 +414,6 @@ struct CreatureEventAI_Action
             uint32 wanderDistance;
             uint32 unused1;
         } changeMovement;
-        // ACTION_T_CONTROL_AGGRO                           = 52
-        struct
-        {
-            uint32 state;                                   // Allow run Aggro action (0 = true, anything else passive react on aggro.)
-            uint32 unused1;
-            uint32 unused2;
-        } setControlAggro;
-        // ACTION_T_SET_CONTROL_ATTACK                      = 74
-        struct
-        {
-            uint32 state;                                   // Allow Attack Start (0 = true, anything else passive react on aggro.)
-            uint32 unused1;
-            uint32 unused2;
-        } setControlAttack;
-        // ACTION_T_SET_CONTROL_EVADE                       = 75
-        struct
-        {
-            uint32 state;                                   // Allow control Enter Evade (0 = true, anything else don't allow run EnterEvade and allow override function)
-            uint32 unused1;
-            uint32 unused2;
-        } setControlEvade;
-        // ACTION_T_SET_CONTROL_DEATH                       = 76
-        struct
-        {
-            uint32 state;                                   // Allow control death action (0 = true, anything else don't allow run JustDied and allow override function)
-            uint32 unused1;
-            uint32 unused2;
-        } setControlDeath;
-        // ACTION_T_SET_CONTROL_SPAWN                       = 77
-        struct
-        {
-            uint32 state;                                   // Allow control spawn action (0 = true, anything else don't allow run JustRespawned and allow override function), note - useless for temporary summon creature.
-            uint32 unused1;
-            uint32 unused2;
-        } setControlSpawn;
-        // ACTION_T_SET_CONTROL_REACHED                     = 78
-        struct
-        {
-            uint32 state;                                   // Allow control reached home action (0 = true, anything else don't allow run JustReachedHome and allow override function)
-            uint32 unused1;
-            uint32 unused2;
-        } setControlReachedHome;
-        // ACTION_T_SET_CONTROL_LOS                         = 79
-        struct
-        {
-            uint32 state;                                   // Allow control ooc los action (0 = true, anything else don't allow run MoveInLineOfSight and allow override function)
-            uint32 unused1;
-            uint32 unused2;
-        } setControlOOCLoS;
-        // ACTION_T_SET_CONTROL_SPELL_HIT                   = 80
-        struct
-        {
-            uint32 state;                                   // Allow control spell hit action (0 = true, anything else don't allow run SpellHit and allow override function)
-            uint32 unused1;
-            uint32 unused2;
-        } setControlSpellHit;
-        // ACTION_T_SET_CONTROL_KILLED                      = 81
-        struct
-        {
-            uint32 state;                                   // Allow control Killed Unit functions (0 = true, anything else passive don't react Killed Unit.)
-            uint32 unused1;
-            uint32 unused2;
-        } setControlKilledUnit;
-        // ACTION_T_MOVEMENT_Z                              = 83
-        struct
-        {
-            uint32 riseDistance;
-            uint32 unused1;
-            uint32 unused2;
-        } riseMovement;
-        // ACTION_T_SET_CONTROL_MOVEMENT_GROUND             = 84
-        struct
-        {
-            uint32 state;                                   // Creature get Normalize Map Coord from damage dealer and movement ground on position z damage dealer.
-            uint32 unused1;
-            uint32 unused2;
-        } setControlMovementGround;
-        // ACTION_T_SET_CURRENT_WAYPOINT                    = 85
-        struct
-        {
-            uint32 uiPointId;                               // Creature can set alternative waypoint.
-            uint32 unused1;
-            uint32 unused2;
-        } setCurrentWaypoint;
-        // ACTION_T_ATTACK_START                            = 87
-        struct
-        {
-            uint32 target;
-        } attack_start_target;
-        // ACTION_T_CONTROL_SPELL_TARGET                    = 88
-        struct
-        {
-            uint32 state;                                   // Allow control spell hit target action (0 = true, anything else don't allow run SpellHit and allow override function)
-            uint32 unused1;
-            uint32 unused2;
-        } setControlSpellHitTarget;
-        // ACTION_T_MOVEMENT_Z_DECREASE                     = 89
-        struct
-        {
-            uint32 decreaseDistance;
-            uint32 unused1;
-            uint32 unused2;
-        } decreaseMovement;
         // RAW
         struct
         {
@@ -717,14 +568,6 @@ struct CreatureEventAI_Event
             uint32 unused1;
             uint32 unused2;
         } receiveAIEvent;
-        // EVENT_T_SPELLHIT_TARGET                          = 32
-        struct
-        {
-            uint32 spellId;
-            uint32 schoolMask;                              // -1 (==0xffffffff) is ok value for full mask, or must be more limited mask like (0 < 1) = 1 for normal/physical school
-            uint32 repeatMin;
-            uint32 repeatMax;
-        } spell_hit_target;
         // RAW
         struct
         {
@@ -800,10 +643,7 @@ class MANGOS_DLL_SPEC CreatureEventAI : public CreatureAI
         void SummonedCreatureJustDied(Creature* unit) override;
         void SummonedCreatureDespawn(Creature* unit) override;
         void ReceiveAIEvent(AIEventType eventType, Creature* pSender, Unit* pInvoker, uint32 miscValue) override;
-        void SpellHitTarget(Unit* pTarget, const SpellEntry* pSpell) override;
-        
-        void SetCurrentWaypoint(uint32 uiPointId);
-        
+
         static int Permissible(const Creature*);
 
         bool ProcessEvent(CreatureEventAIHolder& pHolder, Unit* pActionInvoker = NULL, Creature* pAIEventSender = NULL);
@@ -830,17 +670,6 @@ class MANGOS_DLL_SPEC CreatureEventAI : public CreatureAI
         uint8  m_Phase;                                     // Current phase, max 32 phases
         bool   m_MeleeEnabled;                              // If we allow melee auto attack
         bool   m_HasOOCLoSEvent;                            // Cache if a OOC-LoS Event exists
-        bool   m_IsControlAttackEnabled;                    // Check if we allow attack start or not.
-        bool   m_IsControlAggroEnabled;                     // Check if we allow run aggro action or not.
-        bool   m_IsControlEvadeEnabled;                     // Check if we allow creature evade mode or not.
-        bool   m_IsControlDeathEnabled;                     // Check if we allow run death action or not.
-        bool   m_IsControlSpawnEnabled;                     // Check if we allow run spawn action or not.
-        bool   m_IsControlReachedHomeEnabled;               // Check if we allow run reached home action or not.
-        bool   m_IsControlOOCLoSEnabled;                    // Check if we allow run ooc los action or not.
-        bool   m_IsControlSpellHitEnabled;                  // Check if we allow run spell hit action or not.
-        bool   m_IsControlKilledUnitEnabled;                // Check if we allow run EVENT_T_KILL or not.
-        bool   m_IsControlMovementGroundEnabled;            // Creature get Normalize Map Coord from damage dealer and movement ground on position z damage dealer. Check can run this function or not.
-        bool   m_IsControlSpellHitTargetEnabled;            // Check if we allow run EVENT_T_SPELL_HIT_TARGET or not.
         uint32 m_InvinceabilityHpLevel;                     // Minimal health level allowed at damage apply
 
         uint32 m_throwAIEventMask;                          // Automatically throw AIEvents that are encoded into this mask
