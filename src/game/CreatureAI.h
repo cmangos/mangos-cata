@@ -74,19 +74,10 @@ enum AIEventType
     AI_EVENT_CUSTOM_EVENTAI_D   = 9,                        // Sender = Npc that throws custom event, Invoker = TARGET_T_ACTION_INVOKER (if exists)
     AI_EVENT_CUSTOM_EVENTAI_E   = 10,                       // Sender = Npc that throws custom event, Invoker = TARGET_T_ACTION_INVOKER (if exists)
     AI_EVENT_CUSTOM_EVENTAI_F   = 11,                       // Sender = Npc that throws custom event, Invoker = TARGET_T_ACTION_INVOKER (if exists)
-    AI_EVENT_LOST_SMALL         = 12,                       // Sender = Hurt Npc, Invoker = DamageDealer - Expected to be sent by 10% health
-    AI_EVENT_LOST_MEDIUM        = 13,                       // Sender = Hurt Npc, Invoker = DamageDealer - Expected to be sent by 50% health
-    AI_EVENT_LOST_HIGH          = 14,                       // Sender = Hurt Npc, Invoker = DamageDealer - Expected to be sent by 90% health
-    AI_EVENT_FULL_RENEW         = 15,                       // Sender = Healed Npc, Invoker = Healer
-    AI_EVENT_CUSTOM_DIED        = 16,                       // Sender = Killed Npc, Invoker = Killer
-    AI_EVENT_START_EVENTAI      = 17,                       // Sender = Npc that throws custom event, Invoker = EventStarter
-    AI_EVENT_START_EVENTAI_A    = 18,                       // Sender = Npc that throws custom event, Invoker = EventStarter
-    AI_EVENT_START_EVENTAI_B    = 19,                       // Sender = Npc that throws custom event, Invoker = EventStarter
-    AI_EVENT_START_EVENTAI_С    = 20,                       // Sender = Npc that throws custom event, Invoker = EventStarter
-    MAXIMAL_AI_EVENT_EVENTAI    = 21,
+    MAXIMAL_AI_EVENT_EVENTAI    = 12,
 
     // Internal Use
-    AI_EVENT_CALL_ASSISTANCE    = 22,                       // Sender = Attacked Npc, Invoker = Enemy
+    AI_EVENT_CALL_ASSISTANCE    = 13,                       // Sender = Attacked Npc, Invoker = Enemy
 
     // Predefined for SD2
     AI_EVENT_START_ESCORT       = 100,                      // Invoker = Escorting Player
