@@ -17,25 +17,79 @@
  */
 
 #include "ByteBuffer.h"
+#include "Log.h"
 
-void BitStream::Clear()
+void ByteBufferException::PrintPosError() const
 {
-    _data.clear();
-    _rpos = _wpos = 0;
+    char const* traceStr;
+
+#ifdef HAVE_ACE_STACK_TRACE_H
+    ACE_Stack_Trace trace;
+    traceStr = trace.c_str();
+#else
+    traceStr = NULL;
+#endif
+
+    sLog.outError(
+        "Attempted to %s in ByteBuffer (pos: " SIZEFMTD " size: " SIZEFMTD ") "
+        "value with size: " SIZEFMTD "%s%s",
+        (add ? "put" : "get"), pos, size, esize,
+        traceStr ? "\n" : "", traceStr ? traceStr : "");
 }
 
 uint8 BitStream::GetBit(uint32 bit)
 {
-    MANGOS_ASSERT(_data.size() > bit);
-    return _data[bit];
+    if (!sLog.HasLogLevelOrHigher(LOG_LVL_DEBUG))   // optimize disabled debug output
+        return;
+
+    std::ostringstream ss;
+    ss <<  "STORAGE_SIZE: " << size() << "\n";
+
+    if (sLog.IsIncludeTime())
+        ss << "         ";
+
+    for (size_t i = 0; i < size(); ++i)
+        ss << uint32(read<uint8>(i)) << " - ";
+
+    sLog.outDebug("%s", ss.str().c_str());
 }
 
-uint8 BitStream::ReadBit()
+void ByteBuffer::textlike() const
 {
-    MANGOS_ASSERT(_data.size() < _rpos);
-    uint8 b = _data[_rpos];
-    ++_rpos;
-    return b;
+    if (!sLog.HasLogLevelOrHigher(LOG_LVL_DEBUG))   // optimize disabled debug output
+        return;
+
+    std::ostringstream ss;
+    ss <<  "STORAGE_SIZE: " << size() << "\n";
+
+    if (sLog.IsIncludeTime())
+        ss << "         ";
+
+    for (size_t i = 0; i < size(); ++i)
+        ss << read<uint8>(i);
+
+    sLog.outDebug("%s", ss.str().c_str());
+}
+
+void ByteBuffer::hexlike() const
+{
+    if (!sLog.HasLogLevelOrHigher(LOG_LVL_DEBUG))   // optimize disabled debug output
+        return;
+
+    std::ostringstream ss;
+    ss <<  "STORAGE_SIZE: " << size() << "\n";
+
+    if (sLog.IsIncludeTime())
+        ss << "         ";
+
+    size_t j = 1, k = 1;
+
+    for (size_t i = 0; i < size(); ++i)
+    {
+        if ((i == (j * 8)) && ((i != (k * 16))))
+        {
+            ss << "| ";
+            ++j;
 }
 
 void BitStream::WriteBit(uint32 bit)
@@ -72,6 +126,6 @@ void BitStream::Print()
     for (uint32 i = 0; i < GetLength(); ++i)
         ss << uint32(GetBit(i)) << " ";
 
-    sLog.outDebug(ss.str().c_str());
+    sLog.outDebug("%s", ss.str().c_str());
 }
 
