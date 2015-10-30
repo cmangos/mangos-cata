@@ -30,6 +30,9 @@
 #include "InstanceData.h"
 #include "Chat.h"
 #include "Language.h"
+#include "WaypointManager.h"
+#include "WaypointMovementGenerator.h"
+#include "MotionMaster.h"
 
 bool CreatureEventAIHolder::UpdateRepeatTimer(Creature* creature, uint32 repeatMin, uint32 repeatMax)
 {
@@ -86,6 +89,17 @@ CreatureEventAI::CreatureEventAI(Creature* c) : CreatureAI(c),
     m_Phase(0),
     m_MeleeEnabled(true),
     m_HasOOCLoSEvent(false),
+    m_IsControlAttackEnabled(false),
+    m_IsControlAggroEnabled(false),
+    m_IsControlEvadeEnabled(false),
+    m_IsControlDeathEnabled(false),
+    m_IsControlSpawnEnabled(false),
+    m_IsControlReachedHomeEnabled(false),
+    m_IsControlOOCLoSEnabled(false),
+    m_IsControlSpellHitEnabled(false),
+    m_IsControlKilledUnitEnabled(false),
+    m_IsControlMovementGroundEnabled(false),
+    m_IsControlSpellHitTargetEnabled(false),
     m_InvinceabilityHpLevel(0),
     m_throwAIEventMask(0),
     m_throwAIEventStep(0)
@@ -225,9 +239,9 @@ bool CreatureEventAI::ProcessEvent(CreatureEventAIHolder& pHolder, Unit* pAction
             break;
         case EVENT_T_HP:
         {
-            if (!m_creature->isInCombat() || !m_creature->GetMaxHealth())
+            if (!m_creature->GetMaxHealth())
                 return false;
-
+                
             uint32 perc = (m_creature->GetHealth() * 100) / m_creature->GetMaxHealth();
 
             if (perc > event.percent_range.percentMax || perc < event.percent_range.percentMin)
@@ -240,9 +254,9 @@ bool CreatureEventAI::ProcessEvent(CreatureEventAIHolder& pHolder, Unit* pAction
         }
         case EVENT_T_MANA:
         {
-            if (!m_creature->isInCombat() || !m_creature->GetMaxPower(POWER_MANA))
+            if (!m_creature->GetMaxPower(POWER_MANA))
                 return false;
-
+            
             uint32 perc = (m_creature->GetPower(POWER_MANA) * 100) / m_creature->GetMaxPower(POWER_MANA);
 
             if (perc > event.percent_range.percentMax || perc < event.percent_range.percentMin)
@@ -310,9 +324,6 @@ bool CreatureEventAI::ProcessEvent(CreatureEventAIHolder& pHolder, Unit* pAction
             break;
         case EVENT_T_FRIENDLY_HP:
         {
-            if (!m_creature->isInCombat())
-                return false;
-
             Unit* pUnit = DoSelectLowestHpFriendly((float)event.friendly_hp.radius, event.friendly_hp.hpDeficit);
             if (!pUnit)
                 return false;
@@ -326,9 +337,6 @@ bool CreatureEventAI::ProcessEvent(CreatureEventAIHolder& pHolder, Unit* pAction
         }
         case EVENT_T_FRIENDLY_IS_CC:
         {
-            if (!m_creature->isInCombat())
-                return false;
-
             std::list<Creature*> pList;
             DoFindFriendlyCC(pList, (float)event.friendly_is_cc.radius);
 
@@ -394,9 +402,6 @@ bool CreatureEventAI::ProcessEvent(CreatureEventAIHolder& pHolder, Unit* pAction
             break;
         case EVENT_T_AURA:
         {
-            if (!m_creature->isInCombat())
-                return false;
-
             SpellAuraHolder* holder = m_creature->GetSpellAuraHolder(event.buffed.spellId);
             if (!holder || holder->GetStackAmount() < event.buffed.amount)
                 return false;
@@ -422,9 +427,6 @@ bool CreatureEventAI::ProcessEvent(CreatureEventAIHolder& pHolder, Unit* pAction
         }
         case EVENT_T_MISSING_AURA:
         {
-            if (!m_creature->isInCombat())
-                return false;
-
             SpellAuraHolder* holder = m_creature->GetSpellAuraHolder(event.buffed.spellId);
             if (holder && holder->GetStackAmount() >= event.buffed.amount)
                 return false;
@@ -452,9 +454,9 @@ bool CreatureEventAI::ProcessEvent(CreatureEventAIHolder& pHolder, Unit* pAction
             break;
         case EVENT_T_ENERGY:
         {
-            if (!m_creature->isInCombat() || !m_creature->GetMaxPower(POWER_ENERGY))
+            if (!m_creature->GetMaxPower(POWER_ENERGY))
                 return false;
-
+            
             uint32 perc = (m_creature->GetPower(POWER_ENERGY) * 100) / m_creature->GetMaxPower(POWER_ENERGY);
 
             if (perc > event.percent_range.percentMax || perc < event.percent_range.percentMin)
@@ -465,6 +467,12 @@ bool CreatureEventAI::ProcessEvent(CreatureEventAIHolder& pHolder, Unit* pAction
             pHolder.UpdateRepeatTimer(m_creature, event.percent_range.repeatMin, event.percent_range.repeatMax);
             break;
         }
+        case EVENT_T_SPELLHIT_TARGET:
+        // Spell hit target is special case, param1 and param2 handled within CreatureEventAI::SpellHitTarget
+
+            // Repeat Timers
+            pHolder.UpdateRepeatTimer(m_creature, event.spell_hit_target.repeatMin, event.spell_hit_target.repeatMax);
+            break;
         default:
             sLog.outErrorEventAI("Creature %u using Event %u has invalid Event Type(%u), missing from ProcessEvent() Switch.", m_creature->GetEntry(), pHolder.Event.event_id, pHolder.Event.event_type);
             break;
@@ -692,7 +700,7 @@ void CreatureEventAI::ProcessAction(CreatureEventAI_Action const& action, uint32
             Creature* pCreature = NULL;
 
             if (action.summon.duration)
-                pCreature = m_creature->SummonCreature(action.summon.creatureId, 0.0f, 0.0f, 0.0f, 0.0f, TEMPSUMMON_TIMED_OOC_OR_DEAD_DESPAWN, action.summon.duration);
+                pCreature = m_creature->SummonCreature(action.summon.creatureId, 0.0f, 0.0f, 0.0f, 0.0f, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, action.summon.duration);
             else
                 pCreature = m_creature->SummonCreature(action.summon.creatureId, 0.0f, 0.0f, 0.0f, 0.0f, TEMPSUMMON_TIMED_OOC_DESPAWN, 0);
 
@@ -862,7 +870,7 @@ void CreatureEventAI::ProcessAction(CreatureEventAI_Action const& action, uint32
 
             Creature* pCreature = NULL;
             if (i->second.SpawnTimeSecs)
-                pCreature = m_creature->SummonCreature(action.summon_id.creatureId, i->second.position_x, i->second.position_y, i->second.position_z, i->second.orientation, TEMPSUMMON_TIMED_OOC_OR_DEAD_DESPAWN, i->second.SpawnTimeSecs);
+                pCreature = m_creature->SummonCreature(action.summon_id.creatureId, i->second.position_x, i->second.position_y, i->second.position_z, i->second.orientation, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, i->second.SpawnTimeSecs);
             else
                 pCreature = m_creature->SummonCreature(action.summon_id.creatureId, i->second.position_x, i->second.position_y, i->second.position_z, i->second.orientation, TEMPSUMMON_TIMED_OOC_DESPAWN, 0);
 
@@ -1019,11 +1027,223 @@ void CreatureEventAI::ProcessAction(CreatureEventAI_Action const& action, uint32
             }
             break;
         }
+        case ACTION_T_DELETE_THREAT:
+        {
+            m_creature->DeleteThreatList();
+            break;
+        }
+        case ACTION_T_MOVE_HOME:
+        {
+            m_creature->GetMotionMaster()->MoveTargetedHome();
+            break;
+        }
+        case ACTION_T_LOAD_ADDON:
+        {
+            m_creature->LoadCreatureAddon(true);
+            break;
+        }
+        case ACTION_T_CONTROL_AGGRO:
+        {
+            m_IsControlAggroEnabled = action.setControlAggro.state != 0;
+            break;
+        }
+        case ACTION_T_CLEAR_MOVEMENT:
+        {
+            m_creature->GetMotionMaster()->Clear();
+            break;
+        }
+        case ACTION_T_COMBAT_STOP:
+        {
+            m_creature->CombatStop(true);
+            break;
+        }
+        case ACTION_T_REMOVE_EVADE_AURA:
+        {
+            m_creature->RemoveAllAurasOnEvade();
+            break;
+        }
+        case ACTION_T_CLEAR_HEALTH:
+        {
+            m_creature->SetHealth(0);
+            break;
+        }
+        case ACTION_T_CLEAR_REACTION:
+        {
+            m_creature->ClearAllReactives();
+            break;
+        }
+        case ACTION_T_STOP_MOVING:
+        {
+            m_creature->StopMoving();
+            break;
+        }
+        case ACTION_T_INTERRUPT_CAST:
+        {
+            m_creature->InterruptNonMeleeSpells(true);
+            break;
+        }
+        case ACTION_T_REMOVE_DEATH_AURA:
+        {
+            m_creature->RemoveAllAurasOnDeath();
+            break;
+        }
+        case ACTION_T_ENABLE_FLY:
+        {
+            m_creature->SetByteValue(UNIT_FIELD_BYTES_1, 3, UNIT_BYTE1_FLAG_FLY_ANIM);
+            m_creature->SetLevitate(true);
+            break;
+        }
+        case ACTION_T_DISABLE_FLY:
+        {
+            m_creature->RemoveByteFlag(UNIT_FIELD_BYTES_1, 3, UNIT_BYTE1_FLAG_FLY_ANIM);
+            m_creature->SetLevitate(false);
+            break;
+        }
+        case ACTION_T_SET_RUN:
+        {
+            m_creature->SetWalk(true);
+            break;
+        }
+        case ACTION_T_DISABLE_RUN:
+        {
+            m_creature->SetWalk(false);
+            break;
+        }
+        case ACTION_T_PAUSE_MOVEMENT:
+        {
+            m_creature->addUnitState(UNIT_STAT_WAYPOINT_PAUSED);
+            break;
+        }
+        case ACTION_T_UNPAUSE_MOVEMENT:
+        {
+            m_creature->clearUnitState(UNIT_STAT_WAYPOINT_PAUSED);
+            break;
+        }
+        case ACTION_T_INTERRUPT_CAST_FALSE:
+        {
+            m_creature->InterruptNonMeleeSpells(false);
+            break;
+        }
+        case ACTION_T_SET_HEALTH_ONE:
+        {
+            m_creature->SetHealth(1);
+            break;
+        }
+        case ACTION_T_SET_STATE_ALIVE:
+        {
+            m_creature->SetDeathState(ALIVE);
+            break;
+        }
+        case ACTION_T_SET_STATE_DEATH:
+        {
+            m_creature->SetDeathState(DEAD);
+            break;
+        }
+        case ACTION_T_SET_STEALTH:
+        {
+            m_creature->SetVisibility(VISIBILITY_ON);
+            break;
+        }
+        case ACTION_T_REMOVE_STEALTH:
+        {
+            m_creature->SetVisibility(VISIBILITY_OFF);
+            break;
+        }
+        case ACTION_T_ATTACK_STOP:
+        {
+            m_creature->AttackStop(true);
+            break;
+        }
+        case ACTION_T_SET_CONTROL_ATTACK:
+        {
+            m_IsControlAttackEnabled = action.setControlAttack.state != 0;
+            break;
+        }
+        case ACTION_T_SET_CONTROL_EVADE:
+        {
+            m_IsControlEvadeEnabled = action.setControlEvade.state != 0;
+            break;
+        }
+        case ACTION_T_SET_CONTROL_DEATH:
+        {
+            m_IsControlDeathEnabled = action.setControlDeath.state != 0;
+            break;
+        }
+        case ACTION_T_SET_CONTROL_SPAWN:
+        {
+            m_IsControlSpawnEnabled = action.setControlSpawn.state != 0;
+            break;
+        }
+        case ACTION_T_SET_CONTROL_REACHED:
+        {
+            m_IsControlReachedHomeEnabled = action.setControlReachedHome.state != 0;
+            break;
+        }
+        case ACTION_T_SET_CONTROL_LOS:
+        {
+            m_IsControlOOCLoSEnabled = action.setControlOOCLoS.state != 0;
+            break;
+        }
+        case ACTION_T_SET_CONTROL_SPELL_HIT:
+        {
+            m_IsControlSpellHitEnabled = action.setControlSpellHit.state != 0;
+            break;
+        }
+        case ACTION_T_SET_CONTROL_KILLED:
+        {
+            m_IsControlKilledUnitEnabled = action.setControlKilledUnit.state != 0;
+            break;
+        }
+        case ACTION_T_REMOVE_ALL_AURAS:
+        {
+            m_creature->RemoveAllAuras();
+            break;
+        }
+        case ACTION_T_MOVEMENT_Z:
+        {
+            m_creature->GetMotionMaster()->MovePoint(1, m_creature->GetPositionX(), m_creature->GetPositionY(), m_creature->GetPositionZ() + float(action.riseMovement.riseDistance));
+            break;
+        }
+        case ACTION_T_CONTROL_MOVEMENT_GROUND:
+        {
+            m_IsControlMovementGroundEnabled = action.setControlMovementGround.state != 0;
+            break;
+        }
+        case ACTION_T_SET_CURRENT_WAYPOINT:
+        {
+            m_creature->GetMotionMaster()->Clear();
+            SetCurrentWaypoint(action.setCurrentWaypoint.uiPointId);
+            break;
+        }
+        case ACTION_T_SCRIPT_RESET:
+        {
+            Reset();
+            break;
+        }
+        case ACTION_T_ATTACK_START:
+            if (Unit* target = GetTargetByType(action.remove_aura.target, pActionInvoker, pAIEventSender, reportTargetError))
+                AttackStart(target);
+            else if (reportTargetError)
+                sLog.outErrorEventAI("Event %u - NULL target for ACTION_T_ATTACK_START(%u), target-type %u", EventId, action.type, action.attack_start_target);
+            break;
+        case ACTION_T_CONTROL_SPELL_TARGET:
+        {
+            m_IsControlSpellHitTargetEnabled = action.setControlSpellHitTarget.state != 0;
+            break;
+        }
+        case ACTION_T_MOVEMENT_Z_DECREASE:
+        {
+            m_creature->GetMotionMaster()->MovePoint(1, m_creature->GetPositionX(), m_creature->GetPositionY(), m_creature->GetPositionZ() - float(action.decreaseMovement.decreaseDistance));
+            break;
+        }
     }
 }
 
 void CreatureEventAI::JustRespawned()                       // NOTE that this is called from the AI's constructor as well
 {
+    if (m_IsControlSpawnEnabled)
+        return;
+    
     Reset();
 
     for (CreatureEventAIList::iterator i = m_CreatureEventAIList.begin(); i != m_CreatureEventAIList.end(); ++i)
@@ -1070,6 +1290,9 @@ void CreatureEventAI::Reset()
 
 void CreatureEventAI::JustReachedHome()
 {
+    if (m_IsControlReachedHomeEnabled)
+        return;
+    
     for (CreatureEventAIList::iterator i = m_CreatureEventAIList.begin(); i != m_CreatureEventAIList.end(); ++i)
     {
         if (i->Event.event_type == EVENT_T_REACHED_HOME)
@@ -1081,6 +1304,9 @@ void CreatureEventAI::JustReachedHome()
 
 void CreatureEventAI::EnterEvadeMode()
 {
+    if (m_IsControlEvadeEnabled)
+        return;
+    
     m_creature->RemoveAllAurasOnEvade();
     m_creature->DeleteThreatList();
     m_creature->CombatStop(true);
@@ -1101,6 +1327,9 @@ void CreatureEventAI::EnterEvadeMode()
 
 void CreatureEventAI::JustDied(Unit* killer)
 {
+    if (m_IsControlDeathEnabled)
+        return;
+    
     Reset();
 
     if (m_creature->IsGuard())
@@ -1112,6 +1341,8 @@ void CreatureEventAI::JustDied(Unit* killer)
 
     if (m_throwAIEventMask & (1 << AI_EVENT_JUST_DIED))
         SendAIEventAround(AI_EVENT_JUST_DIED, killer, 0, AIEVENT_DEFAULT_THROW_RADIUS);
+    else if (m_throwAIEventMask & (1 << AI_EVENT_CUSTOM_DIED))
+        SendAIEventAround(AI_EVENT_CUSTOM_DIED, killer, 0, AIEVENT_DEFAULT_THROW_RADIUS);
 
     // Handle On Death events
     for (CreatureEventAIList::iterator i = m_CreatureEventAIList.begin(); i != m_CreatureEventAIList.end(); ++i)
@@ -1126,7 +1357,7 @@ void CreatureEventAI::JustDied(Unit* killer)
 
 void CreatureEventAI::KilledUnit(Unit* victim)
 {
-    if (victim->GetTypeId() != TYPEID_PLAYER)
+    if (m_IsControlKilledUnitEnabled)
         return;
 
     for (CreatureEventAIList::iterator i = m_CreatureEventAIList.begin(); i != m_CreatureEventAIList.end(); ++i)
@@ -1177,6 +1408,9 @@ void CreatureEventAI::ReceiveAIEvent(AIEventType eventType, Creature* pSender, U
 
 void CreatureEventAI::EnterCombat(Unit* enemy)
 {
+    if (m_IsControlAggroEnabled)
+        return;
+    
     // Check for on combat start events
     for (CreatureEventAIList::iterator i = m_CreatureEventAIList.begin(); i != m_CreatureEventAIList.end(); ++i)
     {
@@ -1208,7 +1442,10 @@ void CreatureEventAI::AttackStart(Unit* who)
 {
     if (!who || !m_creature->CanAttackByItself())
         return;
-
+    
+    if (m_IsControlAttackEnabled)
+        return;
+    
     if (m_creature->Attack(who, m_MeleeEnabled))
     {
         m_creature->AddThreat(who);
@@ -1222,6 +1459,9 @@ void CreatureEventAI::AttackStart(Unit* who)
 void CreatureEventAI::MoveInLineOfSight(Unit* who)
 {
     if (!who)
+        return;
+    
+    if (m_IsControlOOCLoSEnabled)
         return;
 
     // Check for OOC LOS Event
@@ -1274,12 +1514,28 @@ void CreatureEventAI::MoveInLineOfSight(Unit* who)
 
 void CreatureEventAI::SpellHit(Unit* pUnit, const SpellEntry* pSpell)
 {
+    if (m_IsControlSpellHitEnabled)
+        return;
+    
     for (CreatureEventAIList::iterator i = m_CreatureEventAIList.begin(); i != m_CreatureEventAIList.end(); ++i)
         if (i->Event.event_type == EVENT_T_SPELLHIT)
             // If spell id matches (or no spell id) & if spell school matches (or no spell school)
             if (!i->Event.spell_hit.spellId || pSpell->Id == i->Event.spell_hit.spellId)
                 if (pSpell->SchoolMask & i->Event.spell_hit.schoolMask)
                     ProcessEvent(*i, pUnit);
+}
+
+void CreatureEventAI::SpellHitTarget(Unit* pTarget, const SpellEntry* pSpell)
+{
+    if (m_IsControlSpellHitTargetEnabled)
+        return;
+    
+    for (CreatureEventAIList::iterator i = m_CreatureEventAIList.begin(); i != m_CreatureEventAIList.end(); ++i)
+        if (i->Event.event_type == EVENT_T_SPELLHIT_TARGET)
+            // If spell id matches (or no spell id) & if spell school matches (or no spell school)
+            if (!i->Event.spell_hit_target.spellId || pSpell->Id == i->Event.spell_hit_target.spellId)
+                if (pSpell->SchoolMask & i->Event.spell_hit_target.schoolMask)
+                    ProcessEvent(*i, pTarget);
 }
 
 void CreatureEventAI::UpdateAI(const uint32 diff)
@@ -1471,6 +1727,7 @@ void CreatureEventAI::ReceiveEmote(Player* pPlayer, uint32 text_emote)
 }
 
 #define HEALTH_STEPS            3
+#define HEALTH_STEPS_LOSS       3
 
 void CreatureEventAI::DamageTaken(Unit* dealer, uint32& damage)
 {
@@ -1508,6 +1765,42 @@ void CreatureEventAI::DamageTaken(Unit* dealer, uint32& damage)
 
         m_throwAIEventStep = step + 1;
     }
+    else if (step < HEALTH_STEPS_LOSS)
+    {
+        // Throw at 90%, 50% and 10% health
+        float healthSteps[HEALTH_STEPS_LOSS] = { 90.0f, 50.0f, 10.0f };
+        float newHealthPercent = (m_creature->GetHealth() - damage) * 100.0f / m_creature->GetMaxHealth();
+        AIEventType sendEvent[HEALTH_STEPS_LOSS] = { AI_EVENT_LOST_HIGH, AI_EVENT_LOST_MEDIUM, AI_EVENT_LOST_SMALL };
+
+        if (newHealthPercent > healthSteps[step])
+            return;                                         // Not reached the next mark
+
+        // search for highest reached mark (with actual event attached)
+        for (uint32 i = HEALTH_STEPS_LOSS - 1; i > step; --i)
+        {
+            if (newHealthPercent < healthSteps[i] && (m_throwAIEventMask & (1 << sendEvent[i])))
+            {
+                step = i;
+                break;
+            }
+        }
+
+        if (m_throwAIEventMask & (1 << sendEvent[step]))
+            SendAIEventAround(sendEvent[step], dealer, 0, AIEVENT_DEFAULT_THROW_RADIUS);
+
+        m_throwAIEventStep = step + 1;
+    }
+    
+    if (m_IsControlMovementGroundEnabled)
+    {    
+        m_creature->SetWalk(false);
+        float fZ = dealer->GetPositionZ();
+        MaNGOS::NormalizeMapCoord(fZ);
+
+        // Note: This should be fall movement
+        m_creature->GetMotionMaster()->Clear();
+        m_creature->GetMotionMaster()->MovePoint(1, m_creature->GetPositionX(), m_creature->GetPositionY(), fZ);
+    }
 }
 
 void CreatureEventAI::HealedBy(Unit* healer, uint32& healedAmount)
@@ -1519,7 +1812,18 @@ void CreatureEventAI::HealedBy(Unit* healer, uint32& healedAmount)
     {
         if (m_throwAIEventMask & (1 << AI_EVENT_GOT_FULL_HEALTH))
             SendAIEventAround(AI_EVENT_GOT_FULL_HEALTH, healer, 0, AIEVENT_DEFAULT_THROW_RADIUS);
+        else if (m_throwAIEventMask & (1 << AI_EVENT_FULL_RENEW))
+            SendAIEventAround(AI_EVENT_FULL_RENEW, healer, 0, AIEVENT_DEFAULT_THROW_RADIUS);
         m_throwAIEventStep = 100;
+    }
+}
+
+void CreatureEventAI::SetCurrentWaypoint(uint32 uiPointId)
+{
+    if (!m_creature->GetMotionMaster()->SetNextWaypoint(uiPointId))
+    {
+        sLog.outErrorEventAI("EventAI for %s current waypoint tried to set to id %u, but doesn't exist in this path", m_creature->GetGuidStr().c_str(), uiPointId);
+        return;
     }
 }
 
