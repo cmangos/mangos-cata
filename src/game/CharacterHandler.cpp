@@ -556,7 +556,7 @@ void WorldSession::HandleCharDeleteOpcode(WorldPacket& recv_data)
 
 void WorldSession::HandlePlayerLoginOpcode(WorldPacket & recv_data )
 {
-    if(PlayerLoading() || GetPlayer() != NULL)
+    if(PlayerLoading() || GetPlayer() != nullptr)
     {
         sLog.outError("Player tryes to login again, AccountId = %d", GetAccountId());
         return;
@@ -1366,7 +1366,7 @@ void WorldSession::HandleEquipmentSetUseOpcode(WorldPacket& recv_data)
                 _player->StoreItem(sDest, uItem, true);
             }
             else
-                _player->SendEquipError(msg, uItem, NULL);
+                _player->SendEquipError(msg, uItem, nullptr);
 
             continue;
         }
