@@ -122,6 +122,11 @@ enum ScriptCommand                                          // resSource, resTar
                                                             // data_flags & SCRIPT_FLAG_COMMAND_ADDITIONAL set/unset byte flag UNIT_BYTE1_FLAG_FLY_ANIM
     SCRIPT_COMMAND_DESPAWN_GO               = 40,           // resTarget = GameObject
     SCRIPT_COMMAND_RESPAWN                  = 41,           // resSource = Creature. Requires SCRIPT_FLAG_BUDDY_IS_DESPAWNED to find dead or despawned targets
+    SCRIPT_COMMAND_RESET_DOOR               = 42,           // resSource = Gameobject
+    SCRIPT_COMMAND_GO_STATE_ACTIVE          = 43,           // resSource = Gameobject
+    SCRIPT_COMMAND_GO_STATE_READY           = 44,           // resSource = Gameobject
+    SCRIPT_COMMAND_GO_STATE_ALTERNATIVE     = 45,           // resSource = Gameobject
+    SCRIPT_COMMAND_FOLLOW                   = 46,           // resSource = Creature, resTarget = Unit
 };
 
 #define MAX_TEXT_ID 4                                       // used for SCRIPT_COMMAND_TALK, SCRIPT_COMMAND_EMOTE, SCRIPT_COMMAND_CAST_SPELL, SCRIPT_COMMAND_TERMINATE_SCRIPT
@@ -375,10 +380,15 @@ struct ScriptInfo
             uint32 fly;                                     // datalong
             uint32 empty;                                   // datalong2
         } fly;
-
+        
         // datalong unsed                                   // SCRIPT_COMMAND_DESPAWN_GO (40)
         // datalong unsed                                   // SCRIPT_COMMAND_RESPAWN (41)
-
+        // datalong unused                                  // SCRIPT_COMMAND_RESET_DOOR (42)
+        // datalong unused                                  // SCRIPT_COMMAND_GO_STATE_ACTIVE (43)
+        // datalong unused                                  // SCRIPT_COMMAND_GO_STATE_READY (44)
+        // datalong unused                                  // SCRIPT_COMMAND_GO_STATE_ACTIVE_ALTERNATIVE (45)
+        // datalong unused                                  // SCRIPT_COMMAND_FOLLOW (46)
+        
         struct
         {
             uint32 data[2];

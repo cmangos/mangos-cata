@@ -120,6 +120,33 @@ enum EventAI_ActionType
     ACTION_T_SET_THROW_MASK             = 46,               // EventTypeMask, unused, unused
     ACTION_T_SET_STAND_STATE            = 47,               // StandState, unused, unused
     ACTION_T_CHANGE_MOVEMENT            = 48,               // MovementType, WanderDistance, unused
+    ACTION_T_DELETE_THREAT              = 49,               // No Params
+    ACTION_T_MOVE_HOME                  = 50,               // No Params
+    ACTION_T_LOAD_ADDON                 = 51,               // No Params
+    ACTION_T_UNLOAD_ADDON               = 52,               // No Params
+    ACTION_T_CLEAR_MOVEMENT             = 53,               // No Params
+    ACTION_T_COMBAT_STOP                = 54,               // No Params
+    ACTION_T_REMOVE_EVADE_AURA          = 55,               // No Params
+    ACTION_T_CLEAR_HEALTH               = 56,               // No Params
+    ACTION_T_CLEAR_REACTION             = 57,               // No Params
+    ACTION_T_STOP_MOVING                = 58,               // No Params
+    ACTION_T_INTERRUPT_CAST             = 59,               // No Params
+    ACTION_T_REMOVE_DEATH_AURA          = 60,               // No Params
+    ACTION_T_ENABLE_FLY                 = 61,               // No Params
+    ACTION_T_DISABLE_FLY                = 62,               // No Params
+    ACTION_T_SET_RUN                    = 63,               // No Params
+    ACTION_T_DISABLE_RUN                = 64,               // No Params
+    ACTION_T_PAUSE_MOVEMENT             = 65,               // No Params
+    ACTION_T_UNPAUSE_MOVEMENT           = 66,               // No Params
+    ACTION_T_DISABLE_COMBAT_STOP        = 67,               // No Params
+    ACTION_T_SET_HEALTH_ONE             = 68,               // No Params
+    ACTION_T_SET_STATE_ALIVE            = 69,               // No Params
+    ACTION_T_SET_STATE_DEATH            = 70,               // No Params
+    ACTION_T_SET_STEALTH                = 71,               // No Params
+    ACTION_T_REMOVE_STEALTH             = 72,               // No Params
+    ACTION_T_ATTACK_STOP                = 73,               // No Params
+    ACTION_T_SET_CONTROL_ATTACK         = 74,               // Allow Attack Start (0 = true, anything else passive react on aggro.)
+    ACTION_T_SET_CONTROL_EVADE          = 75,               // Allow control Enter Evade (0 = true, anything else don't allow run EnterEvade and allow override function)
 
     ACTION_T_END,
 };
@@ -414,6 +441,20 @@ struct CreatureEventAI_Action
             uint32 wanderDistance;
             uint32 unused1;
         } changeMovement;
+        // ACTION_T_SET_CONTROL_ATTACK                      = 74
+        struct
+        {
+            uint32 state;                                   // Allow Attack Start (0 = true, anything else passive react on aggro.)
+            uint32 unused1;
+            uint32 unused2;
+        } setControlAttack;
+        // ACTION_T_SET_CONTROL_EVADE                       = 75
+        struct
+        {
+            uint32 state;                                   // Allow control Enter Evade (0 = true, anything else don't allow run EnterEvade and allow override function)
+            uint32 unused1;
+            uint32 unused2;
+        } setControlEvade;
         // RAW
         struct
         {
@@ -670,6 +711,8 @@ class MANGOS_DLL_SPEC CreatureEventAI : public CreatureAI
         uint8  m_Phase;                                     // Current phase, max 32 phases
         bool   m_MeleeEnabled;                              // If we allow melee auto attack
         bool   m_HasOOCLoSEvent;                            // Cache if a OOC-LoS Event exists
+        bool   m_IsControlAttackEnabled;                    // Check if we allow attack start or not.
+        bool   m_IsControlEvadeEnabled;                     // Check if we allow creature evade mode or not.
         uint32 m_InvinceabilityHpLevel;                     // Minimal health level allowed at damage apply
 
         uint32 m_throwAIEventMask;                          // Automatically throw AIEvents that are encoded into this mask
