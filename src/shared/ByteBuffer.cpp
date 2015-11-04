@@ -72,6 +72,6 @@ void BitStream::Print()
     for (uint32 i = 0; i < GetLength(); ++i)
         ss << uint32(GetBit(i)) << " ";
 
-    sLog.outDebug(ss.str().c_str());
+    sLog.outDebug("%s", ss.str().c_str());
 }
 
