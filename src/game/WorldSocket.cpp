@@ -161,7 +161,7 @@ const std::string& WorldSocket::GetRemoteAddress(void) const
 
 int WorldSocket::SendPacket(const WorldPacket& pct)
 {
-    GUARD_RETURN(m_OutBufferLock, -1);
+    std::lock_guard<std::mutex> guard(m_OutBufferLock);
 
     if (closing_)
         return -1;
@@ -333,7 +333,7 @@ int WorldSocket::handle_input(ACE_HANDLE)
 
 int WorldSocket::handle_output(ACE_HANDLE)
 {
-    GUARD_RETURN(m_OutBufferLock, -1);
+    std::lock_guard<std::mutex> guard(m_OutBufferLock);
 
     if (closing_)
         return -1;
@@ -442,7 +442,7 @@ int WorldSocket::handle_close(ACE_HANDLE h, ACE_Reactor_Mask)
 {
     // Critical section
     {
-        GUARD_RETURN(m_OutBufferLock, -1);
+        std::lock_guard<std::mutex> guard(m_OutBufferLock);
 
         closing_ = true;
 
