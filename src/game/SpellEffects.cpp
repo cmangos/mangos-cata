@@ -59,6 +59,7 @@
 #include "CellImpl.h"
 #include "Vehicle.h"
 #include "G3D/Vector3.h"
+#include "LootMgr.h"
 
 pEffect SpellEffects[TOTAL_SPELL_EFFECTS] =
 {
@@ -4990,7 +4991,8 @@ void Spell::EffectCreateItem2(SpellEffectEntry const* effect)
         }
 
         // create some random items
-        player->AutoStoreLoot(nullptr, m_spellInfo->Id, LootTemplates_Spell);
+        Loot loot(player, m_spellInfo->Id, LOOT_SPELL);
+        loot.AutoStore(player);
     }
 }
 
@@ -5001,7 +5003,8 @@ void Spell::EffectCreateRandomItem(SpellEffectEntry const* /*effect*/)
     Player* player = (Player*)m_caster;
 
     // create some random items
-    player->AutoStoreLoot(nullptr, m_spellInfo->Id, LootTemplates_Spell);
+    Loot loot(player, m_spellInfo->Id, LOOT_SPELL);
+    loot.AutoStore(player);
 }
 
 void Spell::EffectPersistentAA(SpellEffectEntry const* effect)

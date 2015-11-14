@@ -52,6 +52,8 @@
 #include "CellImpl.h"
 
 #include <limits>
+#include "ItemEnchantmentMgr.h"
+#include "LootMgr.h"
 
 INSTANTIATE_SINGLETON_1(ObjectMgr);
 
