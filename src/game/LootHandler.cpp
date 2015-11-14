@@ -213,8 +213,6 @@ void WorldSession::HandleLootOpcode(WorldPacket& recv_data)
     if (!_player->isAlive())
         return;
 
-    //GetPlayer()->SendLoot(guid, LOOT_CORPSE);
-    //GetPlayer()->SendLoot(guid);
     if (Loot* loot = sLootMgr.GetLoot(_player, lguid))
         loot->ShowContentTo(_player);
 }
@@ -226,10 +224,6 @@ void WorldSession::HandleLootReleaseOpcode(WorldPacket& recv_data)
     ObjectGuid lguid;
     recv_data >> lguid;
 
-    //if (ObjectGuid lootGuid = GetPlayer()->GetLootGuid())
-    //    DoLootRelease(lootGuid);
-
-    //sLootMgr.Release(_player, lguid);
     if (Loot* loot = sLootMgr.GetLoot(_player, lguid))
         loot->Release(_player);
 
@@ -237,7 +231,6 @@ void WorldSession::HandleLootReleaseOpcode(WorldPacket& recv_data)
 
 void WorldSession::DoLootRelease(ObjectGuid lguid)
 {
-/*
     Player*  player = GetPlayer();
     Loot*    loot;
 
@@ -429,7 +422,7 @@ void WorldSession::DoLootRelease(ObjectGuid lguid)
     }
 
     // Player is not looking at loot list, he doesn't need to see updates on the loot list
-    loot->RemoveLooter(player->GetObjectGuid());*/
+    loot->RemoveLooter(player->GetObjectGuid());
 }
 
 void WorldSession::HandleLootMasterGiveOpcode(WorldPacket& recv_data)
@@ -525,20 +518,5 @@ void WorldSession::HandleLootRoll(WorldPacket& recv_data)
         return;
 
     sLootMgr.PlayerVote(GetPlayer(), lootedTarget, itemSlot, RollVote(rollType));
-
-    // everything is fine, do it, if false then some cheating problem found
-    /*if (!group->CountRollVote(GetPlayer(), lootedTarget, itemSlot, RollVote(rollType)))
-        return;*/
-
-    /*switch (rollType)
-    {
-        case ROLL_NEED:
-            GetPlayer()->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_ROLL_NEED, 1);
-            break;
-        case ROLL_GREED:
-        case ROLL_DISENCHANT:
-            GetPlayer()->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_ROLL_GREED, 1);
-            break;
-    }*/
 }
 

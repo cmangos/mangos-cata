@@ -388,8 +388,6 @@ class MANGOS_DLL_SPEC WorldSession
 
         void BuildPartyMemberStatsChangedPacket(Player* player, WorldPacket* data);
 
-        void DoLootRelease(ObjectGuid lguid);
-
         // Account mute time
         time_t m_muteTime;
 
