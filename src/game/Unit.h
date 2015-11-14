@@ -271,13 +271,6 @@ enum HitInfo
     HITINFO_UNK22               = 0x00800000
 };
 
-// i would like to remove this: (it is defined in item.h
-enum InventorySlot
-{
-    NULL_BAG                   = 0,
-    NULL_SLOT                  = 255
-};
-
 struct FactionTemplateEntry;
 struct Modifier;
 struct SpellEntry;

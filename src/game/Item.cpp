@@ -360,8 +360,7 @@ float ItemPrototype::getDPS() const
     return damage;
 }
 
-Item::Item() :
-    loot(nullptr)
+Item::Item()
 {
     m_objectType |= TYPEMASK_ITEM;
     m_objectTypeId = TYPEID_ITEM;
@@ -498,7 +497,7 @@ void Item::SaveToDB()
         stmt.PExecute(GetGUIDLow());
     }
 
-    if (m_lootState == ITEM_LOOT_NEW || m_lootState == ITEM_LOOT_CHANGED)
+    if (loot && (m_lootState == ITEM_LOOT_NEW || m_lootState == ITEM_LOOT_CHANGED))
     {
         if (Player* owner = GetOwner())
         {
@@ -506,20 +505,20 @@ void Item::SaveToDB()
             static SqlStatementID saveLoot ;
 
             // save money as 0 itemid data
-            if (loot.gold)
+            if (loot->gold)
             {
                 SqlStatement stmt = CharacterDatabase.CreateStatement(saveGold, "INSERT INTO item_loot (guid,owner_guid,itemid,amount,suffix,property) VALUES (?, ?, 0, ?, 0, 0)");
-                stmt.PExecute(GetGUIDLow(), owner->GetGUIDLow(), loot.gold);
+                stmt.PExecute(GetGUIDLow(), owner->GetGUIDLow(), loot->gold);
             }
 
             SqlStatement stmt = CharacterDatabase.CreateStatement(saveLoot, "INSERT INTO item_loot (guid,owner_guid,itemid,amount,suffix,property) VALUES (?, ?, ?, ?, ?, ?)");
 
             // save items and quest items (at load its all will added as normal, but this not important for item loot case)
-            for (size_t i = 0; i < loot.GetMaxSlotInLootFor(owner); ++i)
+            for (size_t i = 0; i < loot->GetMaxSlotInLootFor(owner); ++i)
             {
                 QuestItem* qitem = nullptr;
 
-                LootItem* item = loot.LootItemInSlot(i, owner, &qitem);
+                LootItem* item = loot->LootItemInSlot(i, owner, &qitem);
                 if (!item)
                     continue;
 
@@ -658,7 +657,7 @@ void Item::LoadLootFromDB(Field* fields)
     // money value special case
     if (item_id == 0)
     {
-        loot.gold = item_amount;
+        loot->gold = item_amount;
         SetLootState(ITEM_LOOT_UNCHANGED);
         return;
     }
@@ -674,7 +673,7 @@ void Item::LoadLootFromDB(Field* fields)
             return;
         }
 
-        loot.items.push_back(LootItem(item_id, type, item_amount, item_suffix, item_propid));
+        loot->items.push_back(LootItem(item_id, type, item_amount, item_suffix, item_propid));
     }
     // currency case
     else //if (type == LOOT_ITEM_TYPE_CURRENCY)
@@ -687,10 +686,11 @@ void Item::LoadLootFromDB(Field* fields)
             return;
         }
 
-        loot.items.push_back(LootItem(item_id, type, item_amount));
+        loot->items.push_back(LootItem(item_id, type, item_amount));
     }
 
-    ++loot.unlootedCount;
+    loot->items.push_back(LootItem(item_id, item_amount, item_suffix, item_propid));
+    ++loot->unlootedCount;
 
     SetLootState(ITEM_LOOT_UNCHANGED);
 }
