@@ -515,24 +515,17 @@ void Item::SaveToDB()
             SqlStatement stmt = CharacterDatabase.CreateStatement(saveLoot, "INSERT INTO item_loot (guid,owner_guid,itemid,amount,suffix,property) VALUES (?, ?, ?, ?, ?, ?)");
 
             // save items and quest items (at load its all will added as normal, but this not important for item loot case)
-            for (size_t i = 0; i < loot->GetMaxSlotInLootFor(owner); ++i)
+            LootItemPtrList lootList;
+            loot->GetLootItemsListFor(owner, lootList);
+            for (LootItemPtrList::const_iterator lootItr = lootList.begin(); lootItr != lootList.end(); ++lootItr)
             {
-                QuestItem* qitem = nullptr;
-
-                LootItem* item = loot->LootItemInSlot(i, owner, &qitem);
-                if (!item)
-                    continue;
-
-                // questitems use the blocked field for other purposes
-                if (!qitem && item->is_blocked)
-                    continue;
-
+                LootItem* lootItem = *lootItr;
                 stmt.addUInt32(GetGUIDLow());
                 stmt.addUInt32(owner->GetGUIDLow());
-                stmt.addInt32(item->currency ? -int32(item->itemid) : item->itemid);
-                stmt.addUInt8(item->count);
-                stmt.addUInt32(item->randomSuffix);
-                stmt.addInt32(item->randomPropertyId);
+                stmt.addInt32(lootItem->lootItemType == LOOTITEM_TYPE_CURRENCY ? -int32(lootItem->itemid) : lootItem->itemid);
+                stmt.addUInt8(lootItem->count);
+                stmt.addUInt32(lootItem->randomSuffix);
+                stmt.addInt32(lootItem->randomPropertyId);
 
                 stmt.Execute();
             }
@@ -650,7 +643,7 @@ bool Item::LoadFromDB(uint32 guidLow, Field* fields, ObjectGuid ownerGuid)
 void Item::LoadLootFromDB(Field* fields)
 {
     uint32 item_id     = abs(fields[1].GetInt32());
-    uint8  type        = fields[1].GetInt32() >= 0 ? LOOT_ITEM_TYPE_ITEM : LOOT_ITEM_TYPE_CURRENCY;
+    uint8  type        = fields[1].GetInt32() < 0 ? LOOTITEM_TYPE_CURRENCY : fields[1].GetInt32();
     uint32 item_amount = fields[2].GetUInt32();
     uint32 item_suffix = fields[3].GetUInt32();
     int32  item_propid = fields[4].GetInt32();
@@ -663,21 +656,8 @@ void Item::LoadLootFromDB(Field* fields)
         return;
     }
 
-    // normal item case
-    if (type == LOOT_ITEM_TYPE_ITEM)
-    {
-        ItemPrototype const* proto = ObjectMgr::GetItemPrototype(item_id);
-        if (!proto)
-        {
-            CharacterDatabase.PExecute("DELETE FROM item_loot WHERE guid = '%u' AND itemid = '%u'", GetGUIDLow(), item_id);
-            sLog.outError("Item::LoadLootFromDB: %s has an unknown item (id: #%u) in item_loot, deleted.", GetOwnerGuid().GetString().c_str(), item_id);
-            return;
-        }
-
-        loot->items.push_back(LootItem(item_id, type, item_amount, item_suffix, item_propid));
-    }
     // currency case
-    else //if (type == LOOT_ITEM_TYPE_CURRENCY)
+    if (type == LOOTITEM_TYPE_CURRENCY)
     {
         CurrencyTypesEntry const* currencyEntry = sCurrencyTypesStore.LookupEntry(item_id);
         if (!currencyEntry)
@@ -686,12 +666,21 @@ void Item::LoadLootFromDB(Field* fields)
             sLog.outError("Item::LoadLootFromDB: %s has an unknown currency (id: #%u) in item_loot, deleted.", GetOwnerGuid().GetString().c_str(), item_id);
             return;
         }
-
-        loot->items.push_back(LootItem(item_id, type, item_amount));
     }
+    // normal item case
+    else
+    {
+        ItemPrototype const* proto = ObjectMgr::GetItemPrototype(item_id);
+        if (!proto)
+        {
+            CharacterDatabase.PExecute("DELETE FROM item_loot WHERE guid = '%u' AND itemid = '%u'", GetGUIDLow(), item_id);
+            sLog.outError("Item::LoadLootFromDB: %s has an unknown item (id: #%u) in item_loot, deleted.", GetOwnerGuid().GetString().c_str(), item_id);
+            return;
+        }
+    }
+    
 
-    loot->items.push_back(LootItem(item_id, item_amount, item_suffix, item_propid));
-    ++loot->unlootedCount;
+    loot->AddItem(item_id, item_amount, item_suffix, item_propid);
 
     SetLootState(ITEM_LOOT_UNCHANGED);
 }
