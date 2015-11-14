@@ -121,7 +121,7 @@
     <Filter Include="scripts\kalimdor\caverns_of_time\hour_of_twilight">
       <UniqueIdentifier>{4df3cb5e-8de9-4082-a35a-72a2c589779c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="scripts\kalimdor\caverns_of_time\hyjal">
+    <Filter Include="scripts\kalimdor\caverns_of_time\hyjal_summit">
       <UniqueIdentifier>{2552ab59-1f73-4778-a6db-6f03e405622d}</UniqueIdentifier>
     </Filter>
     <Filter Include="scripts\kalimdor\caverns_of_time\old_hillsbrad">
@@ -1032,17 +1032,17 @@
     <ClCompile Include="..\..\src\scriptdev2\scripts\kalimdor\caverns_of_time\hour_of_twilight\instance_hour_of_twilight.cpp">
       <Filter>scripts\kalimdor\caverns_of_time\hour_of_twilight</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\scriptdev2\scripts\kalimdor\caverns_of_time\hyjal\boss_archimonde.cpp">
-      <Filter>scripts\kalimdor\caverns_of_time\hyjal</Filter>
+    <ClCompile Include="..\..\src\scriptdev2\scripts\kalimdor\caverns_of_time\hyjal_summit\boss_archimonde.cpp">
+      <Filter>scripts\kalimdor\caverns_of_time\hyjal_summit</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\scriptdev2\scripts\kalimdor\caverns_of_time\hyjal\hyjal.cpp">
-      <Filter>scripts\kalimdor\caverns_of_time\hyjal</Filter>
+    <ClCompile Include="..\..\src\scriptdev2\scripts\kalimdor\caverns_of_time\hyjal_summit\hyjal.cpp">
+      <Filter>scripts\kalimdor\caverns_of_time\hyjal_summit</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\scriptdev2\scripts\kalimdor\caverns_of_time\hyjal\hyjalAI.cpp">
-      <Filter>scripts\kalimdor\caverns_of_time\hyjal</Filter>
+    <ClCompile Include="..\..\src\scriptdev2\scripts\kalimdor\caverns_of_time\hyjal_summit\hyjalAI.cpp">
+      <Filter>scripts\kalimdor\caverns_of_time\hyjal_summit</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\scriptdev2\scripts\kalimdor\caverns_of_time\hyjal\instance_hyjal.cpp">
-      <Filter>scripts\kalimdor\caverns_of_time\hyjal</Filter>
+    <ClCompile Include="..\..\src\scriptdev2\scripts\kalimdor\caverns_of_time\hyjal_summit\instance_hyjal.cpp">
+      <Filter>scripts\kalimdor\caverns_of_time\hyjal_summit</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\scriptdev2\scripts\kalimdor\caverns_of_time\old_hillsbrad\instance_old_hillsbrad.cpp">
       <Filter>scripts\kalimdor\caverns_of_time\old_hillsbrad</Filter>
@@ -2079,11 +2079,11 @@
     <ClInclude Include="..\..\src\scriptdev2\scripts\kalimdor\caverns_of_time\hour_of_twilight\hour_of_twilight.h">
       <Filter>scripts\kalimdor\caverns_of_time\hour_of_twilight</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\scriptdev2\scripts\kalimdor\caverns_of_time\hyjal\hyjal.h">
-      <Filter>scripts\kalimdor\caverns_of_time\hyjal</Filter>
+    <ClInclude Include="..\..\src\scriptdev2\scripts\kalimdor\caverns_of_time\hyjal_summit\hyjal.h">
+      <Filter>scripts\kalimdor\caverns_of_time\hyjal_summit</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\scriptdev2\scripts\kalimdor\caverns_of_time\hyjal\hyjalAI.h">
-      <Filter>scripts\kalimdor\caverns_of_time\hyjal</Filter>
+    <ClInclude Include="..\..\src\scriptdev2\scripts\kalimdor\caverns_of_time\hyjal_summit\hyjalAI.h">
+      <Filter>scripts\kalimdor\caverns_of_time\hyjal_summit</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\scriptdev2\scripts\kalimdor\caverns_of_time\old_hillsbrad\old_hillsbrad.h">
       <Filter>scripts\kalimdor\caverns_of_time\old_hillsbrad</Filter>

@@ -442,10 +442,10 @@
     <ClCompile Include="..\..\src\scriptdev2\scripts\kalimdor\caverns_of_time\hour_of_twilight\boss_arcurion.cpp" />
     <ClCompile Include="..\..\src\scriptdev2\scripts\kalimdor\caverns_of_time\hour_of_twilight\boss_asira_dawnslayer.cpp" />
     <ClCompile Include="..\..\src\scriptdev2\scripts\kalimdor\caverns_of_time\hour_of_twilight\instance_hour_of_twilight.cpp" />
-    <ClCompile Include="..\..\src\scriptdev2\scripts\kalimdor\caverns_of_time\hyjal\boss_archimonde.cpp" />
-    <ClCompile Include="..\..\src\scriptdev2\scripts\kalimdor\caverns_of_time\hyjal\hyjal.cpp" />
-    <ClCompile Include="..\..\src\scriptdev2\scripts\kalimdor\caverns_of_time\hyjal\hyjalAI.cpp" />
-    <ClCompile Include="..\..\src\scriptdev2\scripts\kalimdor\caverns_of_time\hyjal\instance_hyjal.cpp" />
+    <ClCompile Include="..\..\src\scriptdev2\scripts\kalimdor\caverns_of_time\hyjal_summit\boss_archimonde.cpp" />
+    <ClCompile Include="..\..\src\scriptdev2\scripts\kalimdor\caverns_of_time\hyjal_summit\hyjal.cpp" />
+    <ClCompile Include="..\..\src\scriptdev2\scripts\kalimdor\caverns_of_time\hyjal_summit\hyjalAI.cpp" />
+    <ClCompile Include="..\..\src\scriptdev2\scripts\kalimdor\caverns_of_time\hyjal_summit\instance_hyjal.cpp" />
     <ClCompile Include="..\..\src\scriptdev2\scripts\kalimdor\caverns_of_time\old_hillsbrad\instance_old_hillsbrad.cpp" />
     <ClCompile Include="..\..\src\scriptdev2\scripts\kalimdor\caverns_of_time\old_hillsbrad\old_hillsbrad.cpp" />
     <ClCompile Include="..\..\src\scriptdev2\scripts\kalimdor\caverns_of_time\well_of_eternity\boss_mannoroth_and_varothen.cpp" />
@@ -798,8 +798,8 @@
     <ClInclude Include="..\..\src\scriptdev2\scripts\kalimdor\caverns_of_time\dragon_soul\dragon_soul.h" />
     <ClInclude Include="..\..\src\scriptdev2\scripts\kalimdor\caverns_of_time\end_of_time\end_of_time.h" />
     <ClInclude Include="..\..\src\scriptdev2\scripts\kalimdor\caverns_of_time\hour_of_twilight\hour_of_twilight.h" />
-    <ClInclude Include="..\..\src\scriptdev2\scripts\kalimdor\caverns_of_time\hyjal\hyjal.h" />
-    <ClInclude Include="..\..\src\scriptdev2\scripts\kalimdor\caverns_of_time\hyjal\hyjalAI.h" />
+    <ClInclude Include="..\..\src\scriptdev2\scripts\kalimdor\caverns_of_time\hyjal_summit\hyjal.h" />
+    <ClInclude Include="..\..\src\scriptdev2\scripts\kalimdor\caverns_of_time\hyjal_summit\hyjalAI.h" />
     <ClInclude Include="..\..\src\scriptdev2\scripts\kalimdor\caverns_of_time\old_hillsbrad\old_hillsbrad.h" />
     <ClInclude Include="..\..\src\scriptdev2\scripts\kalimdor\caverns_of_time\well_of_eternity\well_of_eternity.h" />
     <ClInclude Include="..\..\src\scriptdev2\scripts\kalimdor\dire_maul\dire_maul.h" />
