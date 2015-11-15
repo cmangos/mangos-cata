@@ -502,7 +502,7 @@ LootSlotType LootItem::GetSlotTypeForSharedLoot(LootView const& lv) const
 
     if (!lootedBy.empty())
         return MAX_LOOT_SLOT_TYPE;                                       // a not free for all item should not be looted more than once
-    
+
     if (lootItemType != LOOTITEM_TYPE_NORMAL)
     {
         // Check if its turn of that player to loot a not party loot. The loot may be released or the item may be passed by currentLooter
@@ -510,7 +510,7 @@ LootSlotType LootItem::GetSlotTypeForSharedLoot(LootView const& lv) const
             return lv.loot.m_lootMethod == NOT_GROUP_TYPE_LOOT ? LOOT_SLOT_OWNER : LOOT_SLOT_NORMAL; // TODO maybe always owner
         return MAX_LOOT_SLOT_TYPE;
     }
-    
+
     switch (lv.loot.m_lootMethod)
     {
         case FREE_FOR_ALL:
@@ -1516,7 +1516,7 @@ Loot::Loot(Player* player, Creature* creature, LootType type) :
             break;
         }
         default:
-            sLog.outError("Loot::CreateLoot> Cannot create loot for %s with invalid LootType(%u)", creature->GetObjectGuid().GetString().c_str(), uint32(type));
+            sLog.outError("Loot::CreateLoot> Cannot create loot for %s with invalid LootType(%u)", creature->GetGuidStr().c_str(), uint32(type));
             m_lootType = LOOT_NONE;
             break;
     }
@@ -2656,7 +2656,7 @@ Loot* LootMgr::GetLoot(Player* player, ObjectGuid const& targetGuid)
     if (targetGuid.IsEmpty())
     {
         lguid = player->GetLootGuid();
-        
+
         if (lguid.IsEmpty())
         {
             lguid = player->GetTargetGuid();
