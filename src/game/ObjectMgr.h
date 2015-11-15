@@ -328,7 +328,7 @@ struct QuestPhaseMaps
 };
 
 typedef std::vector<QuestPhaseMaps> QuestPhaseMapsVector;
-typedef UNORDERED_MAP<uint32, QuestPhaseMapsVector> QuestPhaseMapsMap;
+typedef std::unordered_map<uint32, QuestPhaseMapsVector> QuestPhaseMapsMap;
 
 struct DungeonEncounter
 {

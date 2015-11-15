@@ -285,6 +285,8 @@ public:
     void GetLootItemsListFor(Player* player, LootItemList& lootList);
     void SetGoldAmount(uint32 _gold);
     void SendGold(Player* player);
+    void NotifyItemRemoved(uint32 lootIndex, bool isCurrency = false);
+    uint8 GetOwnerCount() { return m_ownerSet.size(); }
     uint32 GetGoldAmount() const { return m_gold; }
     LootType GetLootType() const { return m_lootType; }
     LootItem* GetLootItemInSlot(uint32 itemSlot);
@@ -305,7 +307,6 @@ private:
     void SendReleaseForAll();
     void SendAllowedLooter();
     void NotifyMoneyRemoved();
-    void NotifyItemRemoved(uint32 lootIndex, bool isCurrency = false);
     void NotifyItemRemoved(Player* player, uint32 lootIndex, bool isCurrency = false);
     void GroupCheck();
     void SetGroupLootRight(Player* player);

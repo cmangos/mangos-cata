@@ -579,7 +579,7 @@ void GroupLootRoll::SendStartRoll()
 
     size_t voteMaskPos = data.wpos();
     data << uint8(0);                                       // roll type mask, allowed choices (placeholder)
-    data << uint8(m_loot->ownerSet.size());
+    data << uint8(m_loot->GetOwnerCount());
 
     for (RollVoteMap::const_iterator itr = m_rollVoteMap.begin(); itr != m_rollVoteMap.end(); ++itr)
     {

@@ -65,13 +65,14 @@ void WorldSession::HandleAutostoreLootItemOpcode(WorldPacket& recv_data)
         return;
     }
 
-    if (item->lootItemType == LOOTITEM_TYPE_CURRENCY)
+    if (loot->GetLootType() == LOOTITEM_TYPE_CURRENCY)
     {
-        if (CurrencyTypesEntry const * currencyEntry = sCurrencyTypesStore.LookupEntry(item->itemId))
-            _player->ModifyCurrencyCount(item->itemId, int32(item->count * currencyEntry->GetPrecision()));
+        if (CurrencyTypesEntry const* currencyEntry = sCurrencyTypesStore.LookupEntry(lootItem->itemId))
+            _player->ModifyCurrencyCount(lootItem->itemId, int32(lootItem->count * currencyEntry->GetPrecision()));
 
         loot->NotifyItemRemoved(itemSlot, true);
-        --loot->maxSlot;
+        // ToDo: fix this!
+        // --loot->maxSlot;
         return;
     }
 
