@@ -3070,10 +3070,9 @@ MeleeHitOutcome Unit::RollMeleeOutcomeAgainst(const Unit* pVictim, WeaponAttackT
 
     // mobs can score crushing blows if they're 4 or more levels above victim
     if (GetLevelForTarget(pVictim) >= pVictim->GetLevelForTarget(this) + 4 &&
-            // can be from by creature (if can) or from controlled player that considered as creature
-            ((GetTypeId() != TYPEID_PLAYER && !((Creature*)this)->IsPet() &&
-              !(((Creature*)this)->GetCreatureInfo()->ExtraFlags & CREATURE_EXTRA_FLAG_NO_CRUSH)) ||
-             GetTypeId() == TYPEID_PLAYER && GetCharmerOrOwnerGuid()))
+        // can be from by creature (if can) or from controlled player that considered as creature
+        ((GetTypeId() == TYPEID_UNIT && !static_cast<Creature const*>(this)->IsPet() && !(static_cast<Creature const*>(this)->GetCreatureInfo()->ExtraFlags & CREATURE_FLAG_EXTRA_NO_CRUSH)) ||
+         (GetTypeId() == TYPEID_PLAYER && GetCharmerOrOwnerGuid())))
     {
         // when their weapon skill is 15 or more above victim's defense skill
         tmp = victimMaxSkillValueForLevel;
@@ -3896,8 +3895,6 @@ void Unit::SetCurrentCastedSpell(Spell* pSpell)
 
 void Unit::InterruptSpell(CurrentSpellTypes spellType, bool withDelayed, bool sendAutoRepeatCancelToClient)
 {
-    MANGOS_ASSERT(spellType < CURRENT_MAX_SPELL);
-
     if (m_currentSpells[spellType] && (withDelayed || m_currentSpells[spellType]->getState() != SPELL_STATE_DELAYED))
     {
         // send autorepeat cancel message for autorepeat spells
@@ -4413,6 +4410,7 @@ bool Unit::AddSpellAuraHolder(SpellAuraHolder* holder)
                 ++itr;
             }
 
+            // TODO remove this switch after confirming that we dont need other cases
             switch (trackedType)
             {
                 case TRACK_AURA_TYPE_CONTROL_VEHICLE:       // Only track the controlled vehicle, no secondary effects
@@ -4421,6 +4419,8 @@ bool Unit::AddSpellAuraHolder(SpellAuraHolder* holder)
                 // no break here, track other controlled
                 case TRACK_AURA_TYPE_SINGLE_TARGET:         // Register spell holder single target
                     scTargets[aurSpellInfo] = GetObjectGuid();
+                    break;
+                default:
                     break;
             }
         }
@@ -5744,6 +5744,8 @@ void Unit::SetPowerType(Powers new_powertype)
             case POWER_RUNIC_POWER:
                 curValue = 0;
                 break;
+            default:
+                break;
         }
 
         // set power (except for mana)
@@ -6475,7 +6477,7 @@ Unit* Unit::_GetTotem(TotemSlot slot) const
 
 Totem* Unit::GetTotem(TotemSlot slot) const
 {
-    if (slot >= MAX_TOTEM_SLOT || !IsInWorld() || !m_TotemSlot[slot])
+    if (!IsInWorld() || !m_TotemSlot[slot])
         return nullptr;
 
     Creature* totem = GetMap()->GetCreature(m_TotemSlot[slot]);
@@ -9364,7 +9366,7 @@ bool Unit::IsSecondChoiceTarget(Unit* pTarget, bool checkThreatArea) const
     return
         pTarget->IsImmunedToDamage(GetMeleeDamageSchoolMask()) ||
         pTarget->hasNegativeAuraWithInterruptFlag(AURA_INTERRUPT_FLAG_DAMAGE) ||
-        checkThreatArea && ((Creature*)this)->IsOutOfThreatArea(pTarget);
+        (checkThreatArea && ((Creature*)this)->IsOutOfThreatArea(pTarget));
 }
 
 //======================================================================

@@ -845,6 +845,8 @@ bool GroupLootRoll::AllPlayerVoted(RollVoteMap::const_iterator& winnerItr)
             case ROLL_NOT_EMITED_YET:
                 ++notVoted;
                 break;
+            default:
+                break;
         }
     }
 
@@ -1341,9 +1343,13 @@ void Loot::Release(Player* player)
 
                     break;
                 }
+                default:
+                    break;
             }
             break;
         }
+        default:
+            break;
     }
 }
 
@@ -1448,6 +1454,8 @@ void Loot::GroupCheck()
             }
             break;
         }
+        default:
+            break;
     }
 }
 
@@ -1456,14 +1464,14 @@ void Loot::SetGroupLootRight(Player* player)
 {
     m_ownerSet.clear();
     Group* grp = player->GetGroup();
-    if (grp && (!m_isChest || m_isChest && static_cast<GameObject*>(m_lootTarget)->GetGOInfo()->chest.groupLootRules))
+    if (grp && (!m_isChest || (m_isChest && static_cast<GameObject*>(m_lootTarget)->GetGOInfo()->chest.groupLootRules)))
     {
         m_lootMethod = grp->GetLootMethod();
         m_threshold = grp->GetLootThreshold();
 
         // we need to fill m_ownerSet with player who have access to the loot
         Group::MemberSlotList const& memberList = grp->GetMemberSlots();
-        ObjectGuid const& currentLooterGuid = grp->GetCurrentLooterGuid();
+        ObjectGuid currentLooterGuid = grp->GetCurrentLooterGuid();
         GuidList ownerList;                 // used to keep order of the player (important to get correctly next looter)
 
         // current looter must be in the group
@@ -1476,7 +1484,8 @@ void Loot::SetGroupLootRight(Player* player)
         if (currentLooterItr == memberList.end())
         {
             currentLooterItr = memberList.begin();
-            currentLooterGuid == currentLooterItr->guid;
+            currentLooterGuid = currentLooterItr->guid;
+            grp->SetNextLooterGuid(currentLooterGuid);
         }
 
         // now that we get a valid current looter iterator we can start to check the loot owner
@@ -2806,6 +2815,8 @@ void LootMgr::PlayerVote(Player* player, ObjectGuid const& lootTargetGuid, uint3
             case ROLL_GREED:
             case ROLL_DISENCHANT:
                 player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_ROLL_GREED, 1);
+                break;
+            default:
                 break;
         }
     }

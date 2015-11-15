@@ -6845,6 +6845,8 @@ void Aura::HandleShapeshiftBoosts(bool apply)
         case FORM_FRENZY:
         case FORM_NONE:
             break;
+        default:
+            break;
     }
 
     if (apply)

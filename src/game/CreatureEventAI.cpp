@@ -1019,6 +1019,9 @@ void CreatureEventAI::ProcessAction(CreatureEventAI_Action const& action, uint32
             }
             break;
         }
+        default:
+            sLog.outError("CreatureEventAi::ProcessAction(): action(%u) not implemented", static_cast<uint32>(action.type));
+            break;
     }
 }
 
@@ -1059,11 +1062,11 @@ void CreatureEventAI::Reset()
                     i->Enabled = true;
                 break;
             }
-                // default:
+            default:
                 // TODO: enable below code line / verify this is correct to enable events previously disabled (ex. aggro yell), instead of enable this in void Aggro()
                 //i->Enabled = true;
                 //i->Time = 0;
-                // break;
+                break;
         }
     }
 }
