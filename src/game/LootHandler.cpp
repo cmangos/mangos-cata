@@ -59,17 +59,17 @@ void WorldSession::HandleAutostoreLootItemOpcode(WorldPacket& recv_data)
     }
 
     // item may not be already looted or blocked by roll system
-    if (item->is_blocked || item->lootedBy.find(_player->GetObjectGuid()) != item->lootedBy.end())
+    if (item->isBlocked || item->lootedBy.find(_player->GetObjectGuid()) != item->lootedBy.end())
     {
-        sLog.outError("HandleAutostoreLootItemOpcode> %s already looted itemId(%u)", _player->GetObjectGuid().GetString().c_str(), item->itemid);
+        sLog.outError("HandleAutostoreLootItemOpcode> %s already looted itemId(%u)", _player->GetObjectGuid().GetString().c_str(), item->itemId);
         loot->SendReleaseFor(_player);
         return;
     }
 
     if (item->lootItemType == LOOTITEM_TYPE_CURRENCY)
     {
-        if (CurrencyTypesEntry const * currencyEntry = sCurrencyTypesStore.LookupEntry(item->itemid))
-            _player->ModifyCurrencyCount(item->itemid, int32(item->count * currencyEntry->GetPrecision()));
+        if (CurrencyTypesEntry const * currencyEntry = sCurrencyTypesStore.LookupEntry(item->itemId))
+            _player->ModifyCurrencyCount(item->itemId, int32(item->count * currencyEntry->GetPrecision()));
 
         loot->NotifyItemRemoved(lootSlot, true);
         --loot->maxSlot;
@@ -199,9 +199,9 @@ void WorldSession::HandleLootMasterGiveOpcode(WorldPacket& recv_data)
     if (!pLoot || _player->GetObjectGuid() != pLoot->masterOwnerGuid)
         return;
 
-    if (slotid > pLoot->items.size())
+    if (slotid > pLoot->lootItems.size())
     {
-        DEBUG_LOG("WorldSession::HandleLootMasterGiveOpcode> Player %s might be using a hack! (slot %d, size " SIZEFMTD ")", _player->GetName(), slotid, pLoot->items.size());
+        DEBUG_LOG("WorldSession::HandleLootMasterGiveOpcode> Player %s might be using a hack! (slot %d, size " SIZEFMTD ")", _player->GetName(), slotid, pLoot->lootItems.size());
         return;
     }
 
@@ -211,14 +211,14 @@ void WorldSession::HandleLootMasterGiveOpcode(WorldPacket& recv_data)
     LootItem* item = pLoot->GetLootItemInSlot(slotid);
     if (item->lootItemType == LOOTITEM_TYPE_CURRENCY)
     {
-        sLog.outError("WorldSession::HandleLootMasterGiveOpcode: player %s tried to give currency via master loot! Hack alert! Slot %u, currency id %u", GetPlayer()->GetName(), slotid, item->itemid);
+        sLog.outError("WorldSession::HandleLootMasterGiveOpcode: player %s tried to give currency via master loot! Hack alert! Slot %u, currency id %u", GetPlayer()->GetName(), slotid, item->itemId);
         return;
     }
 
     if (msg != EQUIP_ERR_OK)
     {
         // send duplicate of error massage to master looter
-        _player->SendEquipError(msg, NULL, NULL, item->itemid);
+        _player->SendEquipError(msg, NULL, NULL, item->itemId);
         return;
     }
 
