@@ -1069,7 +1069,7 @@ void Loot::GenerateMoneyLoot(uint32 minAmount, uint32 maxAmount)
 void Loot::SendReleaseFor(ObjectGuid const& guid)
 {
     Player* plr = sObjectAccessor.FindPlayer(guid);
-    if (plr || plr->GetSession())
+    if (plr && plr->GetSession())
         SendReleaseFor(plr);
 }
 
