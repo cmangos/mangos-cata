@@ -36,7 +36,6 @@ class LootStore;
 class WorldObject;
 class LootTemplate;
 class Loot;
-struct LootView;
 struct LootItem;
 struct ItemPrototype;
 
@@ -182,7 +181,7 @@ struct LootItem
 
     // Basic checks for player/item compatibility - if false no chance to see the item in the loot
     bool AllowedForPlayer(Player const* player, WorldObject const* lootTarget) const;
-    LootSlotType GetSlotTypeForSharedLoot(LootView const& lv) const;
+    LootSlotType GetSlotTypeForSharedLoot(Player const* player, Loot const* loot) const;
     bool IsLootedFor(ObjectGuid const& playerGuid) const { return lootedBy.find(playerGuid) != lootedBy.end(); }
 };
 
@@ -251,12 +250,10 @@ class LootTemplate
 //=====================================================
 
 ByteBuffer& operator<<(ByteBuffer& b, LootItem const& li);
-ByteBuffer& operator<<(ByteBuffer& b, LootView const& lv);
 
 class Loot
 {
 public:
-    friend ByteBuffer& operator<<(ByteBuffer& b, LootView const& lv);
     friend LootItem;
     friend GroupLootRoll;
 
@@ -301,6 +298,7 @@ private:
     void SendAllowedLooter();
     void NotifyMoneyRemoved();
     void NotifyItemRemoved(uint32 lootIndex, bool isCurrency = false);
+    void NotifyItemRemoved(Player* player, uint32 lootIndex, bool isCurrency = false);
     void GroupCheck();
     void SetGroupLootRight(Player* player);
     void GenerateMoneyLoot(uint32 minAmount, uint32 maxAmount);
@@ -310,7 +308,7 @@ private:
     void ForceLootAnimationCLientUpdate();
     void SetPlayerIsLooting(Player* player);
     void SetPlayerIsNotLooting(Player* player);
-
+    bool GetLootContentFor(Player* player, ByteBuffer& buffer);
     // What is looted
     WorldObject*     m_lootTarget;
     Item*            m_itemTarget;
@@ -333,14 +331,6 @@ private:
     bool             m_isChanged;                     // true if at least one item is looted
     GroupLootRollMap m_roll;                          // used if an item is under rolling
     GuidSet          m_playersLooting;                // player who opened loot windows
-};
-
-struct LootView
-{
-    Loot const& loot;
-    Player* viewer;
-    LootView(Loot const& _loot, Player* _viewer)
-        : loot(_loot), viewer(_viewer) {}
 };
 
 extern LootStore LootTemplates_Creature;
