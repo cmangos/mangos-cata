@@ -1321,7 +1321,7 @@ void Loot::ShowContentTo(Player* plr)
 
     WorldPacket data(SMSG_LOOT_RESPONSE);
     data << m_guidTarget;
-    data << uint8(m_lootType);
+    data << uint8(m_clientLootType);
 
     if (GetLootContentFor(plr, data))
         SetPlayerIsLooting(plr);
@@ -1492,7 +1492,7 @@ void Loot::SetGroupLootRight(Player* player)
 }
 
 Loot::Loot(Player* player, Creature* creature, LootType type) :
-    m_lootType(LOOT_NONE), m_lootMethod(NOT_GROUP_TYPE_LOOT), m_threshold(ITEM_QUALITY_UNCOMMON),
+    m_lootType(type), m_lootMethod(NOT_GROUP_TYPE_LOOT), m_threshold(ITEM_QUALITY_UNCOMMON), m_clientLootType(CLIENT_LOOT_CORPSE),
     m_gold(0), m_maxEnchantSkill(0), m_maxSlot(0), m_isReleased(false), m_isChest(false), m_isChanged(false),
     m_haveItemOverThreshold(false), m_isChecked(false), m_lootTarget(NULL)
 {
@@ -1513,14 +1513,13 @@ Loot::Loot(Player* player, Creature* creature, LootType type) :
     m_guidTarget = creature->GetObjectGuid();
     CreatureInfo const* creatureInfo = creature->GetCreatureInfo();
 
-    m_lootType = type;
-
     switch (type)
     {
         case LOOT_CORPSE:
         {
             // setting loot right
             SetGroupLootRight(player);
+            m_clientLootType = CLIENT_LOOT_CORPSE;
 
             if ((creatureInfo->LootId && FillLoot(creatureInfo->LootId, LootTemplates_Creature, player, false)) || creatureInfo->MaxLootGold > 0)
             {
@@ -1539,7 +1538,9 @@ Loot::Loot(Player* player, Creature* creature, LootType type) :
         }
         case LOOT_PICKPOCKETING:
         {
-            if (!creature->isAlive() || player->getClass() != CLASS_ROGUE) // TODO add a flag to creature to check if already pickpocketed
+            m_clientLootType = CLIENT_LOOT_PICKPOCKETING;
+
+            if (!creature->isAlive() || player->getClass() != CLASS_ROGUE)
                 return;
 
             if (!creatureInfo->LootId || !FillLoot(creatureInfo->PickpocketLootId, LootTemplates_Pickpocketing, player, false))
@@ -1560,6 +1561,7 @@ Loot::Loot(Player* player, Creature* creature, LootType type) :
         }
         case LOOT_SKINNING:
         {
+            m_clientLootType = CLIENT_LOOT_PICKPOCKETING;
             if (!creatureInfo->SkinningLootId || !FillLoot(creatureInfo->SkinningLootId, LootTemplates_Skinning, player, false))
             {
                 sLog.outError("Loot::CreateLoot> cannot create skinning loot, FillLoot failed with loot id(%u)!", creatureInfo->SkinningLootId);
@@ -1573,7 +1575,6 @@ Loot::Loot(Player* player, Creature* creature, LootType type) :
         }
         default:
             sLog.outError("Loot::CreateLoot> Cannot create loot for %s with invalid LootType(%u)", creature->GetGuidStr().c_str(), uint32(type));
-            m_lootType = LOOT_NONE;
             break;
     }
 
@@ -1581,7 +1582,7 @@ Loot::Loot(Player* player, Creature* creature, LootType type) :
 }
 
 Loot::Loot(Player* player, GameObject* gameObject, LootType type) :
-    m_lootType(LOOT_NONE), m_lootMethod(NOT_GROUP_TYPE_LOOT), m_threshold(ITEM_QUALITY_UNCOMMON),
+    m_lootType(type), m_lootMethod(NOT_GROUP_TYPE_LOOT), m_threshold(ITEM_QUALITY_UNCOMMON), m_clientLootType(CLIENT_LOOT_CORPSE),
     m_gold(0), m_maxEnchantSkill(0), m_maxSlot(0), m_isReleased(false), m_isChest(false), m_isChanged(false),
     m_haveItemOverThreshold(false), m_isChecked(false), m_lootTarget(NULL)
 {
@@ -1611,8 +1612,6 @@ Loot::Loot(Player* player, GameObject* gameObject, LootType type) :
         return;
     }
 
-    m_lootType = type;
-
     // generate loot only if ready for open and spawned in world
     if (gameObject->getLootState() == GO_READY && gameObject->isSpawned())
     {
@@ -1637,7 +1636,7 @@ Loot::Loot(Player* player, GameObject* gameObject, LootType type) :
                 // setting loot right
                 m_ownerSet.insert(player->GetObjectGuid());
                 m_lootMethod = NOT_GROUP_TYPE_LOOT;
-                m_lootType = LOOT_FISHING;
+                m_clientLootType = CLIENT_LOOT_FISHING;
                 break;
             }
             case LOOT_FISHING:
@@ -1652,6 +1651,7 @@ Loot::Loot(Player* player, GameObject* gameObject, LootType type) :
                 // setting loot right
                 m_ownerSet.insert(player->GetObjectGuid());
                 m_lootMethod = NOT_GROUP_TYPE_LOOT;
+                m_clientLootType = CLIENT_LOOT_FISHING;
                 break;
             }
             default:
@@ -1667,7 +1667,9 @@ Loot::Loot(Player* player, GameObject* gameObject, LootType type) :
                     GenerateMoneyLoot(gameObject->GetGOInfo()->MinMoneyLoot, gameObject->GetGOInfo()->MaxMoneyLoot);
 
                     if (m_lootType == LOOT_FISHINGHOLE)
-                        m_lootType = LOOT_FISHING;
+                        m_clientLootType = CLIENT_LOOT_FISHING;
+                    else
+                        m_clientLootType = CLIENT_LOOT_PICKPOCKETING;
                 }
                 break;
             }
@@ -1679,7 +1681,7 @@ Loot::Loot(Player* player, GameObject* gameObject, LootType type) :
 }
 
 Loot::Loot(Player* player, Corpse* corpse, LootType type) :
-    m_lootType(LOOT_NONE), m_lootMethod(NOT_GROUP_TYPE_LOOT), m_threshold(ITEM_QUALITY_UNCOMMON),
+    m_lootType(type), m_lootMethod(NOT_GROUP_TYPE_LOOT), m_threshold(ITEM_QUALITY_UNCOMMON), m_clientLootType(CLIENT_LOOT_CORPSE),
     m_gold(0), m_maxEnchantSkill(0), m_maxSlot(0), m_isReleased(false), m_isChest(false), m_isChanged(false),
     m_haveItemOverThreshold(false), m_isChecked(false), m_lootTarget(NULL)
 {
@@ -1698,7 +1700,6 @@ Loot::Loot(Player* player, Corpse* corpse, LootType type) :
 
     m_lootTarget = corpse;
     m_guidTarget = corpse->GetObjectGuid();
-    m_lootType     = type;
 
     if (type != LOOT_INSIGNIA || corpse->GetType() == CORPSE_BONES)
         return;
@@ -1720,11 +1721,12 @@ Loot::Loot(Player* player, Corpse* corpse, LootType type) :
     }
     m_ownerSet.insert(player->GetObjectGuid());
     m_lootMethod = NOT_GROUP_TYPE_LOOT;
+    m_clientLootType = CLIENT_LOOT_CORPSE;
     return;
 }
 
 Loot::Loot(Player* player, Item* item, LootType type) :
-    m_lootType(LOOT_NONE), m_lootMethod(NOT_GROUP_TYPE_LOOT), m_threshold(ITEM_QUALITY_UNCOMMON),
+    m_lootType(type), m_lootMethod(NOT_GROUP_TYPE_LOOT), m_threshold(ITEM_QUALITY_UNCOMMON), m_clientLootType(CLIENT_LOOT_CORPSE),
     m_gold(0), m_maxEnchantSkill(0), m_maxSlot(0), m_isReleased(false), m_isChest(false), m_isChanged(false),
     m_haveItemOverThreshold(false), m_isChecked(false), m_lootTarget(NULL)
 {
@@ -1743,8 +1745,6 @@ Loot::Loot(Player* player, Item* item, LootType type) :
 
     m_itemTarget = item;
     m_guidTarget = item->GetObjectGuid();
-
-    m_lootType = type;
 
     switch (type)
     {
@@ -1768,11 +1768,12 @@ Loot::Loot(Player* player, Item* item, LootType type) :
     }
     m_ownerSet.insert(player->GetObjectGuid());
     m_lootMethod = NOT_GROUP_TYPE_LOOT;
+    m_clientLootType = CLIENT_LOOT_PICKPOCKETING;
     return;
 }
 
 Loot::Loot(Unit* unit, Item* item) :
-    m_lootType(LOOT_SKINNING), m_lootMethod(NOT_GROUP_TYPE_LOOT), m_threshold(ITEM_QUALITY_UNCOMMON),
+    m_lootType(LOOT_SKINNING), m_lootMethod(NOT_GROUP_TYPE_LOOT), m_threshold(ITEM_QUALITY_UNCOMMON), m_clientLootType(CLIENT_LOOT_PICKPOCKETING),
     m_gold(0), m_maxEnchantSkill(0), m_maxSlot(0), m_isReleased(false), m_isChest(false), m_isChanged(false),
     m_haveItemOverThreshold(false), m_isChecked(false), m_lootTarget(NULL), m_itemTarget(item)
 {
@@ -1781,7 +1782,7 @@ Loot::Loot(Unit* unit, Item* item) :
 }
 
 Loot::Loot(Player* player, uint32 id, LootType type) :
-    m_lootType(type), m_lootMethod(NOT_GROUP_TYPE_LOOT), m_threshold(ITEM_QUALITY_UNCOMMON),
+    m_lootType(type), m_lootMethod(NOT_GROUP_TYPE_LOOT), m_threshold(ITEM_QUALITY_UNCOMMON), m_clientLootType(CLIENT_LOOT_CORPSE),
     m_gold(0), m_maxEnchantSkill(0), m_maxSlot(0), m_isReleased(false), m_isChest(false), m_isChanged(false),
     m_haveItemOverThreshold(false), m_isChecked(false), m_lootTarget(NULL)
 {
@@ -1789,9 +1790,11 @@ Loot::Loot(Player* player, uint32 id, LootType type) :
     {
         case LOOT_MAIL:
             FillLoot(id, LootTemplates_Mail, player, true, true);
+            m_clientLootType = CLIENT_LOOT_PICKPOCKETING;
             break;
         case LOOT_SKINNING:
             FillLoot(id, LootTemplates_Skinning, player, true, true);
+            m_clientLootType = CLIENT_LOOT_PICKPOCKETING;
             break;
         default:
             sLog.outError("Loot::Loot> invalid loot type passed to loot constructor.");
