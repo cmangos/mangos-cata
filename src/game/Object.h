@@ -80,7 +80,7 @@ class TransportInfo;
 struct MangosStringLocale;
 class Loot;
 
-typedef UNORDERED_MAP<Player*, UpdateData> UpdateDataMapType;
+typedef std::unordered_map<Player*, UpdateData> UpdateDataMapType;
 
 struct Position
 {

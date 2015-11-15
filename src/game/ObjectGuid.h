@@ -310,20 +310,18 @@ ByteBuffer& operator>> (ByteBuffer& buf, PackedGuidReader const& guid);
 
 inline PackedGuid ObjectGuid::WriteAsPacked() const { return PackedGuid(*this); }
 
-HASH_NAMESPACE_START
-
-template<>
-class hash<ObjectGuid>
-{
+namespace std {
+    template<>
+    class hash<ObjectGuid>
+    {
     public:
 
         size_t operator()(ObjectGuid const& key) const
         {
             return hash<uint64>()(key.GetRawValue());
         }
-};
-
-HASH_NAMESPACE_END
+    };
+}
 
 #define DEFINE_READGUIDMASK(T1, T2) template <T1> \
     void ByteBuffer::ReadGuidMask(ObjectGuid& guid) \
