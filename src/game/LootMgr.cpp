@@ -1267,7 +1267,6 @@ void Loot::Release(Player* player)
             {
                 case LOOT_PICKPOCKETING:
                 {
-                    //creature->AllLootRemovedFromCorpse();
                     if (IsLootedFor(player))
                     {
                         Creature* creature = (Creature*)m_lootTarget;
@@ -1276,7 +1275,6 @@ void Loot::Release(Player* player)
                     break;
                 }
                 case LOOT_SKINNING:
-                    //creature->AllLootRemovedFromCorpse();
                     if (IsLootedFor(player))
                     {
                         Creature* creature = (Creature*)m_lootTarget;
@@ -1287,14 +1285,10 @@ void Loot::Release(Player* player)
                 {
                     Creature* creature = (Creature*)m_lootTarget;
                     SetPlayerIsNotLooting(player);
-                    if (IsLootedFor(player))
+                    if (IsLootedForAll())
                     {
-                        if (IsLootedForAll())
-                            SendReleaseForAll();
-                        CreatureInfo const* creatureInfo = creature->GetCreatureInfo();
+                        SendReleaseForAll();
                         creature->SetLootStatus(CREATURE_LOOT_STATUS_LOOTED);
-                        if (creatureInfo->SkinningLootId)
-                            creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SKINNABLE);
                     }
                     break;
                 }
@@ -1504,13 +1498,6 @@ Loot::Loot(Player* player, Creature* creature, LootType type) :
 
             sLog.outDebug("Loot::CreateLoot> cannot create corpse loot, FillLoot failed with loot id(%u)!", creatureInfo->LootId);
             creature->SetLootStatus(CREATURE_LOOT_STATUS_LOOTED);
-
-            // loot is empty, can we show empty loot?
-            if (!creatureInfo->SkinningLootId )
-                return;
-
-            // loot is empty so we can set the corpse as skinnable
-            creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SKINNABLE);
             break;
         }
         case LOOT_PICKPOCKETING:
