@@ -529,8 +529,6 @@ LootSlotType LootItem::GetSlotTypeForSharedLoot(LootView const& lv) const
         }
         case MASTER_LOOT:
         {
-            if (lv.viewer->GetObjectGuid() == lv.loot.m_masterOwnerGuid)
-                return LOOT_SLOT_MASTER;
             if (isUnderThreshold)
             {
                 if (lv.loot.m_isReleased || lv.viewer->GetObjectGuid() == lv.loot.m_currentLooterGuid)
@@ -538,7 +536,11 @@ LootSlotType LootItem::GetSlotTypeForSharedLoot(LootView const& lv) const
                 return MAX_LOOT_SLOT_TYPE;
             }
             else
+            {
+                if (lv.viewer->GetObjectGuid() == lv.loot.m_masterOwnerGuid)
+                    return LOOT_SLOT_MASTER;
                 return LOOT_SLOT_VIEW;
+            }
         }
         case ROUND_ROBIN:
         {
@@ -1094,16 +1096,24 @@ void Loot::SetPlayerIsLooting(Player* player)
 {
     m_playersLooting.insert(player->GetObjectGuid());      // add 'this' player as one of the players that are looting 'loot'
     player->SetLootGuid(m_guidTarget);                     // used to keep track of what loot is opened for that player
-    if (m_lootType == LOOT_CORPSE)
+    if (m_lootType == LOOT_CORPSE || m_isChest)
+    {
         player->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_LOOTING);
+        if (m_guidTarget.IsGameObject())
+            static_cast<GameObject*>(m_lootTarget)->SetInUse(true);
+    }
 }
 
 void Loot::SetPlayerIsNotLooting(Player* player)
 {
     m_playersLooting.erase(player->GetObjectGuid());
     player->SetLootGuid(ObjectGuid());
-    if (m_lootType == LOOT_CORPSE)
+    if (m_lootType == LOOT_CORPSE || m_isChest)
+    {
         player->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_LOOTING);
+        if (m_guidTarget.IsGameObject())
+            static_cast<GameObject*>(m_lootTarget)->SetInUse(false);
+    }
 }
 
 void Loot::Release(Player* player)
@@ -1117,6 +1127,7 @@ void Loot::Release(Player* player)
         case HIGHGUID_GAMEOBJECT:
         {
             GameObject* go = (GameObject*) m_lootTarget;
+            SetPlayerIsNotLooting(player);
 
             if (go->GetGoType() == GAMEOBJECT_TYPE_DOOR)
             {
@@ -1296,6 +1307,23 @@ void Loot::Release(Player* player)
 // Popup windows with loot content
 void Loot::ShowContentTo(Player* plr)
 {
+    if (m_isChest)
+    {
+        if (static_cast<GameObject*>(m_lootTarget)->IsInUse())
+        {
+            SendReleaseFor(plr);
+            return;
+        }
+
+        if (m_ownerSet.find(plr->GetObjectGuid()) == m_ownerSet.end())
+        {
+            // TODO:: Player who had no right before opened the chest. Sure for wild chest this is right but, in case of
+            // a player released its corpse during a boss fight and that boss drop a chest that player must not have right
+            // to loot the chest in any way
+            SetGroupLootRight(plr);
+        }
+    }
+
     if (m_lootMethod != NOT_GROUP_TYPE_LOOT && !m_isChecked)
         GroupCheck();
 
@@ -1388,8 +1416,9 @@ void Loot::GroupCheck()
 // Set the player who have right for this loot
 void Loot::SetGroupLootRight(Player* player)
 {
+    m_ownerSet.clear();
     Group* grp = player->GetGroup();
-    if (grp)
+    if (grp && (!m_isChest || m_isChest && static_cast<GameObject*>(m_lootTarget)->GetGOInfo()->chest.groupLootRules))
     {
         // filling the player who have access to the loot
         Group::MemberSlotList const& memberList = grp->GetMemberSlots();
@@ -1429,6 +1458,8 @@ void Loot::SetGroupLootRight(Player* player)
 
             if (m_lootMethod != FREE_FOR_ALL)
                 SendAllowedLooter();
+
+            m_isChecked = false;
             return;
         }
     }
@@ -1440,7 +1471,7 @@ void Loot::SetGroupLootRight(Player* player)
 
 Loot::Loot(Player* player, Creature* creature, LootType type) :
     m_lootType(LOOT_NONE), m_lootMethod(NOT_GROUP_TYPE_LOOT), m_threshold(ITEM_QUALITY_UNCOMMON),
-    m_gold(0), m_maxEnchantSkill(0), m_maxSlot(0), m_isReleased(false),
+    m_gold(0), m_maxEnchantSkill(0), m_maxSlot(0), m_isReleased(false), m_isChest(false),
     m_haveItemOverThreshold(false), m_isChecked(false), m_lootTarget(NULL)
 {
     // the player whose group may loot the corpse
@@ -1533,7 +1564,7 @@ Loot::Loot(Player* player, Creature* creature, LootType type) :
 
 Loot::Loot(Player* player, GameObject* gameObject, LootType type) :
     m_lootType(LOOT_NONE), m_lootMethod(NOT_GROUP_TYPE_LOOT), m_threshold(ITEM_QUALITY_UNCOMMON),
-    m_gold(0), m_maxEnchantSkill(0), m_maxSlot(0), m_isReleased(false),
+    m_gold(0), m_maxEnchantSkill(0), m_maxSlot(0), m_isReleased(false), m_isChest(false),
     m_haveItemOverThreshold(false), m_isChecked(false), m_lootTarget(NULL)
 {
     // the player whose group may loot the corpse
@@ -1609,13 +1640,10 @@ Loot::Loot(Player* player, GameObject* gameObject, LootType type) :
             {
                 if (uint32 lootid = gameObject->GetGOInfo()->GetLootId())
                 {
-                    if (gameObject->GetGOInfo()->type == GAMEOBJECT_TYPE_CHEST && gameObject->GetGOInfo()->chest.groupLootRules)
-                        SetGroupLootRight(player);
+                    if (gameObject->GetGOInfo()->type == GAMEOBJECT_TYPE_CHEST)
+                        m_isChest = true;
                     else
-                    {
-                        m_ownerSet.insert(player->GetObjectGuid());
-                        m_lootMethod = NOT_GROUP_TYPE_LOOT;
-                    }
+                        SetGroupLootRight(player);
 
                     FillLoot(lootid, LootTemplates_Gameobject, player, false);
                     GenerateMoneyLoot(gameObject->GetGOInfo()->MinMoneyLoot, gameObject->GetGOInfo()->MaxMoneyLoot);
@@ -1634,7 +1662,7 @@ Loot::Loot(Player* player, GameObject* gameObject, LootType type) :
 
 Loot::Loot(Player* player, Corpse* corpse, LootType type) :
     m_lootType(LOOT_NONE), m_lootMethod(NOT_GROUP_TYPE_LOOT), m_threshold(ITEM_QUALITY_UNCOMMON),
-    m_gold(0), m_maxEnchantSkill(0), m_maxSlot(0), m_isReleased(false),
+    m_gold(0), m_maxEnchantSkill(0), m_maxSlot(0), m_isReleased(false), m_isChest(false),
     m_haveItemOverThreshold(false), m_isChecked(false), m_lootTarget(NULL)
 {
     // the player whose group may loot the corpse
@@ -1679,7 +1707,7 @@ Loot::Loot(Player* player, Corpse* corpse, LootType type) :
 
 Loot::Loot(Player* player, Item* item, LootType type) :
     m_lootType(LOOT_NONE), m_lootMethod(NOT_GROUP_TYPE_LOOT), m_threshold(ITEM_QUALITY_UNCOMMON),
-    m_gold(0), m_maxEnchantSkill(0), m_maxSlot(0), m_isReleased(false),
+    m_gold(0), m_maxEnchantSkill(0), m_maxSlot(0), m_isReleased(false), m_isChest(false),
     m_haveItemOverThreshold(false), m_isChecked(false), m_lootTarget(NULL)
 {
     // the player whose group may loot the corpse
@@ -1727,7 +1755,7 @@ Loot::Loot(Player* player, Item* item, LootType type) :
 
 Loot::Loot(Unit* unit, Item* item) :
     m_lootType(LOOT_SKINNING), m_lootMethod(NOT_GROUP_TYPE_LOOT), m_threshold(ITEM_QUALITY_UNCOMMON),
-    m_gold(0), m_maxEnchantSkill(0), m_maxSlot(0), m_isReleased(false),
+    m_gold(0), m_maxEnchantSkill(0), m_maxSlot(0), m_isReleased(false), m_isChest(false),
     m_haveItemOverThreshold(false), m_isChecked(false), m_lootTarget(NULL), m_itemTarget(item)
 {
     m_ownerSet.insert(unit->GetObjectGuid());
@@ -1736,7 +1764,7 @@ Loot::Loot(Unit* unit, Item* item) :
 
 Loot::Loot(Player* player, uint32 id, LootType type) :
     m_lootType(type), m_lootMethod(NOT_GROUP_TYPE_LOOT), m_threshold(ITEM_QUALITY_UNCOMMON),
-    m_gold(0), m_maxEnchantSkill(0), m_maxSlot(0), m_isReleased(false),
+    m_gold(0), m_maxEnchantSkill(0), m_maxSlot(0), m_isReleased(false), m_isChest(false),
     m_haveItemOverThreshold(false), m_isChecked(false), m_lootTarget(NULL)
 {
     switch (type)
@@ -1868,7 +1896,7 @@ void Loot::Update()
 
 void Loot::ForceLootAnimationCLientUpdate()
 {
-    if (m_lootTarget)
+    if (m_guidTarget.IsCreatureOrVehicle() && m_lootTarget)
         m_lootTarget->ForceValuesUpdateAtIndex(UNIT_DYNAMIC_FLAGS);
 }
 
