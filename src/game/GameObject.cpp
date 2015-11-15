@@ -2385,3 +2385,12 @@ float GameObject::GetInteractionDistance()
             return INTERACTION_DISTANCE;
     }
 }
+
+void GameObject::SetInUse(bool use)
+{
+    m_isInUse = use;
+    if (use)
+        SetGoState(GO_STATE_ACTIVE);
+    else
+        SetGoState(GO_STATE_READY);
+}
