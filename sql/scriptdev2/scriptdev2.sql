@@ -287,6 +287,9 @@ UPDATE creature_template SET ScriptName='npc_magwin' WHERE entry=17312;
 
 /* BADLANDS */
 
+/* BARADIN HOLD */
+UPDATE instance_template SET ScriptName='instance_baradin_hold' WHERE map=757;
+
 /* BARRENS */
 UPDATE creature_template SET ScriptName='npc_beaten_corpse' WHERE entry=10668;
 UPDATE creature_template SET ScriptName='npc_gilthares' WHERE entry=3465;
@@ -333,6 +336,14 @@ UPDATE creature_template SET ScriptName='npc_enslaved_soul' WHERE entry=23469;
 UPDATE instance_template SET ScriptName='instance_blackfathom_deeps' WHERE map=48;
 UPDATE gameobject_template SET ScriptName='go_fire_of_akumai' WHERE entry IN (21118,21119,21120,21121);
 UPDATE gameobject_template SET ScriptName='go_fathom_stone' WHERE entry=177964;
+
+/* BLACKROCK CAVERNS */
+UPDATE instance_template SET ScriptName='instance_blackrock_caverns' WHERE map=645;
+UPDATE creature_template SET ScriptName='boss_romogg' WHERE entry=39665;
+UPDATE creature_template SET ScriptName='boss_corla' WHERE entry=39679;
+UPDATE creature_template SET ScriptName='boss_karsh_steelbender' WHERE entry=39698;
+UPDATE creature_template SET ScriptName='boss_beauty' WHERE entry=39700;
+UPDATE creature_template SET ScriptName='boss_lord_obsidius' WHERE entry=39705;
 
 /* BLACKROCK DEPTHS */
 DELETE FROM scripted_areatrigger WHERE entry=1526;
@@ -628,6 +639,7 @@ UPDATE creature_template SET ScriptName='npc_acherus_deathcharger' WHERE entry=2
 UPDATE creature_template SET ScriptName='npc_scarlet_courier' WHERE entry=29076;
 
 /* ELWYNN FOREST */
+UPDATE creature_template SET ScriptName='npc_hogger' WHERE entry=448;
 
 /* EVERSONG WOODS */
 UPDATE creature_template SET ScriptName='npc_kelerun_bloodmourn' WHERE entry=17807;
@@ -2893,6 +2905,12 @@ INSERT INTO script_texts (entry,content_default,sound,type,language,emote,commen
 (-1001189,'ENOUGH! I waste my time here. I must gather my strength on the homeworld.',14428,1,0,0,'malganis_icecrown SAY_DEFEATED'),
 (-1001190,'You\'ll never defeat the Lich King without my forces. I\'ll have my revenge... on him AND you!',14429,1,0,0,'malganis_icecrown SAY_ESCAPE');
 
+-- -1 004 000 GENERAL MAPS - CATACLYSM (not instance maps)
+INSERT INTO script_texts (entry,content_default,sound,type,language,emote,comment) VALUES
+(-1004000,'Yipe! Help Hogger!',0,1,0,0,'hogger SAY_CALL_HELP'),
+(-1004001,'Hogger is eating! Stop him!',0,5,0,0,'hogger WHISPER_EATING'),
+(-1004002,'No hurt Hogger!',0,1,0,0,'hogger SAY_HOGGER_BEATEN');
+
 -- -1 033 000 SHADOWFANG KEEP
 INSERT INTO script_texts (entry,content_default,sound,type,language,emote,comment) VALUES
 (-1033000,'Follow me and I\'ll open the courtyard door for you.',0,0,7,1,'prisoner ashcrombe SAY_FREE_AS'),
@@ -4295,7 +4313,7 @@ INSERT INTO script_texts (entry,content_default,sound,type,language,emote,commen
 
 (-1554020,'We are on a strict timetable. You will not interfere!',11193,1,0,0,'pathaleon SAY_AGGRO'),
 (-1554021,'I\'m looking for a team player...',11197,1,0,0,'pathaleon SAY_DOMINATION_1'),
-(-1554022,'You work for me now!',11198,1,0,0,'pathaleon SAY_DOMINATION_2'),
+(-1554022,'You work for me now!',0,1,0,0,'pathaleon SAY_DOMINATION_2'),
 (-1554023,'Time to supplement my work force.',11196,1,0,0,'pathaleon SAY_SUMMON'),
 (-1554024,'I prefeer to be hands-on...',11199,1,0,0,'pathaleon SAY_ENRAGE'),
 (-1554025,'A minor inconvenience.',11194,1,0,0,'pathaleon SAY_SLAY_1'),
@@ -6613,7 +6631,7 @@ INSERT INTO script_texts (entry,content_default,sound,type,language,emote,commen
 (-1999903,'These mortal infedels my lord, they have invaded your sanctum and seek to steal your secrets.',8041,1,0,0,'example_creature SAY_RANDOM_2'),
 (-1999904,'You are already dead.',8581,1,0,0,'example_creature SAY_RANDOM_3'),
 (-1999905,'Where to go? What to do? So many choices that all end in pain, end in death.',8791,1,0,0,'example_creature SAY_RANDOM_4'),
-(-1999906,'$N, I sentance you to death!',8588,1,0,0,'example_creature SAY_BESERK'),
+(-1999906,'$N, I sentance you to death!',0,1,0,0,'example_creature SAY_BESERK'),
 (-1999907,'The suffering has just begun!',0,1,0,0,'example_creature SAY_PHASE'),
 (-1999908,'I always thought I was a good dancer.',0,0,0,0,'example_creature SAY_DANCE'),
 (-1999909,'Move out Soldier!',0,0,0,0,'example_creature SAY_SALUTE'),
