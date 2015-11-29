@@ -1,4 +1,4 @@
-ALTER TABLE db_version CHANGE COLUMN required_c13121_01_mangos_mangos_string required_c12123_01_mangos_scriptdev2_tables bit;
+ALTER TABLE db_version CHANGE COLUMN required_c13121_01_mangos_mangos_string required_c13123_01_mangos_scriptdev2_tables bit;
 
 DROP TABLE IF EXISTS `custom_texts`;
 CREATE TABLE `custom_texts` (
