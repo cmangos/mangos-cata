@@ -2162,6 +2162,15 @@ class MANGOS_DLL_SPEC Unit : public WorldObject
         void BuildMoveHoverPacket(WorldPacket* data, bool apply, uint32 value);
         void BuildMoveLevitatePacket(WorldPacket* data, bool apply, uint32 value);
 
+        // Take possession of an unit (pet, creature, ...)
+        bool TakePossessOf(Unit* possessed);
+
+        // Take possession of a new spawned unit
+        Unit* TakePossessOf(SpellEntry const* spellEntry, SummonPropertiesEntry const* summonProp, uint32 effIdx, float x, float y, float z, float ang);
+
+        // Reset control to player
+        void ResetControlState();
+
     protected:
         explicit Unit();
 
