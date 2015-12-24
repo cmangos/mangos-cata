@@ -8781,12 +8781,21 @@ void Unit::UpdateSpeed(UnitMoveType mtype, bool forced, float ratio, bool ignore
         case MOVE_RUN:
         case MOVE_WALK:
         case MOVE_SWIM:
-            if (GetTypeId() == TYPEID_UNIT && ((Creature*)this)->IsPet() && hasUnitState(UNIT_STAT_FOLLOW))
+            if (Unit* charmer = GetCharmer())
             {
-                if (Unit* owner = GetOwner())
+                SetSpeedRate(mtype, charmer->GetSpeedRate(mtype), forced);
+                return;
+            }
+            else if (GetTypeId() == TYPEID_UNIT)
+            {
+                Creature* creature = static_cast<Creature*>(this);
+                if (creature->IsPet() && hasUnitState(UNIT_STAT_FOLLOW))
                 {
-                    SetSpeedRate(mtype, owner->GetSpeedRate(mtype), forced, ignoreChange);
-                    return;
+                    if (Unit* owner = GetOwner())
+                    {
+                        SetSpeedRate(mtype, owner->GetSpeedRate(mtype), forced, ignoreChange);
+                        return;
+                    }
                 }
             }
             break;
