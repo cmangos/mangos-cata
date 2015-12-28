@@ -565,6 +565,8 @@ Player::Player(WorldSession* session): Unit(), m_mover(this), m_camera(this), m_
     m_cachedGS = 0;
 
     m_slot = 255;
+
+    m_isGhouled = false;
 }
 
 Player::~Player()
