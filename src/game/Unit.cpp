@@ -12154,6 +12154,7 @@ Unit* Unit::TakePossessOf(SpellEntry const* spellEntry, SummonPropertiesEntry co
         player->GetCamera().SetView(pCreature);                         // modify camera view to the creature view
         player->SetClientControl(pCreature, 1);                         // transfer client control to the creature
         player->SetMover(pCreature);                                    // set mover so now we know that creature is "moved" by this unit
+        player->SendForcedObjectUpdate();                               // we have to update client data here to avoid problem with the "release spirit" windows reappear.
     }
 
     // initialize AI
@@ -12203,6 +12204,7 @@ bool Unit::TakePossessOf(Unit* possessed)
         player->GetCamera().SetView(possessed);
         player->SetClientControl(possessed, 1);
         player->SetMover(possessed);
+        player->SendForcedObjectUpdate();
 
         if (possessedCreature && possessedCreature->IsPet() && possessedCreature->GetObjectGuid() == GetPetGuid())
         {
