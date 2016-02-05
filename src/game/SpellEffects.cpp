@@ -5398,7 +5398,15 @@ void Spell::EffectSummonChangeItem(SpellEffectEntry const* effect)
     // prevent crash at access and unexpected charges counting with item update queue corrupt
     ClearCastItem();
 
-    player->ConvertItem(oldItem, newitemid);
+    uint32 curItemCount = player->GetItemCount(newitemid, true);
+
+    if (Item* newItem = player->ConvertItem(oldItem, newitemid))
+    {
+        player->ItemAddedQuestCheck(newItem->GetEntry(), newItem->GetCount());
+
+        // Push packet to client so it knows we've created an item and quest can show objective update
+        player->SendNewItem(newItem, newItem->GetCount() - curItemCount, true, false);
+    }
 }
 
 void Spell::EffectProficiency(SpellEffectEntry const* /*effect*/)
