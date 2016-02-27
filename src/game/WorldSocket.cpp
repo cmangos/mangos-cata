@@ -222,7 +222,7 @@ bool WorldSocket::ProcessIncomingData()
             case MSG_WOW_CONNECTION:
                 return HandleWowConnection(*pct);
             case CMSG_AUTH_SESSION:
-                if (!!m_session)
+                if (m_session)
                 {
                     sLog.outError("WorldSocket::ProcessIncomingData: Player send CMSG_AUTH_SESSION again");
                     return false;
