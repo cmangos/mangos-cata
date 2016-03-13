@@ -118,12 +118,12 @@ class MANGOS_DLL_SPEC ObjectGuid
             return HighGuid(IsLargeHigh(high) ? high :
                 (m_guid >> 52) & 0xFFF);
         }
-        uint32   GetEntry() const { return HasEntry() ? uint32((m_guid >> 32) & UI64LIT(0xFFFF)) : 0; }
+        uint32   GetEntry() const { return HasEntry() ? uint32((m_guid >> 32) & uint64(0x000000000000FFFF)) : 0; }
         uint32   GetCounter()  const
         {
             return HasEntry()
-                   ? uint32(m_guid & UI64LIT(0x00000000FFFFFFFF))
-                   : uint32(m_guid & UI64LIT(0x00000000FFFFFFFF));  // TODO: switch to 40 bits, but this needs rewrite code to use uint64 instead uint32
+                   ? uint32(m_guid & uint64(0x00000000FFFFFFFF))
+                   : uint32(m_guid & uint64(0x00000000FFFFFFFF));  // TODO: switch to 40 bits, but this needs rewrite code to use uint64 instead uint32
         }
 
         static uint32 GetMaxCounter(HighGuid high)

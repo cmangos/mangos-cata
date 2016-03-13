@@ -210,7 +210,7 @@ inline bool IsSealSpell(SpellEntry const* spellInfo)
 {
     SpellEffectEntry const* spellEffect = spellInfo->GetSpellEffect(EFFECT_INDEX_0);
     //Collection of all the seal family flags. No other paladin spell has any of those.
-    return spellInfo->IsFitToFamily(SPELLFAMILY_PALADIN, UI64LIT(0x26000C000A000000)) &&
+    return spellInfo->IsFitToFamily(SPELLFAMILY_PALADIN, uint64(0x26000C000A000000)) &&
         // avoid counting target triggered effect as seal for avoid remove it or seal by it.
         spellEffect && spellEffect->EffectImplicitTargetA == TARGET_SELF;
 }
@@ -219,7 +219,7 @@ inline bool IsElementalShield(SpellEntry const* spellInfo)
 {
     SpellClassOptionsEntry const* classOptions = spellInfo->GetSpellClassOptions();
     // family flags 10 (Lightning), 42 (Earth), 37 (Water), proc shield from T2 8 pieces bonus
-    return (classOptions && classOptions->SpellFamilyFlags & UI64LIT(0x42000000400)) || spellInfo->Id == 23552;
+    return (classOptions && classOptions->SpellFamilyFlags & uint64(0x42000000400)) || spellInfo->Id == 23552;
 }
 
 inline bool IsExplicitDiscoverySpell(SpellEntry const* spellInfo)
