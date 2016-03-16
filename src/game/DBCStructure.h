@@ -1784,7 +1784,6 @@ struct SpellClassOptionsEntry
     ClassFamilyMask SpellFamilyFlags;                       // 2-4      m_spellClassMask NOTE: size is 12 bytes!!!
     uint32    SpellFamilyName;                              // 5        m_spellClassSet
     //char*   Description;                                  // 6 4.0.0
-
     // helpers
 
     bool IsFitToFamilyMask(uint64 familyFlags, uint32 familyFlags2 = 0) const

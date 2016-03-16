@@ -279,13 +279,13 @@ class Quest
         uint32 GetSoundAcceptId() const { return SoundAcceptId; }
         uint32 GetSoundTurnInId() const { return SoundTurnInId; }
 
-        bool   IsRepeatable() const { return m_SpecialFlags & QUEST_SPECIAL_FLAG_REPEATABLE; }
-        bool   IsAutoComplete() const { return QuestMethod ? false : true; }
-        bool   IsDaily() const { return m_QuestFlags & QUEST_FLAGS_DAILY; }
-        bool   IsWeekly() const { return m_QuestFlags & QUEST_FLAGS_WEEKLY; }
-        bool   IsMonthly() const { return m_SpecialFlags & QUEST_SPECIAL_FLAG_MONTHLY; }
-        bool   IsDailyOrWeekly() const { return m_QuestFlags & (QUEST_FLAGS_DAILY | QUEST_FLAGS_WEEKLY); }
-        bool   IsAutoAccept() const { return m_QuestFlags & QUEST_FLAGS_AUTO_ACCEPT; }
+        bool   IsRepeatable() const { return !!(m_SpecialFlags & QUEST_SPECIAL_FLAG_REPEATABLE); }
+        bool   IsAutoComplete() const { return !QuestMethod; }
+        bool   IsDaily() const { return !!(m_QuestFlags & QUEST_FLAGS_DAILY); }
+        bool   IsWeekly() const { return !!(m_QuestFlags & QUEST_FLAGS_WEEKLY); }
+        bool   IsMonthly() const { return !!(m_SpecialFlags & QUEST_SPECIAL_FLAG_MONTHLY); }
+        bool   IsDailyOrWeekly() const { return !!(m_QuestFlags & (QUEST_FLAGS_DAILY | QUEST_FLAGS_WEEKLY)); }
+        bool   IsAutoAccept() const { return !!(m_QuestFlags & QUEST_FLAGS_AUTO_ACCEPT); }
         bool   IsAllowedInRaid() const;
 
         // quest can be fully deactivated and will not be available for any player
