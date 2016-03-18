@@ -571,7 +571,7 @@ void Spell::EffectSchoolDMG(SpellEffectEntry const* effect)
             {
                 // Shadow Word: Death - deals damage equal to damage done to caster
                 if (classOptions && classOptions->SpellFamilyFlags & uint64(0x0000000200000000))
-                    m_caster->CastCustomSpell(m_caster, 32409, &damage, 0, 0, true);
+                    m_caster->CastCustomSpell(m_caster, 32409, &damage, nullptr, nullptr, true);
                 // Improved Mind Blast (Mind Blast in shadow form bonus)
                 else if (m_caster->GetShapeshiftForm() == FORM_SHADOW && (classOptions && classOptions->SpellFamilyFlags & UI64LIT(0x00002000)))
                 {
@@ -627,7 +627,7 @@ void Spell::EffectSchoolDMG(SpellEffectEntry const* effect)
                     // consume from stack dozes not more that have combo-points
                     if (uint32 combo = ((Player*)m_caster)->GetComboPoints())
                     {
-                        Aura* poison = 0;
+                        Aura* poison = nullptr;
                         // Lookup for Deadly poison (only attacker applied)
                         Unit::AuraList const& auras = unitTarget->GetAurasByType(SPELL_AURA_PERIODIC_DAMAGE);
                         for(Unit::AuraList::const_iterator itr = auras.begin(); itr!=auras.end(); ++itr)
@@ -3272,7 +3272,7 @@ void Spell::EffectDummy(SpellEffectEntry const* effect)
                 int32 basePoints0 = damage+int32(rage_modified * effect->EffectDamageMultiplier +
                                                  m_caster->GetTotalAttackPowerValue(BASE_ATTACK)*0.2f);
 
-                m_caster->CastCustomSpell(unitTarget, 20647, &basePoints0, nullptr, nullptr, true, 0);
+                m_caster->CastCustomSpell(unitTarget, 20647, &basePoints0, nullptr, nullptr, true, nullptr);
 
                 // Sudden Death
                 if (m_caster->HasAura(52437))
@@ -3795,7 +3795,7 @@ void Spell::EffectDummy(SpellEffectEntry const* effect)
                         if (Aura* dummy = owner->GetDummyAura(55456))
                             damage += dummy->GetModifier()->m_amount * damage / 100;
                     }
-                    m_caster->CastCustomSpell(unitTarget, 52042, &damage, nullptr, nullptr, true, 0, 0, m_originalCasterGUID);
+                    m_caster->CastCustomSpell(unitTarget, 52042, &damage, nullptr, nullptr, true, nullptr, nullptr, m_originalCasterGUID);
                 }
                 return;
             }
@@ -3804,7 +3804,7 @@ void Spell::EffectDummy(SpellEffectEntry const* effect)
             {
                 if (!unitTarget || unitTarget->GetPowerType() != POWER_MANA)
                     return;
-                m_caster->CastCustomSpell(unitTarget, 52032, &damage, 0, 0, true, 0, 0, m_originalCasterGUID);
+                m_caster->CastCustomSpell(unitTarget, 52032, &damage, nullptr, nullptr, true, nullptr, nullptr, m_originalCasterGUID);
                 return;
             }
             // Flametongue Weapon Proc, Ranks
@@ -9976,7 +9976,7 @@ void Spell::EffectScriptEffect(SpellEffectEntry const* effect)
                     }
 
                     if (spellId)
-                        m_caster->CastCustomSpell(target, spellId, &basePoint, 0, 0, false);
+                        m_caster->CastCustomSpell(target, spellId, &basePoint, nullptr, nullptr, false);
 
                     return;
                 }
