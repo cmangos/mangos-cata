@@ -128,7 +128,8 @@ class MANGOS_DLL_SPEC ChatHandler
             ObjectGuid const& targetGuid = ObjectGuid(), char const* targetName = nullptr,
             char const* channelName = nullptr, uint32 achievementId = 0, const char* addonPrefix = nullptr);
     protected:
-        explicit ChatHandler() : m_session(nullptr) {}      // for CLI subclass
+        explicit ChatHandler() : m_session(nullptr), sentErrorMessage(false)
+        {}      // for CLI subclass
 
         bool hasStringAbbr(const char* name, const char* part);
 
