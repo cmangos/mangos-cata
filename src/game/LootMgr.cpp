@@ -965,7 +965,6 @@ bool Loot::IsLootedFor(Player const* player) const
     if (m_gold != 0)
         return false;
 
-    ObjectGuid const& playerGuid = player->GetObjectGuid();
     for (LootItemList::const_iterator lootItemItr = m_lootItems.begin(); lootItemItr != m_lootItems.end(); ++lootItemItr)
     {
         LootItem* lootItem = *lootItemItr;
@@ -2033,7 +2032,6 @@ LootItem* Loot::GetLootItemInSlot(uint32 itemSlot)
 // Will return available loot item for specific player. Use only for own loot like loot in item and mail
 void Loot::GetLootItemsListFor(Player* player, LootItemList& lootList)
 {
-    ObjectGuid const& playerGuid = player->GetObjectGuid();
     for (LootItemList::const_iterator lootItemItr = m_lootItems.begin(); lootItemItr != m_lootItems.end(); ++lootItemItr)
     {
         LootItem* lootItem = *lootItemItr;
