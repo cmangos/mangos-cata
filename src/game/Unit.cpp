@@ -7483,9 +7483,9 @@ uint32 Unit::SpellHealingBonusDone(Unit* pVictim, SpellEntry const* spellProto, 
                 int ownHotCount = 0;                        // counted HoT types amount, not stacks
 
                 Unit::AuraList const& RejorRegr = pVictim->GetAurasByType(SPELL_AURA_PERIODIC_HEAL);
-                for(Unit::AuraList::const_iterator i = RejorRegr.begin(); i != RejorRegr.end(); ++i)
-                    if ((*i)->GetSpellProto()->GetSpellFamilyName() == SPELLFAMILY_DRUID &&
-                        (*i)->GetCasterGuid() == GetObjectGuid())
+                for (Unit::AuraList::const_iterator itr = RejorRegr.begin(); itr != RejorRegr.end(); ++itr)
+                    if ((*itr)->GetSpellProto()->GetSpellFamilyName() == SPELLFAMILY_DRUID &&
+                            (*itr)->GetCasterGuid() == GetObjectGuid())
                         ++ownHotCount;
 
                 if (ownHotCount)
