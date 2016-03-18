@@ -8619,7 +8619,6 @@ void Spell::EffectScriptEffect(SpellEffectEntry const* effect)
                         default:
                             return;
                     }
-                    return;
                 }
                 case 50238:                                 // The Cleansing: Your Inner Turmoil's On Death Cast on Master
                 {

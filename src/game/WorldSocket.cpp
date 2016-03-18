@@ -270,8 +270,6 @@ bool WorldSocket::ProcessIncomingData()
 
             return false;
         }
-        else
-            return true;
     }
 
     return true;
