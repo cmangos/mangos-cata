@@ -177,7 +177,6 @@ class ArenaTeam
 
         bool LoadArenaTeamFromDB(QueryResult* arenaTeamDataResult);
         bool LoadMembersFromDB(QueryResult* arenaTeamMembersResult);
-        void LoadStatsFromDB(uint32 ArenaTeamId);
 
         void SaveToDB();
 
