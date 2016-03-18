@@ -732,7 +732,7 @@ void AchievementMgr::StartTimedAchievementCriteria(AchievementCriteriaTypes type
         if (startTime && time_t(startTime + achievementCriteria->timeLimit) < time(nullptr))
             continue;
 
-        CriteriaProgress* progress = nullptr;
+        CriteriaProgress* progress;
 
         CriteriaProgressMap::iterator iter = m_criteriaProgress.find(achievementCriteria->ID);
         if (iter == m_criteriaProgress.end())
@@ -2004,7 +2004,7 @@ void AchievementMgr::SetCriteriaProgress(AchievementCriteriaEntry const* criteri
     if (changeValue > max_value)
         changeValue = max_value;
 
-    CriteriaProgress* progress = nullptr;
+    CriteriaProgress* progress;
     uint32 old_value = 0;
     uint32 newValue = 0;
 

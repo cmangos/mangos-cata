@@ -238,28 +238,23 @@ void WorldSession::SendPetitionQueryOpcode(ObjectGuid petitionguid)
 {
     uint32 petitionLowGuid = petitionguid.GetCounter();
 
-    ObjectGuid ownerGuid;
-    std::string name = "NO_NAME_FOR_GUID";
-    uint8 signs = 0;
-
     QueryResult* result = CharacterDatabase.PQuery(
                               "SELECT ownerguid, name, "
                               "  (SELECT COUNT(playerguid) FROM petition_sign WHERE petition_sign.petitionguid = '%u') AS signs "
                               "FROM petition WHERE petitionguid = '%u'", petitionLowGuid, petitionLowGuid);
 
-    if (result)
-    {
-        Field* fields = result->Fetch();
-        ownerGuid = ObjectGuid(HIGHGUID_PLAYER, fields[0].GetUInt32());
-        name      = fields[1].GetCppString();
-        signs     = fields[2].GetUInt8();
-        delete result;
-    }
-    else
+    if (!result)
     {
         DEBUG_LOG("CMSG_PETITION_QUERY failed for petition (GUID: %u)", petitionLowGuid);
         return;
     }
+
+    Field* fields = result->Fetch();
+    ObjectGuid ownerGuid = ObjectGuid(HIGHGUID_PLAYER, fields[0].GetUInt32());
+    std::string name = fields[1].GetCppString();
+    uint8 signs = fields[2].GetUInt8();
+    uint32 type = fields[3].GetUInt32();
+    delete result;
 
     WorldPacket data(SMSG_PETITION_QUERY_RESPONSE, (4 + 8 + name.size() + 1 + 1 + 4 * 12 + 2 + 10));
     data << uint32(petitionLowGuid);                        // guild/team guid (in mangos always same as GUID_LOPART(petition guid)
