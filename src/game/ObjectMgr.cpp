@@ -43,6 +43,8 @@
 #include "DB2Structure.h"
 #include "DB2Stores.h"
 #include "GridNotifiers.h"
+#include "GridNotifiersImpl.h"
+#include "CellImpl.h"
 
 #include <limits>
 #include "ItemEnchantmentMgr.h"
