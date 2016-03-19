@@ -24,7 +24,6 @@
 #include "Player.h"
 #include "WorldPacket.h"
 #include "WorldSession.h"
-#include "UpdateMask.h"
 
 void WorldSession::HandleLearnTalentOpcode(WorldPacket& recv_data)
 {
