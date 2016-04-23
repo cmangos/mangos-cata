@@ -3644,7 +3644,9 @@ void Spell::_handle_immediate_phase()
         if(!spellEffect)
             continue;
         // persistent area auras target only the ground
-        if(spellEffect->Effect == SPELL_EFFECT_PERSISTENT_AREA_AURA)
+        if (m_spellInfo->Effect == SPELL_EFFECT_PERSISTENT_AREA_AURA ||
+                //summon a gameobject at the spell's destination xyz
+                (m_spellInfo->Effect == SPELL_EFFECT_TRANS_DOOR && m_spellInfo->EffectImplicitTargetA == TARGET_AREAEFFECT_GO_AROUND_DEST))
             HandleEffects(nullptr, nullptr, nullptr, SpellEffectIndex(j));
     }
 }
