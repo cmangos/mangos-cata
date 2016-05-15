@@ -376,7 +376,6 @@ Spell::Spell(Unit* caster, SpellEntry const* info, bool triggered, ObjectGuid or
     m_spellInterrupts = m_spellInfo->GetSpellInterrupts();
 
     m_caster = caster;
-    m_selfContainer = nullptr;
     m_referencedFromCurrentSpell = false;
     m_executedCurrently = false;
     m_delayStart = 0;
