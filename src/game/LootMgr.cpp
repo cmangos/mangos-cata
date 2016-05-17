@@ -262,6 +262,9 @@ bool LootStoreItem::Roll(bool rate) const
         return roll_chance_f(chance * (rate ? sWorld.getConfig(CONFIG_FLOAT_RATE_DROP_CURRENCY) : 1.0f));
     else
     {
+        if (needs_quest)
+            return roll_chance_f(chance * (rate ? sWorld.getConfig(CONFIG_FLOAT_RATE_DROP_ITEM_QUEST) : 1.0f));
+
         ItemPrototype const* pProto = ObjectMgr::GetItemPrototype(itemid);
 
         float qualityModifier = pProto && rate ? sWorld.getConfig(qualityToRate[pProto->Quality]) : 1.0f;
