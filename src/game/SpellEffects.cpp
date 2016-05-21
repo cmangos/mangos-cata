@@ -3076,7 +3076,7 @@ void Spell::EffectDummy(SpellEffectEntry const* effect)
                     if (!unitTarget || unitTarget->GetTypeId() != TYPEID_PLAYER)
                         return;
 
-                    m_caster->CastSpell(unitTarget, m_spellInfo->CalculateSimpleValue(eff_idx), true);
+                    m_caster->CastSpell(unitTarget, effect->CalculateSimpleValue(), true);
                     return;
                 }
                 case 71445:                                 // Twilight Bloodbolt
@@ -3142,7 +3142,7 @@ void Spell::EffectDummy(SpellEffectEntry const* effect)
                     if (!unitTarget || unitTarget->GetTypeId() != TYPEID_PLAYER)
                         return;
 
-                    m_caster->CastSpell(unitTarget, m_spellInfo->CalculateSimpleValue(eff_idx), true);
+                    m_caster->CastSpell(unitTarget, effect->CalculateSimpleValue(), true);
                     return;
                 }
                 case 74452:                                 // Conflagration
@@ -9599,7 +9599,7 @@ void Spell::EffectScriptEffect(SpellEffectEntry const* effect)
                     if (!unitTarget)
                         return;
 
-                    unitTarget->RemoveAurasDueToSpell(m_spellInfo->CalculateSimpleValue(eff_idx));
+                    unitTarget->RemoveAurasDueToSpell(effect->CalculateSimpleValue());
                     return;
                 }
                 case 69298:                                 // Cancel Resistant to Blight
@@ -9607,7 +9607,7 @@ void Spell::EffectScriptEffect(SpellEffectEntry const* effect)
                     if (!unitTarget)
                         return;
 
-                    unitTarget->RemoveAurasDueToSpell(m_spellInfo->CalculateSimpleValue(eff_idx));
+                    unitTarget->RemoveAurasDueToSpell(effect->CalculateSimpleValue());
                     return;
                 }
                 case 69377:                                 // Fortitude
