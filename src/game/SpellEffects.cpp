@@ -7885,6 +7885,17 @@ void Spell::EffectScriptEffect(SpellEffectEntry const* effect)
                     unitTarget->CastSpell(unitTarget, 41131, true);
                     break;
                 }
+                case 41213:                                 // Throw Shield
+                case 43416:                                 // Throw Shield
+                case 69222:                                 // Throw Shield
+                case 73076:                                 // Throw Shield
+                {
+                    if (!unitTarget)
+                        return;
+
+                    unitTarget->CastSpell(m_caster, m_spellInfo->CalculateSimpleValue(eff_idx), true);
+                    return;
+                }
                 case 42281:                                 // Sprouting
                 {
                     if (!unitTarget)
@@ -9591,6 +9602,14 @@ void Spell::EffectScriptEffect(SpellEffectEntry const* effect)
                     m_caster->CastSpell(unitTarget, 72588, true);
                     return;
                 }
+                case 69828:                                 // Halls of Reflection Clone
+                {
+                    if (!unitTarget)
+                        return;
+
+                    unitTarget->CastSpell(m_caster, m_spellInfo->CalculateSimpleValue(eff_idx), true);
+                    return;
+                }
                 case 71806:                                 // Glittering Sparks
                 {
                     if (!unitTarget)
@@ -9647,6 +9666,15 @@ void Spell::EffectScriptEffect(SpellEffectEntry const* effect)
                     for (uint32 triggeredSpell = effect->CalculateSimpleValue(); triggeredSpell < m_spellInfo->Id; ++triggeredSpell)
                         unitTarget->CastSpell(unitTarget, triggeredSpell, true);
 
+                    return;
+                }
+                case 72900:                                 // Start Halls of Reflection Quest AE
+                {
+                    if (!unitTarget || unitTarget->GetTypeId() != TYPEID_PLAYER)
+                        return;
+
+                    if (Player* target = (Player*)unitTarget)
+                        target->CastSpell(target, target->GetTeam() == ALLIANCE ? 71351 : 71542, true);
                     return;
                 }
                 case 73142:                                 // Bone Spike Graveyard (during storm)
