@@ -2094,10 +2094,10 @@
     <ClInclude Include="..\..\src\scriptdev2\scripts\kalimdor\dire_maul\dire_maul.h">
       <Filter>scripts\kalimdor\dire_maul</Filter>
     </ClInclude>
-    <ClInclude Include="..\scripts\kalimdor\firelands\firelands.h">
+    <ClInclude Include="..\..\src\scriptdev2\scripts\kalimdor\firelands\firelands.h">
       <Filter>scripts\kalimdor\firelands</Filter>
     </ClInclude>
-    <ClInclude Include="..\s..\src\scriptdev2\cripts\kalimdor\lost_city_of_tolvir\lost_city_of_tolvir.h">
+    <ClInclude Include="..\..\src\scriptdev2\scripts\kalimdor\lost_city_of_tolvir\lost_city_of_tolvir.h">
       <Filter>scripts\kalimdor\lost_city_of_tolvir</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\scriptdev2\scripts\kalimdor\onyxias_lair\onyxias_lair.h">
