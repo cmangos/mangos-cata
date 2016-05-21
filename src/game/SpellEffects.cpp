@@ -3071,6 +3071,14 @@ void Spell::EffectDummy(SpellEffectEntry const* effect)
                     unitTarget->CastSpell(m_caster, 69956, true);
                     return;
                 }
+                case 71307:                                 // Vile Gas
+                {
+                    if (!unitTarget || unitTarget->GetTypeId() != TYPEID_PLAYER)
+                        return;
+
+                    m_caster->CastSpell(unitTarget, m_spellInfo->CalculateSimpleValue(eff_idx), true);
+                    return;
+                }
                 case 71445:                                 // Twilight Bloodbolt
                 case 71471:                                 // Twilight Bloodbolt
                 {
@@ -3127,6 +3135,14 @@ void Spell::EffectDummy(SpellEffectEntry const* effect)
                         return;
 
                     m_caster->CastSpell(unitTarget, m_caster->CanReachWithMeleeAttack(unitTarget) ? 71623 : 72264, true);
+                    return;
+                }
+                case 72285:                                 // Vile Gas Trigger
+                {
+                    if (!unitTarget || unitTarget->GetTypeId() != TYPEID_PLAYER)
+                        return;
+
+                    m_caster->CastSpell(unitTarget, m_spellInfo->CalculateSimpleValue(eff_idx), true);
                     return;
                 }
                 case 74452:                                 // Conflagration
@@ -9578,6 +9594,22 @@ void Spell::EffectScriptEffect(SpellEffectEntry const* effect)
                     unitTarget->CastSpell(unitTarget, effect->CalculateSimpleValue(), true);
                     return;
                 }
+                case 69195:                                 // Pungent Blight
+                {
+                    if (!unitTarget)
+                        return;
+
+                    unitTarget->RemoveAurasDueToSpell(m_spellInfo->CalculateSimpleValue(eff_idx));
+                    return;
+                }
+                case 69298:                                 // Cancel Resistant to Blight
+                {
+                    if (!unitTarget)
+                        return;
+
+                    unitTarget->RemoveAurasDueToSpell(m_spellInfo->CalculateSimpleValue(eff_idx));
+                    return;
+                }
                 case 69377:                                 // Fortitude
                 {
                     if (!unitTarget)
@@ -9639,6 +9671,20 @@ void Spell::EffectScriptEffect(SpellEffectEntry const* effect)
                         return;
 
                     unitTarget->CastCustomSpell(unitTarget, 72371, &missingStacks, &missingStacks, nullptr, true);
+                    return;
+                }
+                case 72219:                                 // Gastric Bloat
+                {
+                    if (!unitTarget || unitTarget->GetTypeId() != TYPEID_PLAYER)
+                        return;
+
+                    uint32 auraStacks = 0;
+                    if (SpellAuraHolder* playerAura = unitTarget->GetSpellAuraHolder(m_spellInfo->Id))
+                        auraStacks = playerAura->GetStackAmount();
+
+                    // cast Gastric Explosion on 10 stacks
+                    if (auraStacks >= 10)
+                        unitTarget->CastSpell(unitTarget, 72227, true, NULL, NULL, m_caster->GetObjectGuid());
                     return;
                 }
                 case 72257:                                 // Remove Marks of the Fallen Champion
