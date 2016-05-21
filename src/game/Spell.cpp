@@ -1941,6 +1941,7 @@ void Spell::SetTargetMap(SpellEffectIndex effIndex, uint32 targetMode, UnitList&
             switch (m_spellInfo->Id)
             {
                 // Do not target current victim
+                case 30769:                                 // Pick Red Riding Hood
                 case 30843:                                 // Enfeeble
                 case 31347:                                 // Doom
                 case 37676:                                 // Insidious Whisper
