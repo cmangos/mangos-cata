@@ -1327,9 +1327,6 @@ void CreatureEventAI::SpellHit(Unit* pUnit, const SpellEntry* pSpell)
 
 void CreatureEventAI::SpellHitTarget(Unit* pTarget, const SpellEntry* pSpell)
 {
-     if (m_IsControlSpellHitTargetEnabled)
-         return;
-     
      for (CreatureEventAIList::iterator i = m_CreatureEventAIList.begin(); i != m_CreatureEventAIList.end(); ++i)
          if (i->Event.event_type == EVENT_T_SPELLHIT_TARGET)
              // If spell id matches (or no spell id) & if spell school matches (or no spell school)
