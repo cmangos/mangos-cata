@@ -5430,12 +5430,13 @@ void Spell::EffectSummonType(SpellEffectEntry const* effect)
         amount = 1;
 
     // Expected Level                                       (Totem, Pet and Critter may not use this)
-    uint32 level = responsibleCaster ? responsibleCaster->getLevel() : m_caster->getLevel();
+    uint32 level = responsibleCaster ? std::max(responsibleCaster->getLevel() + m_spellInfo->EffectMultipleValue[eff_idx], 1.0f) 
+    : std::max(m_caster->getLevel() + m_spellInfo->EffectMultipleValue[eff_idx], 1.0f);
     // level of creature summoned using engineering item based at engineering skill level
     if (m_caster->GetTypeId() == TYPEID_PLAYER && m_CastItem)
     {
         ItemPrototype const* proto = m_CastItem->GetProto();
-        if (proto && proto->RequiredSkill == SKILL_ENGINEERING)
+        if (proto && proto->RequiredSkill == SKILL_ENGINEERING && proto->InventoryType == INVTYPE_TRINKET)
             if (uint16 engineeringSkill = ((Player*)m_caster)->GetSkillValue(SKILL_ENGINEERING))
             {
                 level = engineeringSkill / 5;
@@ -5644,6 +5645,8 @@ bool Spell::DoSummonWild(CreatureSummonPositions& list, SummonPropertiesEntry co
             // Notify original caster if not done already
             if (m_originalCaster && m_originalCaster != m_caster && m_originalCaster->GetTypeId() == TYPEID_UNIT && ((Creature*)m_originalCaster)->AI())
                 ((Creature*)m_originalCaster)->AI()->JustSummoned(summon);
+            else if (m_caster && ((Creature*)m_caster)->AI())
+                ((Creature*)m_caster)->AI()->JustSummoned(summon);
         }
         else
             return false;
@@ -5781,7 +5784,7 @@ bool Spell::DoSummonGuardian(CreatureSummonPositions& list, SummonPropertiesEntr
         spawnCreature->SetCreatorGuid(m_caster->GetObjectGuid());
         spawnCreature->SetUInt32Value(UNIT_CREATED_BY_SPELL, m_spellInfo->Id);
 
-        spawnCreature->InitStatsForLevel(level, m_caster);
+        spawnCreature->InitStatsForLevel(level);
         spawnCreature->GetCharmInfo()->SetPetNumber(pet_number, false);
 
         m_caster->AddGuardian(spawnCreature);
@@ -5903,21 +5906,27 @@ bool Spell::DoSummonPet(SpellEffectEntry const* effect)
         return false;
     }
 
-    uint32 level = m_caster->getLevel();                    // TODO Engineering Pets have also caster-level? (if they exist)
-    Pet* spawnCreature = new Pet(SUMMON_PET);
+    Pet* spawnCreature = new Pet();
 
-    if (m_caster->GetTypeId() == TYPEID_PLAYER && spawnCreature->LoadPetFromDB((Player*)m_caster, pet_entry))
+    if (m_caster->GetTypeId() == TYPEID_PLAYER)
     {
-        // Summon in dest location
-        if (m_targets.m_targetMask & TARGET_FLAG_DEST_LOCATION)
-            spawnCreature->Relocate(m_targets.m_destX, m_targets.m_destY, m_targets.m_destZ, -m_caster->GetOrientation());
+        spawnCreature->setPetType(SUMMON_PET);
 
-        // set timer for unsummon
-        if (m_duration > 0)
-            spawnCreature->SetDuration(m_duration);
+        if (spawnCreature->LoadPetFromDB((Player*)m_caster, pet_entry))
+        {
+            // Summon in dest location
+            if (m_targets.m_targetMask & TARGET_FLAG_DEST_LOCATION)
+                spawnCreature->Relocate(m_targets.m_destX, m_targets.m_destY, m_targets.m_destZ, -m_caster->GetOrientation());
 
-        return false;
+            // set timer for unsummon
+            if (m_duration > 0)
+                spawnCreature->SetDuration(m_duration);
+
+            return false;
+        }
     }
+    else
+        spawnCreature->setPetType(GUARDIAN_PET);
 
     // Summon in dest location
     CreatureCreatePos pos(m_caster->GetMap(), m_targets.m_destX, m_targets.m_destY, m_targets.m_destZ, -m_caster->GetOrientation(), m_caster->GetPhaseMask());
@@ -5933,6 +5942,8 @@ bool Spell::DoSummonPet(SpellEffectEntry const* effect)
         delete spawnCreature;
         return false;
     }
+
+    uint32 level = std::max(m_caster->getLevel() + m_spellInfo->EffectMultipleValue[eff_idx], 1.0f);
 
     spawnCreature->SetRespawnCoord(pos);
 
@@ -5950,7 +5961,7 @@ bool Spell::DoSummonPet(SpellEffectEntry const* effect)
     spawnCreature->SetCreatorGuid(m_caster->GetObjectGuid());
     spawnCreature->SetUInt32Value(UNIT_CREATED_BY_SPELL, m_spellInfo->Id);
 
-    spawnCreature->InitStatsForLevel(level, m_caster);
+    spawnCreature->InitStatsForLevel(level);
 
     spawnCreature->GetCharmInfo()->SetPetNumber(pet_number, false);
 
@@ -6721,7 +6732,7 @@ void Spell::EffectSummonPet(SpellEffectEntry const* effect)
     if (m_caster->IsFFAPvP())
         NewSummon->SetFFAPvP(true);
 
-    NewSummon->InitStatsForLevel(petlevel, m_caster);
+    NewSummon->InitStatsForLevel(petlevel);
     NewSummon->InitPetCreateSpells();
     NewSummon->InitLevelupSpellsForLevel();
     NewSummon->InitTalentForLevel();
@@ -11151,8 +11162,13 @@ void Spell::EffectSummonDeadPet(SpellEffectEntry const* /*effect*/)
         return;
     if (pet->isAlive())
         return;
-    if (damage < 0)
-        return;
+
+    if (_player->GetDistance(pet) >= 2.0f)
+    {
+        float px, py, pz;
+        m_caster->GetClosePoint(px, py, pz, pet->GetObjectBoundingRadius());
+        ((Unit*)pet)->NearTeleportTo(px, py, pz, -m_caster->GetOrientation());
+    }
 
     pet->SetUInt32Value(UNIT_DYNAMIC_FLAGS, UNIT_DYNFLAG_NONE);
     pet->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SKINNABLE);
@@ -11977,7 +11993,7 @@ void Spell::EffectCreateTamedPet(SpellEffectEntry const* effect)
     if (unitTarget->IsFFAPvP())
         newTamedPet->SetFFAPvP(true);
 
-    newTamedPet->InitStatsForLevel(unitTarget->getLevel(), unitTarget);
+    newTamedPet->InitStatsForLevel(unitTarget->getLevel());
     newTamedPet->InitPetCreateSpells();
     newTamedPet->InitLevelupSpellsForLevel();
     newTamedPet->InitTalentForLevel();
