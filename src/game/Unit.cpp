@@ -2432,6 +2432,13 @@ void Unit::CalculateDamageAbsorbAndResist(Unit* pCaster, SpellSchoolMask schoolM
                         currentAbsorb = max_absorb;
                     break;
                 }
+                // Timeloop.
+                if (spellProto->Id == 105984)
+                {
+                    preventDeathSpell = (*i)->GetSpellProto();
+                    preventDeathAmount = (*i)->GetModifier()->m_amount;
+                    continue;
+                }
                 break;
             }
             case SPELLFAMILY_DRUID:
@@ -2469,6 +2476,12 @@ void Unit::CalculateDamageAbsorbAndResist(Unit* pCaster, SpellSchoolMask schoolM
                         preventDeathSpell = (*i)->GetSpellProto();
                     }
                     // always skip this spell in charge dropping, absorb amount calculation since it has chance as m_amount and doesn't need to absorb any damage
+                    continue;
+                // Hodir Protective Gaze.
+                if (spellProto->Id == 64174)
+                {
+                    preventDeathSpell = (*i)->GetSpellProto();
+                    preventDeathAmount = (*i)->GetModifier()->m_amount;
                     continue;
                 }
                 break;
@@ -2725,6 +2738,18 @@ void Unit::CalculateDamageAbsorbAndResist(Unit* pCaster, SpellSchoolMask schoolM
     {
         switch(preventDeathSpell->GetSpellFamilyName())
         {
+            case SPELLFAMILY_GENERIC:
+            {
+                // Timeloop.
+                if (preventDeathSpell->Id == 105984)
+                {
+                    int32 healAmount = GetMaxHealth() * preventDeathAmount / 100;
+                    CastCustomSpell(this, 105992, &healAmount, NULL, NULL, true);
+                    RemoveAurasDueToSpell(preventDeathSpell->Id);
+                    RemainingDamage = 0;
+                }
+                break;
+            }
             // Cheat Death
             case SPELLFAMILY_ROGUE:
             {
@@ -2736,6 +2761,14 @@ void Unit::CalculateDamageAbsorbAndResist(Unit* pCaster, SpellSchoolMask schoolM
                     // with health > 10% lost health until health==10%, in other case no losses
                     uint32 health10 = GetMaxHealth() / 10;
                     RemainingDamage = GetHealth() > health10 ? GetHealth() - health10 : 0;
+                }
+                break;
+                // Hodir Protective Gaze.
+                if (preventDeathSpell->SpellIconID == 3017)
+                {
+                    CastSpell(this, 64175, true);
+                    RemoveAurasDueToSpell(preventDeathSpell->Id);
+                    RemainingDamage = 0;
                 }
                 break;
             }
