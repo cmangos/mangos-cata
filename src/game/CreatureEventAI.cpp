@@ -1056,6 +1056,8 @@ void CreatureEventAI::ProcessAction(CreatureEventAI_Action const& action, uint32
         case ACTION_T_SET_CURRENT_WAYPOINT:
         {
              m_creature->GetMotionMaster()->Clear();
+             m_creature->clearUnitState(UNIT_STAT_WAYPOINT_PAUSED);
+             m_creature->GetMotionMaster()->MoveWaypoint();
              SetCurrentWaypoint(action.setCurrentWaypoint.uiPointId);
              break;
         }
