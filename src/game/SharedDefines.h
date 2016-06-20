@@ -1137,7 +1137,8 @@ enum SpellCastResult
     SPELL_FAILED_EXCEEDED_WEEKLY_USAGE = 201,
     SPELL_FAILED_UNKNOWN = 203,
 
-    SPELL_CAST_OK = 255                                     // custom value, don't must be send to client
+    SPELL_NOT_FOUND = 254,                                  // custom value, don't must be send to client
+    SPELL_CAST_OK = 255
 };
 
 // Used in addition to SPELL_FAILED_CUSTOM_ERROR
