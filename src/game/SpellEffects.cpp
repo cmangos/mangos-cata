@@ -6641,10 +6641,8 @@ void Spell::EffectSummonPet(SpellEffectEntry const* effect)
 {
     uint32 petentry = effect->EffectMiscValue;
 
-    Pet* OldSummon = m_caster->GetPet();
-
     // if pet requested type already exist
-    if (OldSummon)
+    if (Pet* OldSummon = m_caster->GetPet())
     {
         if ((petentry == 0 || OldSummon->GetEntry() == petentry) && OldSummon->getPetType() != SUMMON_PET)
         {
@@ -6708,16 +6706,20 @@ void Spell::EffectSummonPet(SpellEffectEntry const* effect)
     NewSummon->SetRespawnCoord(pos);
 
     uint32 petlevel = std::max(m_caster->getLevel() + effect->EffectMultipleValue, 1.0f);
-    NewSummon->setPetType(SUMMON_PET);
 
     uint32 faction = m_caster->getFaction();
+
     if (m_caster->GetTypeId() == TYPEID_UNIT)
     {
+        NewSummon->setPetType(GUARDIAN_PET);
+
         if (((Creature*)m_caster)->IsTotem())
             NewSummon->GetCharmInfo()->SetReactState(REACT_AGGRESSIVE);
         else
             NewSummon->GetCharmInfo()->SetReactState(REACT_DEFENSIVE);
     }
+    else
+        NewSummon->setPetType(SUMMON_PET);
 
     NewSummon->SetOwnerGuid(m_caster->GetObjectGuid());
     NewSummon->SetCreatorGuid(m_caster->GetObjectGuid());
