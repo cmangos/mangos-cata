@@ -202,6 +202,7 @@ void PetAI::UpdateAI(const uint32 diff)
             {
                 m_creature->AddCreatureSpellCooldown(spell_id);
 
+                m_creature->RemoveSpellsCausingAura(SPELL_AURA_MOD_STEALTH);
                 spell->SpellStart(&(spell->m_targets));
             }
             else
@@ -316,6 +317,7 @@ void PetAI::UpdateAI(const uint32 diff)
 
             m_creature->AddCreatureSpellCooldown(spell->m_spellInfo->Id);
 
+            m_creature->RemoveSpellsCausingAura(SPELL_AURA_MOD_STEALTH);
             spell->SpellStart(&targets);
         }
 
@@ -346,7 +348,10 @@ void PetAI::UpdateAI(const uint32 diff)
         {
             if (DoMeleeAttackIfReady())
                 // if pet misses its target, it will also be the first in threat list
+            {
+                m_creature->RemoveSpellsCausingAura(SPELL_AURA_MOD_STEALTH);
                 victim->AddThreat(m_creature);
+            }
             else
                 AttackStart(victim);
         }
