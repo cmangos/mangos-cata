@@ -8267,8 +8267,13 @@ void Unit::Mount(uint32 mount, uint32 spellId)
                 ((Player*)this)->UnsummonPetTemporaryIfAny();
             // Normal case (Unsummon only permanent pet)
             else if (Pet* pet = GetPet())
-                pet->SetModeFlags(PET_MODE_DISABLE_ACTIONS);
-
+            {
+                if (pet->isControlled() && (!(pet->isTemporarySummoned() || ((Player*)this)->InArena())
+                    || sWorld.getConfig(CONFIG_BOOL_PET_UNSUMMON_AT_MOUNT)))
+                    ((Player*)this)->UnsummonPetTemporaryIfAny();
+                else
+                    pet->SetModeFlags(PET_MODE_DISABLE_ACTIONS);
+            }
         }
 
         float height = ((Player*)this)->GetCollisionHeight(true);
@@ -8293,10 +8298,6 @@ void Unit::Unmount(bool from_aura)
         WorldPacket data(SMSG_DISMOUNT, 8);
         data << GetPackGUID();
         SendMessageToSet(&data, true);
-
-        if (Pet* pet = GetPet())
-            if (CharmInfo* charmInfo = pet->GetCharmInfo())
-                pet->SetModeFlags(PetModeFlags(charmInfo->GetReactState() | charmInfo->GetCommandState() * 0x100));
     }
 
     // only resummon old pet if the player is already added to a map
@@ -8304,7 +8305,14 @@ void Unit::Unmount(bool from_aura)
     // (it could probably happen when logging in after a previous crash)
     if (GetTypeId() == TYPEID_PLAYER)
     {
-        ((Player*)this)->ResummonPetTemporaryUnSummonedIfAny();
+        if (Pet* pet = GetPet())
+        {
+            // Get reaction state and display appropriately
+            if (CharmInfo* charmInfo = pet->GetCharmInfo())
+                pet->SetModeFlags(PetModeFlags(charmInfo->GetReactState() | charmInfo->GetCommandState() * 0x100));
+        }
+        else
+            ((Player*)this)->ResummonPetTemporaryUnSummonedIfAny();
 
         float height = ((Player*)this)->GetCollisionHeight(false);
         if (height)
