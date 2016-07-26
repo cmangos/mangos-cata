@@ -18,22 +18,25 @@
 
 add_definitions(-DDT_POLYREF64)
 
-set(DETOUR_SRCS
-    DetourAlloc.cpp
-    DetourCommon.cpp
-    DetourNavMeshBuilder.cpp
-    DetourNavMesh.cpp
-    DetourNavMeshQuery.cpp
-    DetourNode.cpp
+set(RECAST_SRCS
+    Recast.cpp
+    RecastAlloc.cpp
+    RecastArea.cpp
+    RecastContour.cpp
+    RecastFilter.cpp
+    RecastMesh.cpp
+    RecastMeshDetail.cpp
+    RecastRasterization.cpp
+    RecastRegion.cpp
 )
 
 include_directories(
   ${CMAKE_CURRENT_SOURCE_DIR}
   ${CMAKE_SOURCE_DIR}/dep/recastnavigation
-  ${CMAKE_SOURCE_DIR}/dep/recastnavigation/Detour
-  ${CMAKE_SOURCE_DIR}/dep/recastnavigation/Detour/Include
+  ${CMAKE_SOURCE_DIR}/dep/recastnavigation/Recast
+  ${CMAKE_SOURCE_DIR}/dep/recastnavigation/Recast/Include
 )
 
-add_library(detour STATIC
-  ${DETOUR_SRCS}
+add_library(recast STATIC
+  ${RECAST_SRCS}
 )

@@ -15,25 +15,4 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-
-add_definitions(-DDT_POLYREF64)
-
-set(DETOUR_SRCS
-    DetourAlloc.cpp
-    DetourCommon.cpp
-    DetourNavMeshBuilder.cpp
-    DetourNavMesh.cpp
-    DetourNavMeshQuery.cpp
-    DetourNode.cpp
-)
-
-include_directories(
-  ${CMAKE_CURRENT_SOURCE_DIR}
-  ${CMAKE_SOURCE_DIR}/dep/recastnavigation
-  ${CMAKE_SOURCE_DIR}/dep/recastnavigation/Detour
-  ${CMAKE_SOURCE_DIR}/dep/recastnavigation/Detour/Include
-)
-
-add_library(detour STATIC
-  ${DETOUR_SRCS}
-)
+add_subdirectory(Source)
