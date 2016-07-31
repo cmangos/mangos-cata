@@ -6128,7 +6128,7 @@ void Spell::EffectDispel(SpellEffectEntry const* effect)
                 if (!holder->IsPositive())
                     positive = false;
                 else
-                    positive = !holder->GetSpellProto()->HasAttribute(SPELL_ATTR_EX_NEGATIVE);
+                    positive = !holder->GetSpellProto()->HasAttribute(SPELL_ATTR_NEGATIVE);
 
                 // do not remove positive auras if friendly target
                 //               negative auras if non-friendly target

@@ -916,7 +916,7 @@ bool IsPositiveEffect(SpellEntry const* spellproto, SpellEffectIndex effIndex)
                         spellproto->GetSpellFamilyName() == SPELLFAMILY_GENERIC)
                         return false;
                     // but not this if this first effect (don't found better check)
-                    if (spellproto->HasAttribute(SPELL_ATTR_UNK26) && effIndex == EFFECT_INDEX_0)
+                    if (spellproto->HasAttribute(SPELL_ATTR_NEGATIVE) && effIndex == EFFECT_INDEX_0)
                         return false;
                     break;
                 case SPELL_AURA_TRANSFORM:
@@ -1022,7 +1022,7 @@ bool IsPositiveEffect(SpellEntry const* spellproto, SpellEffectIndex effIndex)
         return false;
 
     // AttributesEx check
-    if (spellproto->HasAttribute(SPELL_ATTR_EX_NEGATIVE))
+    if (spellproto->HasAttribute(SPELL_ATTR_NEGATIVE))
         return false;
 
     // ok, positive
