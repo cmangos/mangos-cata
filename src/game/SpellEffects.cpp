@@ -5407,6 +5407,10 @@ void Spell::EffectApplyAreaAura(SpellEffectEntry const* effect)
 
 void Spell::EffectSummonType(SpellEffectEntry const* effect)
 {
+    // if this spell already have an aura applied cancel the summon
+    if (m_caster->HasAura(m_spellInfo->Id))
+        return;
+
     uint32 prop_id = effect->EffectMiscValueB;
     SummonPropertiesEntry const *summon_prop = sSummonPropertiesStore.LookupEntry(prop_id);
     if(!summon_prop)
