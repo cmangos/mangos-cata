@@ -6759,8 +6759,7 @@ void Spell::EffectSummonPet(SpellEffectEntry const* effect)
     {
         NewSummon->SetUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
 
-        // I very much doubt this flag has anything to do with sanctuaries as this flag is needed to be able to bandage pet after load from db
-        NewSummon->SetByteValue(UNIT_FIELD_BYTES_2, 1, UNIT_BYTE2_FLAG_SANCTUARY | UNIT_BYTE2_FLAG_UNK4 | UNIT_BYTE2_FLAG_UNK5);
+        NewSummon->SetByteValue(UNIT_FIELD_BYTES_2, 1, UNIT_BYTE2_FLAG_SUPPORTABLE | UNIT_BYTE2_FLAG_AURAS);
         NewSummon->SetUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP_ATTACKABLE);
 
         NewSummon->GetCharmInfo()->SetPetNumber(pet_number, true);
