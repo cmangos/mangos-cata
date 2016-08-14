@@ -2169,7 +2169,7 @@ class MANGOS_DLL_SPEC Unit : public WorldObject
         bool TakePossessOf(Unit* possessed);
 
         // Take possession of a new spawned unit
-        Unit* TakePossessOf(SpellEntry const* spellEntry, SummonPropertiesEntry const* summonProp, uint32 effIdx, float x, float y, float z, float ang);
+        Unit* TakePossessOf(SpellEntry const* spellEntry, SummonPropertiesEntry const* summonProp, SpellEffectEntry const* spellEffect, float x, float y, float z, float ang);
 
         // Reset control to player
         void ResetControlState(bool attackCharmer = true);

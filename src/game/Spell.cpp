@@ -1930,7 +1930,7 @@ void Spell::SetTargetMap(SpellEffectIndex effIndex, uint32 targetMode, UnitList&
                     }
 
                     if (!prev->IsWithinLOSInMap(*next)
-                        || ((m_spellInfo->HasAttribute(SPELL_ATTR_EX6_IGNORE_CC_TARGETS) && !(*next)->CanFreeMove()))
+                        || (m_spellInfo->HasAttribute(SPELL_ATTR_EX6_IGNORE_CC_TARGETS) && !(*next)->CanFreeMove()))
                     {
                         ++next;
                         continue;
@@ -1945,7 +1945,6 @@ void Spell::SetTargetMap(SpellEffectIndex effIndex, uint32 targetMode, UnitList&
                 }
             }
             break;
-        }
         case TARGET_ALL_ENEMY_IN_AREA:
             FillAreaTargets(targetUnitMap, radius, PUSH_DEST_CENTER, SPELL_TARGETS_AOE_DAMAGE);
 
@@ -2998,7 +2997,9 @@ void Spell::SetTargetMap(SpellEffectIndex effIndex, uint32 targetMode, UnitList&
     // remove caster from the list if required by attribute
     if (m_spellInfo->HasAttribute(SPELL_ATTR_EX_CANT_TARGET_SELF))
     {
-        if (targetMode != TARGET_SELF && targetMode != TARGET_SELF2 && m_spellInfo->Effect[effIndex] != SPELL_EFFECT_SUMMON)
+        const SpellEffectEntry* spellEffect = m_spellInfo->GetSpellEffect(effIndex);
+
+        if (targetMode != TARGET_SELF && targetMode != TARGET_SELF2 && (spellEffect && spellEffect->Effect != SPELL_EFFECT_SUMMON))
             targetUnitMap.remove(m_caster);
     }
 
@@ -3075,6 +3076,7 @@ void Spell::SetTargetMap(SpellEffectIndex effIndex, uint32 targetMode, UnitList&
         for (std::list<GameObject*>::iterator iter = tempTargetGOList.begin(); iter != tempTargetGOList.end(); ++iter)
             AddGOTarget(*iter, effIndex);
     }
+}
 }
 
 SpellCastResult Spell::PreCastCheck(Aura* triggeredByAura /*= nullptr*/)
@@ -3676,9 +3678,9 @@ void Spell::_handle_immediate_phase()
         if(!spellEffect)
             continue;
         // persistent area auras target only the ground
-        if (m_spellInfo->Effect == SPELL_EFFECT_PERSISTENT_AREA_AURA ||
+        if (spellEffect->Effect == SPELL_EFFECT_PERSISTENT_AREA_AURA ||
                 //summon a gameobject at the spell's destination xyz
-                (m_spellInfo->Effect == SPELL_EFFECT_TRANS_DOOR && m_spellInfo->EffectImplicitTargetA == TARGET_AREAEFFECT_GO_AROUND_DEST))
+                (spellEffect->Effect == SPELL_EFFECT_TRANS_DOOR && spellEffect->EffectImplicitTargetA == TARGET_AREAEFFECT_GO_AROUND_DEST))
             HandleEffects(nullptr, nullptr, nullptr, SpellEffectIndex(j));
     }
 }
@@ -6520,7 +6522,7 @@ SpellCastResult Spell::CheckPetCast(Unit* target)
                     return SPELL_FAILED_BAD_IMPLICIT_TARGETS;
                 break;
             }
-            else if (m_spellInfo->EffectImplicitTargetA[i] == TARGET_SCRIPT_COORDINATES)
+            else if (spellEffect->EffectImplicitTargetA == TARGET_SCRIPT_COORDINATES)
             {
                 script = true;
                 continue;

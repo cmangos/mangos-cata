@@ -6393,7 +6393,10 @@ void Player::CheckAreaExploreAndOutdoor()
             SpellEntry const* spellInfo = sSpellStore.LookupEntry(itr->first);
             if (!spellInfo || !IsNeedCastSpellAtOutdoor(spellInfo) || HasAura(itr->first))
                 continue;
-            if ((spellInfo->Stances || spellInfo->StancesNot) && !IsNeedCastSpellAtFormApply(spellInfo, GetShapeshiftForm()))
+
+            SpellShapeshiftEntry const* shapeShift = spellInfo->GetSpellShapeshift();
+
+            if (!shapeShift || (shapeShift->Stances || shapeShift->StancesNot) && !IsNeedCastSpellAtFormApply(spellInfo, GetShapeshiftForm()))
                 continue;
             CastSpell(this, itr->first, true, nullptr);
         }

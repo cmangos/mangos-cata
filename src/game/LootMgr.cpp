@@ -375,7 +375,6 @@ LootItem::LootItem(LootStoreItem const& li, uint32 _lootSlot, uint32 threshold)
     currentLooterPass = false;
     isNotVisibleForML = false;
     checkRollNeed     = false;
-}
 
     if (lootItemType == LOOTITEM_TYPE_CURRENCY)
     {

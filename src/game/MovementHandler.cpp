@@ -22,6 +22,7 @@
 #include "Opcodes.h"
 #include "Log.h"
 #include "Player.h"
+#include "SpellAuras.h"
 #include "MapManager.h"
 #include "Transports.h"
 #include "BattleGround/BattleGround.h"

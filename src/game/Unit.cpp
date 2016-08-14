@@ -1879,11 +1879,6 @@ void Unit::CalculateMeleeDamage(Unit* pVictim, CalcDamageInfo* damageInfo, Weapo
 
             if (mod != 0)
                 damageInfo->damage = int32((damageInfo->damage) * float((100.0f + mod) / 100.0f));
-			
-            uint32 crTypeMask = damageInfo->target->GetCreatureTypeMask();
-			
-            // Increase crit damage from SPELL_AURA_MOD_CRIT_PERCENT_VERSUS
-            mod += GetTotalAuraModifierByMiscMask(SPELL_AURA_MOD_CRIT_PERCENT_VERSUS, crTypeMask);
 
             // Resilience - reduce crit damage
             uint32 reduction_affected_damage = CalcNotIgnoreDamageReduction(damageInfo->damage, damageInfo->damageSchoolMask);
@@ -3091,7 +3086,7 @@ MeleeHitOutcome Unit::RollMeleeOutcomeAgainst(const Unit* pVictim, WeaponAttackT
         return MELEE_HIT_CRIT;
     }
 
-    tmp = (victimDefenseSkill < victimMaxSkillValueForLevel) ? victimDefenseSkill : victimMaxSkillValueForLevel;
+    //tmp = (victimDefenseSkill < victimMaxSkillValueForLevel) ? victimDefenseSkill : victimMaxSkillValueForLevel;
 
     // mobs can score crushing blows if they're 4 or more levels above victim
     // having defense above your maximum (from items, talents etc.) has no effect
@@ -4605,7 +4600,7 @@ bool Unit::RemoveNoStackAurasDueToAuraHolder(SpellAuraHolder* holder)
             if (triggeredBy && sSpellMgr.IsSpellCanAffectSpell(triggeredBy, i_spellProto)) // check if this spell can be triggered by any talent aura
                 continue;
 
-            if (sSpellMgr.IsNoStackSpellDueToSpell(spellProto, i_spellProto))
+            if (sSpellMgr.IsNoStackSpellDueToSpell(spellProto->Id, i_spellProto->Id))
             {
                 // Its a parent aura (create this aura in ApplyModifier)
                 if ((*i).second->IsInUse())
@@ -4957,7 +4952,7 @@ void Unit::RemoveAurasOnCast(SpellEntry const* castedSpellEntry)
         SpellEntry const* spellEntry = holder->GetSpellProto();
         bool removeThisHolder = false;
 
-        if (spellEntry->AuraInterruptFlags & AURA_INTERRUPT_FLAG_UNK2)
+        if (spellEntry->GetAuraInterruptFlags() & AURA_INTERRUPT_FLAG_UNK2)
         {
             if (castedSpellEntry->HasAttribute(SPELL_ATTR_EX_NOT_BREAK_STEALTH))
             {
@@ -7443,9 +7438,6 @@ uint32 Unit::SpellCriticalDamageBonus(SpellEntry const* spellProto, uint32 damag
     }
     else
         critPctDamageMod += pVictim->GetTotalAuraModifierByMiscMask(SPELL_AURA_MOD_ATTACKER_SPELL_CRIT_DAMAGE, GetSpellSchoolMask(spellProto));
-
-    uint32 creatureTypeMask = pVictim->GetCreatureTypeMask();
-    critPctDamageMod += GetTotalAuraMultiplierByMiscMask(SPELL_AURA_MOD_CRIT_PERCENT_VERSUS, creatureTypeMask);
 
     if (critPctDamageMod != 0)
         crit_bonus = int32(crit_bonus * float((100.0f + critPctDamageMod) / 100.0f));
@@ -12174,9 +12166,9 @@ void Unit::SendCollisionHeightUpdate(float height)
 }
 
 // This will create a new creature and set the current unit as the controller of that new creature
-Unit* Unit::TakePossessOf(SpellEntry const* spellEntry, SummonPropertiesEntry const* summonProp, uint32 effIdx, float x, float y, float z, float ang)
+Unit* Unit::TakePossessOf(SpellEntry const* spellEntry, SummonPropertiesEntry const* summonProp, SpellEffectEntry const* spellEffect, float x, float y, float z, float ang)
 {
-    int32 const& creatureEntry = spellEntry->EffectMiscValue[effIdx];
+    int32 const& creatureEntry = spellEffect->EffectMiscValue;
     CreatureInfo const* cinfo = ObjectMgr::GetCreatureTemplate(creatureEntry);
     if (!cinfo)
     {

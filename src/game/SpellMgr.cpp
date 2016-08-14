@@ -2307,8 +2307,8 @@ bool SpellMgr::IsNoStackSpellDueToSpell(uint32 spellId_1, uint32 spellId_2) cons
             if (classOptions2 && classOptions2->SpellFamilyName == SPELLFAMILY_MAGE )
             {
                 // Blizzard & Chilled (and some other stacked with blizzard spells
-                if (classOptions1 && (classOptions1->SpellFamilyFlags & uint64(0x80)) && (classOptions2->SpellFamilyFlags & UI64LIT(0x100000)) ||
-                    (classOptions2->SpellFamilyFlags & uint64(0x80)) && (classOptions1->SpellFamilyFlags & UI64LIT(0x100000)) )
+                if (classOptions1 && (classOptions1->SpellFamilyFlags & uint64(0x80)) && (classOptions2->SpellFamilyFlags & uint64(0x100000)) ||
+                    (classOptions2->SpellFamilyFlags & uint64(0x80)) && (classOptions1->SpellFamilyFlags & uint64(0x100000)) )
                     return false;
 
                 // Blink & Improved Blink
@@ -4742,7 +4742,7 @@ int32 GetDiminishingReturnsLimitDuration(DiminishingGroup group, SpellEntry cons
         case SPELLFAMILY_HUNTER:
         {
             // Wyvern Sting
-            if (classOptions && classOptions->SpellFamilyFlags & Uuint64I64LIT(0x0000100000000000))
+            if (classOptions && classOptions->SpellFamilyFlags & uint64(0x0000100000000000))
                 return 6000;
             break;
         }

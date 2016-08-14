@@ -121,8 +121,7 @@ bool WorldSocket::Open()
 
     data << ServerToClient;
 
-    if (SendPacket(data) == -1)
-        return -1;
+    SendPacket(data);
 
     // Send startup packet.
     WorldPacket packet (SMSG_AUTH_CHALLENGE, 37);

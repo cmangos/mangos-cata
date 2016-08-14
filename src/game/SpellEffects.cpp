@@ -433,7 +433,7 @@ void Spell::EffectSchoolDMG(SpellEffectEntry const* effect)
             case SPELLFAMILY_MAGE:
                 // remove Arcane Blast buffs at any non-Arcane Blast arcane damage spell.
                 // NOTE: it removed at hit instead cast because currently spell done-damage calculated at hit instead cast
-                if ((m_spellInfo->SchoolMask & SPELL_SCHOOL_MASK_ARCANE) && !(classOptions && classOptions->SpellFamilyFlags & UI64LIT(0x20000000)))
+                if ((m_spellInfo->SchoolMask & SPELL_SCHOOL_MASK_ARCANE) && !(classOptions && classOptions->SpellFamilyFlags & uint64(0x20000000)))
                     m_caster->RemoveAurasDueToSpell(36032); // Arcane Blast buff
                 break;
             case SPELLFAMILY_WARRIOR:
@@ -572,7 +572,7 @@ void Spell::EffectSchoolDMG(SpellEffectEntry const* effect)
                 if (classOptions && classOptions->SpellFamilyFlags & uint64(0x0000000200000000))
                     m_caster->CastCustomSpell(m_caster, 32409, &damage, nullptr, nullptr, true);
                 // Improved Mind Blast (Mind Blast in shadow form bonus)
-                else if (m_caster->GetShapeshiftForm() == FORM_SHADOW && (classOptions && classOptions->SpellFamilyFlags & UI64LIT(0x00002000)))
+                else if (m_caster->GetShapeshiftForm() == FORM_SHADOW && (classOptions && classOptions->SpellFamilyFlags & uint64(0x00002000)))
                 {
                     Unit::AuraList const& ImprMindBlast = m_caster->GetAurasByType(SPELL_AURA_ADD_FLAT_MODIFIER);
                     for (Unit::AuraList::const_iterator i = ImprMindBlast.begin(); i != ImprMindBlast.end(); ++i)
@@ -776,10 +776,10 @@ void Spell::EffectSchoolDMG(SpellEffectEntry const* effect)
                     damage += count * int32(average * IN_MILLISECONDS) / m_caster->GetAttackTime(BASE_ATTACK);
                 }
                 // Shield of Righteousness
-                else if (classOptions && classOptions->SpellFamilyFlags & uint64(0x0010000000000000))
+                /*else if (classOptions && classOptions->SpellFamilyFlags & uint64(0x0010000000000000))
                 {
                     damage += int32(m_caster->GetShieldBlockValue());
-                }
+                }*/
                 // Judgement
                 else if (m_spellInfo->Id == 54158)
                 {
@@ -5452,8 +5452,8 @@ void Spell::EffectSummonType(SpellEffectEntry const* effect)
         amount = 1;
 
     // Expected Level                                       (Totem, Pet and Critter may not use this)
-    uint32 level = responsibleCaster ? std::max(responsibleCaster->getLevel() + m_spellInfo->EffectMultipleValue[eff_idx], 1.0f) 
-    : std::max(m_caster->getLevel() + m_spellInfo->EffectMultipleValue[eff_idx], 1.0f);
+    uint32 level = responsibleCaster ? std::max(responsibleCaster->getLevel() + effect->EffectMultipleValue, 1.0f) 
+    : std::max(m_caster->getLevel() + effect->EffectMultipleValue, 1.0f);
     // level of creature summoned using engineering item based at engineering skill level
     if (m_caster->GetTypeId() == TYPEID_PLAYER && m_CastItem)
     {
@@ -5529,7 +5529,7 @@ void Spell::EffectSummonType(SpellEffectEntry const* effect)
                     if (prop_id == 61)
                     {
                         // Totem cases
-                        if (CreatureInfo const* cInfo = ObjectMgr::GetCreatureTemplate(m_spellInfo->EffectMiscValue[eff_idx]))
+                        if (CreatureInfo const* cInfo = ObjectMgr::GetCreatureTemplate(effect->EffectMiscValue))
                         {
                             if (cInfo->CreatureType == CREATURE_TYPE_TOTEM)
                             {
@@ -5913,7 +5913,7 @@ bool Spell::DoSummonPossessed(CreatureSummonPositions& list, SummonPropertiesEnt
 
     uint32 const& creatureEntry = effect->EffectMiscValue;
 
-    Unit* newUnit = m_caster->TakePossessOf(m_spellInfo, prop, effIdx, list[0].x, list[0].y, list[0].z, m_caster->GetOrientation());
+    Unit* newUnit = m_caster->TakePossessOf(m_spellInfo, prop, effect, list[0].x, list[0].y, list[0].z, m_caster->GetOrientation());
     if (!newUnit)
     {
         sLog.outError("Spell::DoSummonPossessed: creature entry %d for spell %u could not be summoned.", creatureEntry, m_spellInfo->Id);
@@ -5982,7 +5982,7 @@ bool Spell::DoSummonPet(SpellEffectEntry const* effect)
         return false;
     }
 
-    uint32 level = std::max(m_caster->getLevel() + m_spellInfo->EffectMultipleValue[eff_idx], 1.0f);
+    uint32 level = std::max(m_caster->getLevel() + effect->EffectMultipleValue, 1.0f);
 
     spawnCreature->SetRespawnCoord(pos);
 

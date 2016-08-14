@@ -1126,7 +1126,8 @@ void Aura::HandleAddModifier(bool apply, bool Real)
         else if (opt && spellProto->Id == 37212)
         {
             // Flametongue Weapon (Passive)
-uint64        }
+            const_cast<SpellClassOptionsEntry*>(opt)->SpellFamilyFlags = ClassFamilyMask(uint64(0x0000000000200000));
+        }
     }
 
     ((Player*)GetTarget())->AddSpellMod(this, apply);
@@ -7598,7 +7599,7 @@ void Aura::PeriodicTick()
                 // apply damage part to caster if needed (ex. health funnel)
                 if (target != pCaster && spellProto->SpellVisual[0] == 163)
                 {
-                    uint32 damage = spellProto->manaPerSecond;
+                    uint32 damage = spellProto->GetManaPerSecond();
                     uint32 absorb = 0;
 
                     pCaster->DealDamageMods(pCaster, damage, &absorb);
