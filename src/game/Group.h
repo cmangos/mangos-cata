@@ -177,7 +177,7 @@ class MANGOS_DLL_SPEC Group
         uint32 GetId() const { return m_Id; }
         ObjectGuid GetObjectGuid() const { return ObjectGuid(HIGHGUID_GROUP, GetId()); }
         bool IsFull() const { return (m_groupType == GROUPTYPE_NORMAL) ? (m_memberSlots.size() >= MAX_GROUP_SIZE) : (m_memberSlots.size() >= MAX_RAID_SIZE); }
-        bool isRaidGroup() const { return !!(m_groupType & GROUPTYPE_RAID); }
+        bool isRaidGroup() const { return (m_groupType & GROUPTYPE_RAID) != 0; }
         bool isBGGroup()   const { return !!m_bgGroup; }
         bool IsCreated()   const { return GetMembersCount() > 0; }
         ObjectGuid const& GetLeaderGuid() const { return m_leaderGuid; }

@@ -83,7 +83,7 @@ struct ItemExtendedCostEntry
         MANGOS_ASSERT(i < MAX_EXTENDED_COST_CURRENCIES);
 
         // start from ITEM_EXTENDED_COST_FLAG_SEASON_IN_INDEX_0
-        return flags & 1 << (i + 1);
+        return (flags & (1 << (i + 1))) != 0;
     }
 };
 

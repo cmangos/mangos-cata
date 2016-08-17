@@ -171,7 +171,7 @@ struct CreatureInfo
 
     bool IsExotic() const
     {
-        return !!(CreatureTypeFlags & CREATURE_TYPEFLAGS_EXOTIC);
+        return (CreatureTypeFlags & CREATURE_TYPEFLAGS_EXOTIC) != 0;
     }
 
     bool isTameable(bool exotic) const
@@ -537,11 +537,11 @@ class MANGOS_DLL_SPEC Creature : public Unit
         bool IsDespawned() const { return getDeathState() ==  DEAD; }
         void SetCorpseDelay(uint32 delay) { m_corpseDelay = delay; }
         bool IsRacialLeader() const { return GetCreatureInfo()->RacialLeader; }
-        bool IsCivilian() const { return !!(GetCreatureInfo()->ExtraFlags & CREATURE_EXTRA_FLAG_CIVILIAN); }
-        bool IsGuard() const { return !!(GetCreatureInfo()->ExtraFlags & CREATURE_EXTRA_FLAG_GUARD); }
+        bool IsCivilian() const { return (GetCreatureInfo()->ExtraFlags & CREATURE_EXTRA_FLAG_CIVILIAN) != 0; }
+        bool IsGuard() const { return (GetCreatureInfo()->ExtraFlags & CREATURE_EXTRA_FLAG_GUARD) != 0; }
 
-        bool CanWalk() const { return !!(GetCreatureInfo()->InhabitType & INHABIT_GROUND); }
-        bool CanSwim() const { return !!(GetCreatureInfo()->InhabitType & INHABIT_WATER); }
+        bool CanWalk() const { return (GetCreatureInfo()->InhabitType & INHABIT_GROUND) != 0; }
+        bool CanSwim() const { return (GetCreatureInfo()->InhabitType & INHABIT_WATER) != 0; }
         bool IsSwimming() const { return (m_movementInfo.HasMovementFlag((MovementFlags)(MOVEFLAG_SWIMMING))); }
         bool CanFly() const { return (GetCreatureInfo()->InhabitType & INHABIT_AIR) || (GetByteValue(UNIT_FIELD_BYTES_1, 3) & UNIT_BYTE1_FLAG_FLY_ANIM) || m_movementInfo.HasMovementFlag((MovementFlags)(MOVEFLAG_LEVITATING | MOVEFLAG_CAN_FLY)); }
         bool IsFlying() const { return (m_movementInfo.HasMovementFlag((MovementFlags)(MOVEFLAG_FLYING | MOVEFLAG_LEVITATING))); }
@@ -727,8 +727,8 @@ class MANGOS_DLL_SPEC Creature : public Unit
         bool HasInvolvedQuest(uint32 quest_id)  const override;
 
         GridReference<Creature>& GetGridRef() { return m_gridRef; }
-        bool IsRegeneratingHealth() const { return !!(GetCreatureInfo()->RegenerateStats & REGEN_FLAG_HEALTH); }
-        bool IsRegeneratingPower() const { return !!(GetCreatureInfo()->RegenerateStats & REGEN_FLAG_POWER); }
+        bool IsRegeneratingHealth() const { return (GetCreatureInfo()->RegenerateStats & REGEN_FLAG_HEALTH) != 0; }
+        bool IsRegeneratingPower() const { return (GetCreatureInfo()->RegenerateStats & REGEN_FLAG_POWER) != 0; }
         virtual uint8 GetPetAutoSpellSize() const { return CREATURE_MAX_SPELLS; }
         virtual uint32 GetPetAutoSpellOnPos(uint8 pos) const
         {

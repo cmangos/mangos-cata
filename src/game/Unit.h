@@ -704,8 +704,8 @@ class MovementInfo
         // Movement flags manipulations
         void AddMovementFlag(MovementFlags f) { moveFlags |= f; }
         void RemoveMovementFlag(MovementFlags f) { moveFlags &= ~f; }
-        bool HasMovementFlag(MovementFlags f) const { return moveFlags & f; }
-        bool HasMovementFlag2(MovementFlags2 f) const { return moveFlags2 & f; }
+        bool HasMovementFlag(MovementFlags f) const { return (moveFlags & f) != 0; }
+        bool HasMovementFlag2(MovementFlags2 f) const { return (moveFlags2 & f) != 0; }
         MovementFlags GetMovementFlags() const { return MovementFlags(moveFlags); }
         void SetMovementFlags(MovementFlags f) { moveFlags = f; }
         MovementFlags2 GetMovementFlags2() const { return MovementFlags2(moveFlags2); }
@@ -1404,7 +1404,7 @@ class MANGOS_DLL_SPEC Unit : public WorldObject
         void SendMeleeAttackStart(Unit* pVictim);
 
         void addUnitState(uint32 f) { m_state |= f; }
-        bool hasUnitState(uint32 f) const { return !!(m_state & f); }
+        bool hasUnitState(uint32 f) const { return (m_state & f) != 0; }
         void clearUnitState(uint32 f) { m_state &= ~f; }
         bool CanFreeMove() const
         {

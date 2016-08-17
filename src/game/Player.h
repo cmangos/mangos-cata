@@ -1089,13 +1089,13 @@ class MANGOS_DLL_SPEC Player : public Unit
         void ContinueTaxiFlight();
         bool isAcceptTickets() const { return GetSession()->GetSecurity() >= SEC_GAMEMASTER && (m_ExtraFlags & PLAYER_EXTRA_GM_ACCEPT_TICKETS); }
         void SetAcceptTicket(bool on) { if (on) m_ExtraFlags |= PLAYER_EXTRA_GM_ACCEPT_TICKETS; else m_ExtraFlags &= ~PLAYER_EXTRA_GM_ACCEPT_TICKETS; }
-        bool isAcceptWhispers() const { return !!(m_ExtraFlags & PLAYER_EXTRA_ACCEPT_WHISPERS); }
+        bool isAcceptWhispers() const { return (m_ExtraFlags & PLAYER_EXTRA_ACCEPT_WHISPERS) != 0; }
         void SetAcceptWhispers(bool on) { if (on) m_ExtraFlags |= PLAYER_EXTRA_ACCEPT_WHISPERS; else m_ExtraFlags &= ~PLAYER_EXTRA_ACCEPT_WHISPERS; }
         bool isGameMaster() const { return m_ExtraFlags & PLAYER_EXTRA_GM_ON; }
         void SetGameMaster(bool on);
         bool isGMChat() const { return GetSession()->GetSecurity() >= SEC_MODERATOR && (m_ExtraFlags & PLAYER_EXTRA_GM_CHAT); }
         void SetGMChat(bool on) { if (on) m_ExtraFlags |= PLAYER_EXTRA_GM_CHAT; else m_ExtraFlags &= ~PLAYER_EXTRA_GM_CHAT; }
-        bool isTaxiCheater() const { return !!(m_ExtraFlags & PLAYER_EXTRA_TAXICHEAT); }
+        bool isTaxiCheater() const { return (m_ExtraFlags & PLAYER_EXTRA_TAXICHEAT) != 0; }
         void SetTaxiCheater(bool on) { if (on) m_ExtraFlags |= PLAYER_EXTRA_TAXICHEAT; else m_ExtraFlags &= ~PLAYER_EXTRA_TAXICHEAT; }
         bool isGMVisible() const { return !(m_ExtraFlags & PLAYER_EXTRA_GM_INVISIBLE); }
         void SetGMVisible(bool on);
@@ -2274,7 +2274,7 @@ class MANGOS_DLL_SPEC Player : public Unit
 
         uint8 m_forced_speed_changes[MAX_MOVE_TYPE];
 
-        bool HasAtLoginFlag(AtLoginFlags f) const { return !!(m_atLoginFlags & f); }
+        bool HasAtLoginFlag(AtLoginFlags f) const { return (m_atLoginFlags & f) != 0; }
         void SetAtLoginFlag(AtLoginFlags f) { m_atLoginFlags |= f; }
         void RemoveAtLoginFlag(AtLoginFlags f, bool in_db_also = false);
 
@@ -2357,7 +2357,7 @@ class MANGOS_DLL_SPEC Player : public Unit
         bool IsBaseRuneSlotsOnCooldown(RuneType runeType) const;
         void ClearLastUsedRuneMask() { m_runes->lastUsedRuneMask = 0; }
         uint32 GetLastUsedRuneMask() const { return m_runes->lastUsedRuneMask; }
-        bool IsLastUsedRune(uint8 index) const { return m_runes->lastUsedRuneMask & (1 << index); }
+        bool IsLastUsedRune(uint8 index) const { return (m_runes->lastUsedRuneMask & (1 << index)) != 0; }
         void SetLastUsedRune(RuneType type) { m_runes->lastUsedRuneMask |= 1 << uint32(type); }
         void SetBaseRune(uint8 index, RuneType baseRune) { m_runes->runes[index].BaseRune = baseRune; }
         void SetCurrentRune(uint8 index, RuneType currentRune) { m_runes->runes[index].CurrentRune = currentRune; }

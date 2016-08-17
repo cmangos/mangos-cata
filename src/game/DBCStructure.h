@@ -848,8 +848,8 @@ struct CurrencyTypesEntry
     uint32 Flags;                                           // 9
     //DBCString description;                                // 10
 
-    bool HasPrecision() const   { return Flags & CURRENCY_FLAG_HAS_PRECISION; }
-    bool HasSeasonCount() const { return Flags & CURRENCY_FLAG_HAS_SEASON_COUNT; }
+    bool HasPrecision() const   { return (Flags & CURRENCY_FLAG_HAS_PRECISION) != 0; }
+    bool HasSeasonCount() const { return (Flags & CURRENCY_FLAG_HAS_SEASON_COUNT) != 0; }
     float GetPrecision() const  { return HasPrecision() ? CURRENCY_PRECISION : 1.0f; }
 };
 
@@ -2202,17 +2202,17 @@ struct MANGOS_DLL_SPEC SpellEntry
         return classOpt && classOpt->IsFitToFamily(family, mask);
     }
 
-    inline bool HasAttribute(SpellAttributes attribute) const { return Attributes & attribute; }
-    inline bool HasAttribute(SpellAttributesEx attribute) const { return AttributesEx & attribute; }
-    inline bool HasAttribute(SpellAttributesEx2 attribute) const { return AttributesEx2 & attribute; }
-    inline bool HasAttribute(SpellAttributesEx3 attribute) const { return AttributesEx3 & attribute; }
-    inline bool HasAttribute(SpellAttributesEx4 attribute) const { return AttributesEx4 & attribute; }
-    inline bool HasAttribute(SpellAttributesEx5 attribute) const { return AttributesEx5 & attribute; }
-    inline bool HasAttribute(SpellAttributesEx6 attribute) const { return AttributesEx6 & attribute; }
-    inline bool HasAttribute(SpellAttributesEx7 attribute) const { return AttributesEx7 & attribute; }
-    inline bool HasAttribute(SpellAttributesEx8 attribute) const { return AttributesEx8 & attribute; }
-    inline bool HasAttribute(SpellAttributesEx9 attribute) const { return AttributesEx9 & attribute; }
-    inline bool HasAttribute(SpellAttributesEx10 attribute) const { return AttributesEx10 & attribute; }
+    inline bool HasAttribute(SpellAttributes attribute) const { return (Attributes & attribute) != 0; }
+    inline bool HasAttribute(SpellAttributesEx attribute) const { return (AttributesEx & attribute) != 0; }
+    inline bool HasAttribute(SpellAttributesEx2 attribute) const { return (AttributesEx2 & attribute) != 0; }
+    inline bool HasAttribute(SpellAttributesEx3 attribute) const { return (AttributesEx3 & attribute) != 0; }
+    inline bool HasAttribute(SpellAttributesEx4 attribute) const { return (AttributesEx4 & attribute) != 0; }
+    inline bool HasAttribute(SpellAttributesEx5 attribute) const { return (AttributesEx5 & attribute) != 0; }
+    inline bool HasAttribute(SpellAttributesEx6 attribute) const { return (AttributesEx6 & attribute) != 0; }
+    inline bool HasAttribute(SpellAttributesEx7 attribute) const { return (AttributesEx7 & attribute) != 0; }
+    inline bool HasAttribute(SpellAttributesEx8 attribute) const { return (AttributesEx8 & attribute) != 0; }
+    inline bool HasAttribute(SpellAttributesEx9 attribute) const { return (AttributesEx9 & attribute) != 0; }
+    inline bool HasAttribute(SpellAttributesEx10 attribute) const { return (AttributesEx10 & attribute) != 0; }
 
     private:
         // prevent creating custom entries (copy data from original in fact)

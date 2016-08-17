@@ -8164,7 +8164,7 @@ bool PlayerCondition::Meets(Player const* player, Map const* map, WorldObject co
             if (dbcEntry2 && map->GetDifficulty() != Difficulty(dbcEntry2->Difficulty))
                 dbcEntry2 = nullptr;
 
-            return !!(completedEncounterMask & ((dbcEntry1 ? 1 << dbcEntry1->encounterIndex : 0) | (dbcEntry2 ? 1 << dbcEntry2->encounterIndex : 0)));
+            return (completedEncounterMask & ((dbcEntry1 ? 1 << dbcEntry1->encounterIndex : 0) | (dbcEntry2 ? 1 << dbcEntry2->encounterIndex : 0))) != 0;
         }
         case CONDITION_SOURCE_AURA:
         {

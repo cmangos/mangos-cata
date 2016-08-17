@@ -146,7 +146,7 @@ namespace Movement
 
         MoveSplineFlag splineFlags = move_spline.splineflags;
         uint32 nodes = move_spline.getPath().size();
-        bool hasSplineStartTime = move_spline.splineflags & (MoveSplineFlag::Trajectory | MoveSplineFlag::Animation);
+        bool hasSplineStartTime = (move_spline.splineflags & (MoveSplineFlag::Trajectory | MoveSplineFlag::Animation)) != 0;
         bool hasSplineVerticalAcceleration = (move_spline.splineflags & MoveSplineFlag::Trajectory) && move_spline.effect_start_time < move_spline.Duration();
 
         data.WriteBits(uint8(move_spline.spline.mode()), 2);
@@ -183,7 +183,7 @@ namespace Movement
         {
             MoveSplineFlag splineFlags = move_spline.splineflags;
             uint32 nodes = move_spline.getPath().size();
-            bool hasSplineStartTime = move_spline.splineflags & (MoveSplineFlag::Trajectory | MoveSplineFlag::Animation);
+            bool hasSplineStartTime = (move_spline.splineflags & (MoveSplineFlag::Trajectory | MoveSplineFlag::Animation)) != 0;
             bool hasSplineVerticalAcceleration = (move_spline.splineflags & MoveSplineFlag::Trajectory) && move_spline.effect_start_time < move_spline.Duration();
 
             if (hasSplineVerticalAcceleration)
