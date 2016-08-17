@@ -67,7 +67,7 @@ float baseMoveSpeed[MAX_MOVE_TYPE] =
 ////////////////////////////////////////////////////////////
 // Methods of class MovementInfo
 
-void MovementInfo::Read(ByteBuffer& data, uint16 opcode)
+void MovementInfo::Read(ByteBuffer& data, Opcodes opcode)
 {
     bool hasTransportData = false,
         hasMovementFlags = false,
@@ -268,7 +268,7 @@ void MovementInfo::Read(ByteBuffer& data, uint16 opcode)
     }
 }
 
-void MovementInfo::Write(ByteBuffer& data, uint16 opcode) const
+void MovementInfo::Write(ByteBuffer& data, Opcodes opcode) const
 {
     bool hasTransportData = !t_guid.IsEmpty();
 

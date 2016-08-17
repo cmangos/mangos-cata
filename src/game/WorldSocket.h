@@ -116,7 +116,7 @@ class WorldSocket : public MaNGOS::Socket
         virtual bool ProcessIncomingData() override;
 		
 		/// Called on open ,the void* is the acceptor.
-        int HandleWowConnection(WorldPacket& recvPacket);
+        bool HandleWowConnection(WorldPacket& recvPacket);
 
         /// Called by ProcessIncoming() on CMSG_AUTH_SESSION.
         bool HandleAuthSession(WorldPacket &recvPacket);

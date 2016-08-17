@@ -1462,7 +1462,7 @@ struct OpcodeHandler
 extern OpcodeHandler opcodeTable[MAX_OPCODE_TABLE_SIZE];
 
 /// Lookup opcode name for human understandable logging
-inline const char* LookupOpcodeName(uint16 id)
+inline const char* LookupOpcodeName(Opcodes id)
 {
     return opcodeTable[id].name;
 }

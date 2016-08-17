@@ -84,7 +84,9 @@ struct ServerPktHeader
 WorldSocket::WorldSocket(boost::asio::io_service &service, std::function<void (Socket *)> closeHandler)
     : Socket(service, closeHandler), m_lastPingTime(std::chrono::system_clock::time_point::min()), m_sessionFinalized(false),
       m_overSpeedPings(0), m_session(nullptr), m_seed(static_cast<uint32>(rand32())), m_useExistingHeader(false)
-{}
+{
+    InitializeOpcodes();
+}
 
 WorldSocket::~WorldSocket()
 {
@@ -117,14 +119,22 @@ bool WorldSocket::Open()
         return false;
 
     std::string ServerToClient = "RLD OF WARCRAFT CONNECTION - SERVER TO CLIENT";
-    WorldPacket data(MSG_WOW_CONNECTION,46);
+    WorldPacket data(MSG_WOW_CONNECTION, 46);
 
     data << ServerToClient;
 
     SendPacket(data);
 
-    // Send startup packet.
+    return true;
+}
+
+bool WorldSocket::HandleWowConnection(WorldPacket& recvPacket)
+{
+    std::string ClientToServerMsg;
+    recvPacket >> ClientToServerMsg;
+
     WorldPacket packet (SMSG_AUTH_CHALLENGE, 37);
+
     for (uint32 i = 0; i < 8; i++)
         packet << uint32(0);
 
@@ -134,13 +144,6 @@ bool WorldSocket::Open()
     SendPacket(packet);
 
     return true;
-}
-
-int WorldSocket::HandleWowConnection(WorldPacket& recvPacket)
-{
-    std::string ClientToServerMsg;
-    recvPacket >> ClientToServerMsg;
-    return 0;
 }
 
 bool WorldSocket::ProcessIncomingData()
@@ -170,7 +173,7 @@ bool WorldSocket::ProcessIncomingData()
 
     // there must always be at least four bytes for the opcode,
     // and 0x2800 is the largest supported buffer in the client
-    if ((header.size < 4) || (header.size > 0x2800))
+    if ((header.size < 4) || (header.size > 0x2800) && header.cmd != 0x4C524F57)
     {
         sLog.outError("WorldSocket::ProcessIncomingData: client sent malformed packet size = %u , cmd = %u", header.size, header.cmd);
     
@@ -201,10 +204,10 @@ bool WorldSocket::ProcessIncomingData()
     if (IsClosed())
         return false;
 
-    // Dump received packet.
-    //sLog.outWorldPacketDump(uint32(get_handle()), new_pct->GetOpcode(), new_pct->GetOpcodeName(), new_pct, true);
-
     WorldPacket *pct = new WorldPacket(opcode, validBytesRemaining);
+
+    // Dump received packet.
+    //sLog.outWorldPacketDump(uint32(get_handle()), pct->GetOpcode(), pct->GetOpcodeName(), pct, true);
 
     if (validBytesRemaining)
     {
@@ -216,7 +219,7 @@ bool WorldSocket::ProcessIncomingData()
     {
         switch (opcode)
         {
-            case MSG_WOW_CONNECTION:
+            case 0x4C524F57:
                 return HandleWowConnection(*pct);
             case CMSG_AUTH_SESSION:
                 if (m_session)

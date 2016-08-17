@@ -698,8 +698,8 @@ class MovementInfo
             t_time(0), t_seat(-1), t_time2(0), s_pitch(0.0f), fallTime(0), splineElevation(0.0f), byteParam(0) {}
 
         // Read/Write methods
-        void Read(ByteBuffer& data, uint16 opcode);
-        void Write(ByteBuffer& data, uint16 opcode) const;
+        void Read(ByteBuffer& data, Opcodes opcode);
+        void Write(ByteBuffer& data, Opcodes opcode) const;
 
         // Movement flags manipulations
         void AddMovementFlag(MovementFlags f) { moveFlags |= f; }

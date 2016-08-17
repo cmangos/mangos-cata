@@ -2674,7 +2674,7 @@ MovementStatusElements ChangeSeatsOnControlledVehicleSequence[] =
     MSEEnd,
 };
 
-MovementStatusElements* GetMovementStatusElementsSequence(uint16 opcode)
+MovementStatusElements* GetMovementStatusElementsSequence(Opcodes opcode)
 {
     switch (opcode)
     {

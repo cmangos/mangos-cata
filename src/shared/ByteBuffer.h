@@ -638,7 +638,7 @@ class ByteBuffer
 
         std::string ReadString()
         {
-            std::string s = 0;
+            std::string s = "";
             (*this) >> s;
             return s;
         }
