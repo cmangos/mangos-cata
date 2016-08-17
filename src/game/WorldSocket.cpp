@@ -99,7 +99,7 @@ void WorldSocket::SendPacket(const WorldPacket& pct, bool immediate)
         return;
 
     // Dump outgoing packet.
-    //sLog.outWorldPacketDump(uint32(get_handle()), pct.GetOpcode(), pct.GetOpcodeName(), &pct, false);
+    sLog.outWorldPacketDump(GetRemoteEndpoint().c_str(), pct.GetOpcode(), pct.GetOpcodeName(), &pct, false);
 
     ServerPktHeader header(pct.size() + 2, pct.GetOpcode());
     m_crypt.EncryptSend((uint8*)header.header, header.getHeaderLength());
@@ -206,14 +206,15 @@ bool WorldSocket::ProcessIncomingData()
 
     WorldPacket *pct = new WorldPacket(opcode, validBytesRemaining);
 
-    // Dump received packet.
-    //sLog.outWorldPacketDump(uint32(get_handle()), pct->GetOpcode(), pct->GetOpcodeName(), pct, true);
-
     if (validBytesRemaining)
     {
         pct->append(InPeak(), validBytesRemaining);
         ReadSkip(validBytesRemaining);
     }
+
+    // Dump received packet.
+    if (opcode != 0x4C524F57)
+        sLog.outWorldPacketDump(GetRemoteEndpoint().c_str(), pct->GetOpcode(), pct->GetOpcodeName(), pct, true);
 
     try
     {
