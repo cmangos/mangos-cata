@@ -17,6 +17,7 @@
  */
 
 #include "Common.h"
+#include "DBCStores.h"
 #include "WorldPacket.h"
 #include "Log.h"
 #include "Player.h"

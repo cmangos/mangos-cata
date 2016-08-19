@@ -24,6 +24,7 @@
 #include "GridNotifiersImpl.h"
 #include "Opcodes.h"
 #include "Log.h"
+#include "MapManager.h"
 #include "World.h"
 #include "ObjectMgr.h"
 #include "SpellMgr.h"
