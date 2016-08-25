@@ -4299,7 +4299,12 @@ void Aura::HandleModPossess(bool apply, bool Real)
         caster->TakePossessOf(target);
     }
     else
+    {
         caster->ResetControlState();
+
+        // clean dummy auras from caster : TODO check if its right in all case
+        caster->RemoveAurasDueToSpell(GetId());
+    }
 }
 
 void Aura::HandleModPossessPet(bool apply, bool Real)
