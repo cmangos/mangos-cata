@@ -111,6 +111,7 @@ DBCStorage <GtChanceToSpellCritEntry>     sGtChanceToSpellCritStore(GtChanceToSp
 DBCStorage <GtOCTClassCombatRatingScalarEntry> sGtOCTClassCombatRatingScalarStore(GtOCTClassCombatRatingScalarfmt);
 //DBCStorage <GtOCTRegenMPEntry>            sGtOCTRegenMPStore(GtOCTRegenMPfmt);  -- not used currently
 DBCStorage <GtOCTHpPerStaminaEntry>       sGtOCTHpPerStaminaStore(GtOCTHpPerStaminafmt);
+DBCStorage <GtNPCManaCostScalerEntry>     sGtNPCManaCostScalerStore(GtNPCManaCostScalerfmt);
 DBCStorage <GtRegenMPPerSptEntry>         sGtRegenMPPerSptStore(GtRegenMPPerSptfmt);
 DBCStorage <GtSpellScalingEntry>          sGtSpellScalingStore(GtSpellScalingfmt);
 DBCStorage <GtOCTBaseHPByClassEntry>      sGtOCTBaseHPByClassStore(GtOCTBaseHPByClassfmt);
@@ -528,7 +529,8 @@ void LoadDBCStores(const std::string& dataPath)
     LoadDBC(availableDbcLocales,bar,bad_dbc_files,sGtChanceToSpellCritStore, dbcPath,"gtChanceToSpellCrit.dbc");
 
     LoadDBC(availableDbcLocales,bar,bad_dbc_files,sGtOCTClassCombatRatingScalarStore,dbcPath,"gtOCTClassCombatRatingScalar.dbc");
-    LoadDBC(availableDbcLocales,bar,bad_dbc_files,sGtOCTHpPerStaminaStore,   dbcPath,"gtOCTHpPerStamina.dbc");
+    LoadDBC(availableDbcLocales,bar,bad_dbc_files,sGtNPCManaCostScalerStore, dbcPath, "gtNPCManaCostScaler.dbc");
+	LoadDBC(availableDbcLocales,bar,bad_dbc_files,sGtOCTHpPerStaminaStore,   dbcPath,"gtOCTHpPerStamina.dbc");
     //LoadDBC(availableDbcLocales,bar,bad_dbc_files,sGtOCTRegenMPStore,        dbcPath,"gtOCTRegenMP.dbc");       -- not used currently
     LoadDBC(availableDbcLocales,bar,bad_dbc_files,sGtRegenMPPerSptStore,     dbcPath,"gtRegenMPPerSpt.dbc");
     LoadDBC(availableDbcLocales,bar,bad_dbc_files,sGtSpellScalingStore,      dbcPath,"gtSpellScaling.dbc");     // 15595

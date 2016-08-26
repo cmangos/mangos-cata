@@ -6937,8 +6937,13 @@ uint32 Spell::CalculatePowerCost(SpellEntry const* spellInfo, Unit* caster, Spel
         if (Player* modOwner = caster->GetSpellModOwner())
             modOwner->ApplySpellMod(spellInfo->Id, SPELLMOD_COST, powerCost);
 
-    if (spellInfo->HasAttribute(SPELL_ATTR_LEVEL_DAMAGE_CALCULATION))
-        powerCost = int32(powerCost / (1.117f * spellInfo->GetSpellLevel() / caster->getLevel() - 0.1327f));
+    if (!caster->IsControlledByPlayer() && spellInfo->HasAttribute(SPELL_ATTR_LEVEL_DAMAGE_CALCULATION))
+    {
+        GtNPCManaCostScalerEntry const* spellScaler = sGtNPCManaCostScalerStore.LookupEntry(spellInfo->GetSpellLevel() - 1);
+        GtNPCManaCostScalerEntry const* casterScaler = sGtNPCManaCostScalerStore.LookupEntry(caster->getLevel() - 1);
+        if (spellScaler && casterScaler)
+            powerCost *= casterScaler->ratio / spellScaler->ratio;
+    }
 
     // PCT mod from user auras by school
     float pctCostMultiplier = 1.0f;

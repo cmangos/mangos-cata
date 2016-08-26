@@ -148,6 +148,7 @@ extern DBCStorage <GtChanceToMeleeCritEntry>     sGtChanceToMeleeCritStore;
 extern DBCStorage <GtChanceToSpellCritBaseEntry> sGtChanceToSpellCritBaseStore;
 extern DBCStorage <GtChanceToSpellCritEntry>     sGtChanceToSpellCritStore;
 extern DBCStorage <GtOCTClassCombatRatingScalarEntry> sGtOCTClassCombatRatingScalarStore;
+extern DBCStorage <GtNPCManaCostScalerEntry>     sGtNPCManaCostScalerStore;
 //extern DBCStorage <GtOCTRegenMPEntry>            sGtOCTRegenMPStore; -- not used currently
 extern DBCStorage <GtOCTHpPerStaminaEntry>       sGtOCTHpPerStaminaStore;
 extern DBCStorage <GtRegenMPPerSptEntry>         sGtRegenMPPerSptStore;

@@ -1100,6 +1100,11 @@ struct GtOCTHpPerStaminaEntry
     float    ratio;
 };
 
+struct GtNPCManaCostScalerEntry
+{
+    float    ratio;
+};
+
 struct GtRegenMPPerSptEntry
 {
     //uint32 level;
