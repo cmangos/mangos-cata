@@ -5481,9 +5481,16 @@ void Spell::EffectSummonType(SpellEffectEntry const* effect)
     if (summon_prop->Group == SUMMON_PROP_GROUP_VEHICLE || summon_prop->Group == SUMMON_PROP_GROUP_UNCONTROLLABLE_VEHICLE || summon_prop->Group == SUMMON_PROP_GROUP_CONTROLLABLE)
         amount = 1;
 
-    // Expected Level                                       (Totem, Pet and Critter may not use this)
-    uint32 level = responsibleCaster ? std::max(responsibleCaster->getLevel() + effect->EffectMultipleValue, 1.0f) 
-    : std::max(m_caster->getLevel() + effect->EffectMultipleValue, 1.0f);
+    // Expected Level
+    Unit* petInvoker = responsibleCaster ? responsibleCaster : m_caster;
+    uint32 level = petInvoker->getLevel();
+    if (petInvoker->GetTypeId() != TYPEID_PLAYER)
+    {
+        // pet players do not need this
+        // TODO :: Totem, Pet and Critter may not use this
+        level += std::max(effect->EffectMultipleValue, 1.0f);
+    }
+
     // level of creature summoned using engineering item based at engineering skill level
     if (m_caster->GetTypeId() == TYPEID_PLAYER && m_CastItem)
     {
@@ -5646,7 +5653,7 @@ void Spell::EffectSummonType(SpellEffectEntry const* effect)
             itr->creature->setFaction(summon_prop->FactionId);
         // Else set faction to summoner's faction for pet-like summoned
         else if ((summon_prop->Flags & SUMMON_PROP_FLAG_INHERIT_FACTION) || !itr->creature->IsTemporarySummon())
-            itr->creature->setFaction(responsibleCaster ? responsibleCaster->getFaction() : m_caster->getFaction());
+            itr->creature->setFaction(petInvoker->getFaction());
 
         if (!itr->creature->IsTemporarySummon())
         {
