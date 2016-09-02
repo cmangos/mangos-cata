@@ -156,11 +156,6 @@ Creature::Creature(CreatureSubtype subtype) : Unit(),
 Creature::~Creature()
 {
     CleanupsBeforeDelete();
-
-    m_vendorItemCounts.clear();
-
-    delete i_AI;
-    i_AI = nullptr;
 }
 
 void Creature::AddToWorld()
@@ -183,6 +178,14 @@ void Creature::RemoveFromWorld()
         GetMap()->GetObjectsStore().erase<Creature>(GetObjectGuid(), (Creature*)nullptr);
 
     Unit::RemoveFromWorld();
+}
+
+void Creature::CleanupsBeforeDelete()
+{
+    delete i_AI;
+    i_AI = nullptr;
+    Unit::CleanupsBeforeDelete();
+    m_vendorItemCounts.clear();
 }
 
 void Creature::RemoveCorpse(bool inPlace)
