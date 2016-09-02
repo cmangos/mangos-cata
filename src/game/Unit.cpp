@@ -6214,6 +6214,10 @@ void Unit::CombatStop(bool includingCast)
             ((Creature*)this)->ClearTemporaryFaction();
     }
 
+
+    if (GetTypeId() == TYPEID_UNIT && ((Creature*)this)->AI())
+        ((Creature*)this)->AI()->CombatStop();
+
     ClearInCombat();
 }
 
