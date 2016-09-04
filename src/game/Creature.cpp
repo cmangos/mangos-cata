@@ -813,8 +813,10 @@ bool Creature::Create(uint32 guidlow, CreatureCreatePos& cPos, CreatureInfo cons
     if (!cPos.Relocate(this))
         return false;
 
-    // Notify the outdoor pvp script
-    if (OutdoorPvP* outdoorPvP = sOutdoorPvPMgr.GetScript(GetZoneId()))
+    // Notify the pvp script
+    if (GetMap()->IsBattleGroundOrArena())
+        ((BattleGroundMap*)GetMap())->GetBG()->HandleCreatureCreate(this);
+    else if (OutdoorPvP* outdoorPvP = sOutdoorPvPMgr.GetScript(GetZoneId()))
         outdoorPvP->HandleCreatureCreate(this);
 
     // Notify the map's instance data.
