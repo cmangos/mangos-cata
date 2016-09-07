@@ -480,8 +480,7 @@ Unit::Unit() :
     i_motionMaster(this),
     m_regenTimer(0),
     m_vehicleInfo(nullptr),
-    m_ThreatManager(this),
-    m_HostileRefManager(this)
+    m_combatData(new CombatData(this))
 {
     m_objectType |= TYPEMASK_UNIT;
     m_objectTypeId = TYPEID_UNIT;
@@ -578,6 +577,7 @@ Unit::~Unit()
     delete m_charmInfo;
     delete m_vehicleInfo;
     delete movespline;
+    delete m_combatData;
 
     // those should be already removed at "RemoveFromWorld()" call
     MANGOS_ASSERT(m_gameObj.size() == 0);
@@ -614,7 +614,7 @@ void Unit::Update(uint32 update_diff, uint32 p_time)
         // Check UNIT_STAT_MELEE_ATTACKING or UNIT_STAT_CHASE (without UNIT_STAT_FOLLOW in this case) so pets can reach far away
         // targets without stopping half way there and running off.
         // These flags are reset after target dies or another command is given.
-        if (m_HostileRefManager.isEmpty())
+        if (getHostileRefManager().isEmpty())
         {
             // m_CombatTimer set at aura start and it will be freeze until aura removing
             if (m_CombatTimer <= update_diff)
@@ -6280,15 +6280,15 @@ bool Unit::CanAttackByItself() const
 
 void Unit::RemoveAllAttackers()
 {
-    while (!m_attackers.empty())
+    while (!m_combatData->attackers.empty())
     {
-        AttackerSet::iterator iter = m_attackers.begin();
+        AttackerSet::iterator iter = m_combatData->attackers.begin();
         (*iter)->AttackStop();
 
         if (m_attacking)
         {
             sLog.outError("WORLD: Unit has an attacker that isn't attacking it!");
-            m_attackers.erase(iter);
+            m_combatData->attackers.erase(iter);
         }
     }
 }
@@ -9280,7 +9280,7 @@ void Unit::SetDeathState(DeathState s)
         RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SKINNABLE);  // clear skinnable for creature and player (at battleground)
     }
 
-    if (m_deathState != ALIVE && s == ALIVE)
+    if (s != ALIVE && s != JUST_ALIVED)
     {
         //_ApplyAllAuraMods();
     }
@@ -9346,17 +9346,17 @@ void Unit::AddThreat(Unit* pVictim, float threat /*= 0.0f*/, bool crit /*= false
 {
     // Only mobs can manage threat lists
     if (CanHaveThreatList())
-        m_ThreatManager.addThreat(pVictim, threat, crit, schoolMask, threatSpell);
+        getThreatManager().addThreat(pVictim, threat, crit, schoolMask, threatSpell);
 }
 
 //======================================================================
 
 void Unit::DeleteThreatList()
 {
-    if (CanHaveThreatList(true) && !m_ThreatManager.isThreatListEmpty())
+    if (CanHaveThreatList(true) && !getThreatManager().isThreatListEmpty())
         SendThreatClear();
 
-    m_ThreatManager.clearReferences();
+    getThreatManager().clearReferences();
 }
 
 //======================================================================
@@ -9386,7 +9386,7 @@ void Unit::TauntApply(Unit* taunter)
             ((Creature*)this)->AI()->AttackStart(taunter);
     }
 
-    m_ThreatManager.tauntApply(taunter);
+    getThreatManager().tauntApply(taunter);
 }
 
 //======================================================================
@@ -9406,7 +9406,7 @@ void Unit::TauntFadeOut(Unit* taunter)
     if (!target || target != taunter)
         return;
 
-    if (m_ThreatManager.isThreatListEmpty())
+    if (getThreatManager().isThreatListEmpty())
     {
         m_fixateTargetGuid.Clear();
 
@@ -9422,8 +9422,8 @@ void Unit::TauntFadeOut(Unit* taunter)
         return;
     }
 
-    m_ThreatManager.tauntFadeOut(taunter);
-    target = m_ThreatManager.getHostileTarget();
+    getThreatManager().tauntFadeOut(taunter);
+    target = getThreatManager().getHostileTarget();
 
     if (target && target != taunter)
     {
@@ -9513,8 +9513,8 @@ bool Unit::SelectHostileTarget()
     }
 
     // No valid fixate target, taunt aura or taunt aura caster is dead, standard target selection
-    if (!target && !m_ThreatManager.isThreatListEmpty())
-        target = m_ThreatManager.getHostileTarget();
+    if (!target && !getThreatManager().isThreatListEmpty())
+        target = getThreatManager().getHostileTarget();
 
     if (target)
     {
@@ -9531,7 +9531,7 @@ bool Unit::SelectHostileTarget()
                 // remove all taunts
                 RemoveSpellsCausingAura(SPELL_AURA_MOD_TAUNT);
 
-                if (m_ThreatManager.getThreatList().size() < 2)
+                if (getThreatManager().getThreatList().size() < 2)
                 {
                     // only one target in list, we have to evade after timer
                     // TODO: make timer - inside Creature class
@@ -9541,8 +9541,8 @@ bool Unit::SelectHostileTarget()
                 {
                     // remove unreachable target from our threat list
                     // next iteration we will select next possible target
-                    m_HostileRefManager.deleteReference(target);
-                    m_ThreatManager.modifyThreatPercent(target, -101);
+                    getHostileRefManager().deleteReference(target);
+                    getThreatManager().modifyThreatPercent(target, -101);
                     // remove target from current attacker, do not exit combat settings
                     AttackStop(true);
                 }
@@ -9563,7 +9563,7 @@ bool Unit::SelectHostileTarget()
     // Note: creature not have targeted movement generator but have attacker in this case
     if (GetMotionMaster()->GetCurrentMovementGeneratorType() != CHASE_MOTION_TYPE)
     {
-        for (AttackerSet::const_iterator itr = m_attackers.begin(); itr != m_attackers.end(); ++itr)
+        for (AttackerSet::const_iterator itr = m_combatData->attackers.begin(); itr != m_combatData->attackers.end(); ++itr)
         {
             if ((*itr)->IsInMap(this) && (*itr)->isTargetableForAttack() && (*itr)->isInAccessablePlaceFor((Creature*)this))
                 return false;

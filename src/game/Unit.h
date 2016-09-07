@@ -1180,10 +1180,24 @@ struct SpellProcEventEntry;                                 // used only private
 
 #define MAX_OBJECT_SLOT 5
 
+typedef std::set<Unit*> AttackerSet;
+
+struct CombatData
+{
+public:
+    CombatData(Unit* owner) : threatManager(ThreatManager(owner)), hostileRefManager(HostileRefManager(owner)) {};
+
+    // Manage all Units threatening us
+    ThreatManager threatManager;
+    // Manage all Units that are threatened by us
+    HostileRefManager hostileRefManager;
+
+    AttackerSet attackers;
+};
+
 class MANGOS_DLL_SPEC Unit : public WorldObject
 {
     public:
-        typedef std::set<Unit*> AttackerSet;
         typedef std::multimap<uint32 /*spellId*/, SpellAuraHolder*> SpellAuraHolderMap;
         typedef std::pair<SpellAuraHolderMap::iterator, SpellAuraHolderMap::iterator> SpellAuraHolderBounds;
         typedef std::pair<SpellAuraHolderMap::const_iterator, SpellAuraHolderMap::const_iterator> SpellAuraHolderConstBounds;
@@ -1333,21 +1347,21 @@ class MANGOS_DLL_SPEC Unit : public WorldObject
 
         void _addAttacker(Unit* pAttacker)                  //< (Internal Use) must be called only from Unit::Attack(Unit*)
         {
-            AttackerSet::const_iterator itr = m_attackers.find(pAttacker);
-            if (itr == m_attackers.end())
-                m_attackers.insert(pAttacker);
+            AttackerSet::const_iterator itr = m_combatData->attackers.find(pAttacker);
+            if (itr == m_combatData->attackers.end())
+                m_combatData->attackers.insert(pAttacker);
         }
         void _removeAttacker(Unit* pAttacker)               //< (Internal Use) must be called only from Unit::AttackStop()
         {
-            m_attackers.erase(pAttacker);
+            m_combatData->attackers.erase(pAttacker);
         }
         Unit* getAttackerForHelper()                        //< Return a possible enemy from this unit to help in combat
         {
             if (getVictim() != nullptr)
                 return getVictim();
 
-            if (!m_attackers.empty())
-                return *(m_attackers.begin());
+            if (!m_combatData->attackers.empty())
+                return *(m_combatData->attackers.begin());
 
             return nullptr;
         }
@@ -1388,7 +1402,7 @@ class MANGOS_DLL_SPEC Unit : public WorldObject
         void RemoveAllAttackers();
 
         /// Returns the Unit::m_attackers, that stores the units that are attacking you
-        AttackerSet const& getAttackers() const { return m_attackers; }
+        AttackerSet const& getAttackers() const { return m_combatData->attackers; }
 
         bool isAttackingPlayer() const;                     //< Returns if this unit is attacking a player (or this unit's minions/pets are attacking a player)
         bool CanAttackByItself() const;                     //< Used to check if a vehicle is allowed attack other units by itself
@@ -1925,11 +1939,11 @@ class MANGOS_DLL_SPEC Unit : public WorldObject
         void TauntFadeOut(Unit* taunter);
         void FixateTarget(Unit* pVictim);
         ObjectGuid GetFixateTargetGuid() const { return m_fixateTargetGuid; }
-        ThreatManager& getThreatManager() { return m_ThreatManager; }
-        ThreatManager const& getThreatManager() const { return m_ThreatManager; }
-        void addHatedBy(HostileReference* pHostileReference) { m_HostileRefManager.insertFirst(pHostileReference); };
+        ThreatManager& getThreatManager() { return m_combatData->threatManager; }
+        ThreatManager const& getThreatManager() const { return m_combatData->threatManager; }
+        void addHatedBy(HostileReference* pHostileReference) { m_combatData->hostileRefManager.insertFirst(pHostileReference); };
         void removeHatedBy(HostileReference* /*pHostileReference*/) { /* nothing to do yet */ }
-        HostileRefManager& getHostileRefManager() { return m_HostileRefManager; }
+        HostileRefManager& getHostileRefManager() { return m_combatData->hostileRefManager; }
 
         SpellAuraHolder* GetVisibleAura(uint8 slot) const
         {
@@ -2175,6 +2189,8 @@ class MANGOS_DLL_SPEC Unit : public WorldObject
         // Reset control to player
         void ResetControlState(bool attackCharmer = true);
 
+        CombatData* m_combatData;
+
     protected:
         explicit Unit();
 
@@ -2185,7 +2201,6 @@ class MANGOS_DLL_SPEC Unit : public WorldObject
 
         float m_createStats[MAX_STATS];
 
-        AttackerSet m_attackers;
         Unit* m_attacking;
 
         DeathState m_deathState;
@@ -2257,10 +2272,6 @@ class MANGOS_DLL_SPEC Unit : public WorldObject
         ShortTimeTracker m_movesplineTimer;
 
         Diminishing m_Diminishing;
-        // Manage all Units threatening us
-        ThreatManager m_ThreatManager;
-        // Manage all Units that are threatened by us
-        HostileRefManager m_HostileRefManager;
 
         FollowerRefManager m_FollowingRefManager;
 
