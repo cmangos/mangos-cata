@@ -443,27 +443,7 @@ Spell::Spell(Unit* caster, SpellEntry const* info, bool triggered, ObjectGuid or
 
     m_spellFlags = SPELL_FLAG_NORMAL;
 
-    if (m_spellInfo->GetDmgClass() == SPELL_DAMAGE_CLASS_MAGIC && !m_spellInfo->HasAttribute(SPELL_ATTR_EX_CANT_REFLECTED))
-    {
-        for (int j = 0; j < MAX_EFFECT_INDEX; ++j)
-        {
-            SpellEffectEntry const* spellEffect = m_spellInfo->GetSpellEffect(SpellEffectIndex(j));
-            if(!spellEffect)
-                continue;
-            if (spellEffect->Effect == 0)
-                continue;
-
-            if(!IsPositiveTarget(spellEffect->EffectImplicitTargetA, spellEffect->EffectImplicitTargetB))
-                m_canReflect = true;
-            else
-                m_canReflect = m_spellInfo->HasAttribute(SPELL_ATTR_EX_UNK7);
-
-            if (m_canReflect)
-                continue;
-            else
-                break;
-        }
-    }
+    m_canReflect = IsReflectableSpell(m_spellInfo);
 
     CleanupTargetList();
 }
@@ -2976,7 +2956,7 @@ void Spell::SetTargetMap(SpellEffectIndex effIndex, uint32 targetMode, UnitList&
                     break;
                 case SPELL_EFFECT_APPLY_AREA_AURA_PARTY:
                     // AreaAura
-                    if ((m_spellInfo->Attributes == (SPELL_ATTR_NOT_SHAPESHIFT | SPELL_ATTR_UNK18 | SPELL_ATTR_CASTABLE_WHILE_MOUNTED | SPELL_ATTR_CASTABLE_WHILE_SITTING)) || (m_spellInfo->Attributes == SPELL_ATTR_NOT_SHAPESHIFT))
+                    if ((m_spellInfo->Attributes == (SPELL_ATTR_NOT_SHAPESHIFT | SPELL_ATTR_DONT_AFFECT_SHEATH_STATE | SPELL_ATTR_CASTABLE_WHILE_MOUNTED | SPELL_ATTR_CASTABLE_WHILE_SITTING)) || (m_spellInfo->Attributes == SPELL_ATTR_NOT_SHAPESHIFT))
                         SetTargetMap(effIndex, TARGET_AREAEFFECT_PARTY, targetUnitMap);
                     break;
                 case SPELL_EFFECT_SKIN_PLAYER_CORPSE:
@@ -5447,7 +5427,7 @@ SpellCastResult Spell::CheckCast(bool strict)
                 return SPELL_FAILED_TARGET_AURASTATE;
 
         // Must be behind the target.
-        if (m_spellInfo->AttributesEx2 == SPELL_ATTR_EX2_UNK20 && m_spellInfo->HasAttribute(SPELL_ATTR_EX_UNK9) && target->HasInArc(M_PI_F, m_caster))
+        if (m_spellInfo->AttributesEx2 == SPELL_ATTR_EX2_UNK20 && m_spellInfo->HasAttribute(SPELL_ATTR_EX_FACING_TARGET ) && target->HasInArc(M_PI_F, m_caster))
         {
             // Exclusion for Pounce: Facing Limitation was removed in 2.0.1, but it still uses the same, old Ex-Flags
             // Exclusion for Mutilate:Facing Limitation was removed in 2.0.1 and 3.0.3, but they still use the same, old Ex-Flags
@@ -5461,8 +5441,10 @@ SpellCastResult Spell::CheckCast(bool strict)
             }
         }
 
-        // Target must be facing you.
-        if ((m_spellInfo->Attributes == (SPELL_ATTR_UNK4 | SPELL_ATTR_NOT_SHAPESHIFT | SPELL_ATTR_UNK18 | SPELL_ATTR_STOP_ATTACK_TARGET)) && !target->HasInArc(M_PI_F, m_caster))
+        // Caster must be facing the targets front
+        if (((m_spellInfo->Attributes == (SPELL_ATTR_ABILITY | SPELL_ATTR_NOT_SHAPESHIFT | SPELL_ATTR_DONT_AFFECT_SHEATH_STATE | SPELL_ATTR_STOP_ATTACK_TARGET)) && !m_caster->IsFacingTargetsFront(target))
+            // Caster must be facing the target!
+            || (m_spellInfo->HasAttribute(SPELL_ATTR_EX_FACING_TARGET) && !m_caster->HasInArc(M_PI_F, target)))
         {
             SendInterrupted(2);
             return SPELL_FAILED_NOT_INFRONT;
