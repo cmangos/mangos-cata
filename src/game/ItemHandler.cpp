@@ -592,10 +592,10 @@ void WorldSession::SendListInventory(ObjectGuid vendorguid)
                         continue;
 
                     // race wrong item skip always
-                    if ((pProto->Flags2 & ITEM_FLAG2_HORDE_ONLY) && _player->GetTeam() != HORDE)
+                    if ((pProto->Flags2 & ITEM_FLAG2_FACTION_HORDE) && _player->GetTeam() != HORDE)
                         continue;
 
-                    if ((pProto->Flags2 & ITEM_FLAG2_ALLIANCE_ONLY) && _player->GetTeam() != ALLIANCE)
+                    if ((pProto->Flags2 & ITEM_FLAG2_FACTION_ALLIANCE) && _player->GetTeam() != ALLIANCE)
                         continue;
 
                     if ((pProto->AllowableRace & _player->getRaceMask()) == 0)
@@ -623,11 +623,10 @@ void WorldSession::SendListInventory(ObjectGuid vendorguid)
 
                 // reputation discount
                 maxDurability = pProto->MaxDurability;
-                price = (crItem->ExtendedCost == 0 || pProto->Flags2 & ITEM_FLAG2_EXT_COST_REQUIRES_GOLD) ? uint32(floor(pProto->BuyPrice * discountMod)) : 0;
+                price = (crItem->ExtendedCost == 0 || pProto->Flags2 & ITEM_FLAG2_DONT_IGNORE_BUY_PRICE) ? uint32(floor(pProto->BuyPrice * discountMod)) : 0;
                 displayId = pProto->DisplayInfoID;
                 maxCount = crItem->maxcount <= 0 ? -1 : int32(pCreature->GetVendorItemCurrentCount(crItem));
                 buyCount = pProto->BuyCount;
-
             }
             else if (crItem->type == VENDOR_ITEM_TYPE_CURRENCY)
             {
