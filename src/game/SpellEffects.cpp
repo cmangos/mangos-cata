@@ -1833,22 +1833,21 @@ void Spell::EffectDummy(SpellEffectEntry const* effect)
                     m_caster->CastSpell(m_caster, 45088, true);
                     return;
                 }
-                case 45449:                                // Arcane Prisoner Rescue
+                case 45502:                                 // Seaforium Depth Charge Explosion
                 {
-                    uint32 spellId = 0;
-                    switch (rand() % 2)
+                    if (!unitTarget || m_caster->GetTypeId() != TYPEID_UNIT)
+                        return;
+
+                    // Note: summoned caster is a scripted totem
+                    if (((Creature*)m_caster)->IsTotem())
                     {
-                        case 0: spellId = 45446; break;    // Summon Arcane Prisoner - Male
-                        case 1: spellId = 45448; break;    // Summon Arcane Prisoner - Female
+                        if (Unit* summonerPlayer = ((Totem*)m_caster)->GetOwner())
+                        {
+                            if (summonerPlayer->GetTypeId() == TYPEID_PLAYER)
+                                ((Player*)summonerPlayer)->KilledMonsterCredit(unitTarget->GetEntry(), unitTarget->GetObjectGuid());
+                        }
                     }
-                    // Spawn
-                    m_caster->CastSpell(m_caster, spellId, true);
-
-                    if (!unitTarget) return;
-                    // Arcane Prisoner Kill Credit
-                    unitTarget->CastSpell(m_caster, 45456, true);
-
-                    break;
+                    return;
                 }
                 case 45583:                                 // Throw Gnomish Grenade
                 {
