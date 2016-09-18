@@ -4668,8 +4668,6 @@ void Spell::EffectPowerDrain(SpellEffectEntry const* effect)
     if (drain_power == POWER_MANA && m_caster != unitTarget)
     {
         float manaMultiplier = effect->EffectMultipleValue;
-        if(manaMultiplier==0)
-            manaMultiplier = 1;
 
         if (Player* modOwner = m_caster->GetSpellModOwner())
             modOwner->ApplySpellMod(m_spellInfo->Id, SPELLMOD_MULTIPLE_VALUE, manaMultiplier);
