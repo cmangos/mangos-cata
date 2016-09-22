@@ -4664,18 +4664,23 @@ void Spell::EffectPowerDrain(SpellEffectEntry const* effect)
 
     unitTarget->ModifyPower(drain_power, -new_damage);
 
+    int32 gain = 0;
+
     // Don`t restore from self drain
     if (drain_power == POWER_MANA && m_caster != unitTarget)
     {
-        float manaMultiplier = effect->EffectMultipleValue;
+        float gainMultiplier = effect->EffectMultipleValue;
 
         if (Player* modOwner = m_caster->GetSpellModOwner())
-            modOwner->ApplySpellMod(m_spellInfo->Id, SPELLMOD_MULTIPLE_VALUE, manaMultiplier);
+            modOwner->ApplySpellMod(m_spellInfo->Id, SPELLMOD_MULTIPLE_VALUE, gainMultiplier);
 
-        int32 gain = int32(new_damage * manaMultiplier);
-
-        m_caster->EnergizeBySpell(m_caster, m_spellInfo->Id, gain, POWER_MANA);
+        gain = int32(new_damage * gainMultiplier);
     }
+
+    if (!gain)
+        return;
+
+    m_caster->EnergizeBySpell(m_caster, m_spellInfo->Id, gain, drain_power);
 }
 
 void Spell::EffectSendEvent(SpellEffectEntry const* effect)
