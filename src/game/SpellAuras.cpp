@@ -9561,7 +9561,7 @@ bool SpellAuraHolder::IsNeedVisibleSlot(Unit const* caster) const
 
     if (m_spellProto->GetProcFlags())
         return true;
-    else if (HasAuraWithTriggerEffect(m_spellProto))
+    else if (IsSpellTriggerSpellByAura(m_spellProto))
         return true;
     else if (IsSpellHaveAura(m_spellProto, SPELL_AURA_MOD_IGNORE_SHAPESHIFT))
         return true;
