@@ -5505,8 +5505,14 @@ void Spell::EffectSummonType(SpellEffectEntry const* effect)
     {
         realCaster->GetPosition(summonPositions[0].x, summonPositions[0].y, summonPositions[0].z);
 
-        // TODO - Is this really an error?
-        sLog.outDebug("Spell Effect EFFECT_SUMMON (%u) - summon without destination (spell id %u, effIndex %u)", effect->Effect, m_spellInfo->Id, SpellEffectIndex(effect->EffectIndex));
+        if (effect->EffectImplicitTargetA == TARGET_EFFECT_SELECT || effect->EffectImplicitTargetB == TARGET_EFFECT_SELECT) // custom, done in SetTargetMap
+            m_targets.getDestination(summonPositions[0].x, summonPositions[0].y, summonPositions[0].z);
+        else
+        {
+            realCaster->GetPosition(summonPositions[0].x, summonPositions[0].y, summonPositions[0].z);
+            // TODO - Is this really an error?
+            sLog.outDebug("Spell Effect EFFECT_SUMMON (%u) - summon without destination (spell id %u, effIndex %u)", effect->Effect, m_spellInfo->Id, SpellEffectIndex(effect->EffectIndex));
+        }
     }
 
     // Set summon positions
