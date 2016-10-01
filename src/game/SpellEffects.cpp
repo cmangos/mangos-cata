@@ -5471,7 +5471,7 @@ void Spell::EffectSummonType(SpellEffectEntry const* effect)
         uint32 resultLevel = level + std::max(effect->EffectMultipleValue, 1.0f);
 
         // result level should be a possible level for creatures
-        if (resultLevel > 0 && resultLevel < DEFAULT_MAX_CREATURE_LEVEL)
+        if (resultLevel > 0 && resultLevel <= DEFAULT_MAX_CREATURE_LEVEL)
             level = resultLevel;
     }
     // level of creature summoned using engineering item based at engineering skill level
@@ -5503,8 +5503,6 @@ void Spell::EffectSummonType(SpellEffectEntry const* effect)
         m_targets.getDestination(summonPositions[0].x, summonPositions[0].y, summonPositions[0].z);
     else
     {
-        realCaster->GetPosition(summonPositions[0].x, summonPositions[0].y, summonPositions[0].z);
-
         if (effect->EffectImplicitTargetA == TARGET_EFFECT_SELECT || effect->EffectImplicitTargetB == TARGET_EFFECT_SELECT) // custom, done in SetTargetMap
             m_targets.getDestination(summonPositions[0].x, summonPositions[0].y, summonPositions[0].z);
         else
