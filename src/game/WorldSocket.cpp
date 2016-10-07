@@ -525,7 +525,7 @@ bool WorldSocket::HandleAuthSession(WorldPacket &recvPacket)
 
     m_session->LoadGlobalAccountData();
     m_session->LoadTutorialsData();
-    m_session->ReadAddonsInfo(recvPacket);
+    m_session->ReadAddonsInfo(addonsData);
 
     sWorld.AddSession(m_session);
 
