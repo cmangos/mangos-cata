@@ -11907,6 +11907,92 @@ void Spell::EffectRedirectThreat(SpellEffectEntry const* /*effect*/)
     m_caster->getHostileRefManager().SetThreatRedirection(unitTarget->GetObjectGuid(), uint32(damage));
 }
 
+void Spell::EffectCreateTamedPet(SpellEffectEntry const* effect)
+{
+	sLog.outErrorDb(" SpellEffectCreateTamedPet-WOLF: START");
+    if (!unitTarget || unitTarget->GetTypeId() != TYPEID_PLAYER || unitTarget->getClass() != CLASS_HUNTER)
+        return;
+	uint32 creatureEntry = m_spellInfo->GetEffectMiscValue(EFFECT_INDEX_0);
+
+	Pet* OldSummon = m_caster->GetPet();
+
+    // if pet requested type already exist
+	if (OldSummon)
+    {
+		sLog.outErrorDb(" SpellEffectCreateTamedPet-WOLF: Already got a pet ");
+		return;
+	 }
+	
+	sLog.outErrorDb(" SpellEffectCreateTamedPet-WOLF: CretureEntry: %u", creatureEntry);
+    
+	CreatureInfo const* cInfo = ObjectMgr::GetCreatureTemplate(creatureEntry);
+
+    // == 0 in case call current pet, check only real summon case
+    if (creatureEntry && !cInfo)
+    {
+        sLog.outErrorDb("EffectCreateTamedPet: creature entry %u not found for spell %u.", creatureEntry, m_spellInfo->Id);
+        return;
+    }
+
+	Pet* NewSummon = new Pet;
+
+	    CreatureCreatePos pos(m_caster, m_caster->GetOrientation());
+
+    Map* map = m_caster->GetMap();
+    uint32 pet_number = sObjectMgr.GeneratePetNumber();
+    if (!NewSummon->Create(map->GenerateLocalLowGuid(HIGHGUID_PET), pos, cInfo, pet_number))
+    {
+        delete NewSummon;
+        return;
+    }
+
+    NewSummon->SetRespawnCoord(pos);
+
+    uint32 petlevel = m_caster->getLevel();
+    NewSummon->setPetType(HUNTER_PET);
+
+    uint32 faction = m_caster->getFaction();
+    NewSummon->GetCharmInfo()->SetReactState(REACT_DEFENSIVE);
+    
+    NewSummon->SetOwnerGuid(m_caster->GetObjectGuid());
+    NewSummon->SetCreatorGuid(m_caster->GetObjectGuid());
+    NewSummon->SetUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
+    NewSummon->setFaction(faction);
+    NewSummon->SetUInt32Value(UNIT_FIELD_PET_NAME_TIMESTAMP, uint32(time(NULL)));
+    NewSummon->SetUInt32Value(UNIT_FIELD_PETEXPERIENCE, 0);
+    NewSummon->SetUInt32Value(UNIT_FIELD_PETNEXTLEVELEXP, 1000);
+    NewSummon->SetUInt32Value(UNIT_CREATED_BY_SPELL, m_spellInfo->Id);
+
+    NewSummon->GetCharmInfo()->SetPetNumber(pet_number, true);
+    // this enables pet details window (Shift+P)
+
+    NewSummon->InitStatsForLevel(petlevel, m_caster);
+    NewSummon->InitPetCreateSpells();
+    NewSummon->InitLevelupSpellsForLevel();
+    NewSummon->InitTalentForLevel();
+
+    NewSummon->RemoveByteFlag(UNIT_FIELD_BYTES_2, 2, UNIT_CAN_BE_RENAMED);
+    NewSummon->SetByteFlag(UNIT_FIELD_BYTES_2, 2, UNIT_CAN_BE_ABANDONED);
+    
+    NewSummon->AIM_Initialize();
+    NewSummon->SetHealth(NewSummon->GetMaxHealth());
+    NewSummon->SetPower(POWER_MANA, NewSummon->GetMaxPower(POWER_MANA));
+
+	 float px, py, pz;
+            m_caster->GetClosePoint(px, py, pz, NewSummon->GetObjectBoundingRadius());
+			NewSummon->Relocate(px, py, pz, m_caster->GetOrientation());
+
+    map->Add((Creature*)NewSummon);
+
+    m_caster->SetPet(NewSummon);
+    DEBUG_LOG("New Pet has guid %u", NewSummon->GetGUIDLow());
+
+	NewSummon->SavePetToDB(PET_SAVE_AS_CURRENT);
+    //((Player*)m_caster)->PetSpellInitialize();
+    sLog.outErrorDb(" SpellEffectCreateTamedPet-WOLF: Pet saved to DB");
+	
+}
+
 void Spell::EffectTeachTaxiNode(SpellEffectEntry const* effect)
 {
     if (!unitTarget || unitTarget->GetTypeId() != TYPEID_PLAYER)

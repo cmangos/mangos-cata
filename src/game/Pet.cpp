@@ -73,9 +73,10 @@ void Pet::RemoveFromWorld()
 bool Pet::LoadPetFromDB(Player* owner, uint32 petentry, uint32 petnumber, bool current)
 {
     m_loading = true;
-
+  
     uint32 ownerid = owner->GetGUIDLow();
-
+    bool petControl = owner->HasSpell(79682); // 0 = Owner does not know spell 79682 = Pet Control
+    	
     QueryResult* result;
 
     if (petnumber)
@@ -229,9 +230,12 @@ bool Pet::LoadPetFromDB(Player* owner, uint32 petentry, uint32 petnumber, bool c
 
         CharacterDatabase.CommitTransaction();
     }
-
+	bool hideActionBar = 0; // = 1 when it must be hidden
+	if ((!petControl) && (pet_type == HUNTER_PET))
+		hideActionBar = 1;
+		
     // load action bar, if data broken will fill later by default spells.
-    if (!is_temporary_summoned)
+   if ((!is_temporary_summoned) || (!hideActionBar))
         m_charmInfo->LoadPetActionBar(fields[12].GetCppString());
 
     // since last save (in seconds)
@@ -270,11 +274,13 @@ bool Pet::LoadPetFromDB(Player* owner, uint32 petentry, uint32 petnumber, bool c
     AIM_Initialize();
 
     // Spells should be loaded after pet is added to map, because in CheckCast is check on it
-    _LoadSpells();
-    InitLevelupSpellsForLevel();
+    if (!hideActionBar)
+		{
+        _LoadSpells();
+        InitLevelupSpellsForLevel();
 
-    CleanupActionBar();                                     // remove unknown spells from action bar after load
-
+        CleanupActionBar();                                     // remove unknown spells from action bar after load
+        }
     _LoadSpellCooldowns();
 
     owner->SetPet(this);                                    // in DB stored only full controlled creature
@@ -282,7 +288,8 @@ bool Pet::LoadPetFromDB(Player* owner, uint32 petentry, uint32 petnumber, bool c
 
     if (owner->GetTypeId() == TYPEID_PLAYER)
     {
-        ((Player*)owner)->PetSpellInitialize();
+        if (!hideActionBar)
+            ((Player*)owner)->PetSpellInitialize();
         if (((Player*)owner)->GetGroup())
             ((Player*)owner)->SetGroupUpdateFlag(GROUP_UPDATE_PET);
 
@@ -729,7 +736,8 @@ void Pet::GivePetLevel(uint32 level)
     }
 
     InitStatsForLevel(level);
-    InitLevelupSpellsForLevel();
+    if (level >10) // only update spell for pets above level 10
+    	InitLevelupSpellsForLevel();
     InitTalentForLevel();
 }
 

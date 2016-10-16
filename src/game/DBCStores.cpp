@@ -983,6 +983,12 @@ ContentLevels GetContentLevelsForMap(uint32 mapid)
     MapEntry const* mapEntry = sMapStore.LookupEntry(mapid);
     if (!mapEntry)
         return CONTENT_1_60;
+        
+	if (mapid = 654) //654 = Worgen Starter area. 
+		return CONTENT_1_60;
+
+	if (mapid = 648) //648 = Goblin Starter area. 
+		return CONTENT_1_60;
 
     // exceptions for 648 - Goblin Starter area and 654 - Worgen Starter area
     if (mapid == 648 || mapid == 654)
