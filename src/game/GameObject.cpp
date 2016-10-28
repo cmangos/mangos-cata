@@ -451,7 +451,7 @@ void GameObject::Update(uint32 update_diff, uint32 p_time)
                         for (GuidSet::const_iterator itr = m_UniqueUsers.begin(); itr != m_UniqueUsers.end(); ++itr)
                         {
                             if (Player* owner = GetMap()->GetPlayer(*itr))
-                                owner->CastSpell(owner, spellId, false, nullptr, nullptr, GetObjectGuid());
+                                owner->CastSpell(owner, spellId, TRIGGERED_NONE, nullptr, nullptr, GetObjectGuid());
                         }
 
                         ClearAllUsesData();
@@ -1078,7 +1078,7 @@ void GameObject::Use(Unit* user)
     // by default spell caster is user
     Unit* spellCaster = user;
     uint32 spellId = 0;
-    bool triggered = false;
+    uint32 triggeredFlags = 0;
 
     // test only for exist cooldown data (cooldown timer used for door/buttons reset that not have use cooldown)
     if (uint32 cooldown = GetGOInfo()->GetCooldown())
@@ -1172,7 +1172,7 @@ void GameObject::Use(Unit* user)
 
             // FIXME: when GO casting will be implemented trap must cast spell to target
             if (goInfo->trap.spellId)
-                caster->CastSpell(user, goInfo->trap.spellId, true, nullptr, nullptr, GetObjectGuid());
+                caster->CastSpell(user, goInfo->trap.spellId, TRIGGERED_OLD_TRIGGERED, nullptr, nullptr, GetObjectGuid());
             // use template cooldown if provided
             m_cooldownTime = time(nullptr) + (goInfo->trap.cooldown ? goInfo->trap.cooldown : uint32(4));
 
@@ -1334,7 +1334,7 @@ void GameObject::Use(Unit* user)
 
             // cast this spell later if provided
             spellId = info->goober.spellId;
-            triggered = true;
+            triggeredFlags = TRIGGERED_OLD_TRIGGERED;
 
             // database may contain a dummy spell, so it need replacement by actually existing
             switch (spellId)
@@ -1517,10 +1517,10 @@ void GameObject::Use(Unit* user)
 
             if (info->summoningRitual.animSpell)
             {
-                player->CastSpell(player, info->summoningRitual.animSpell, true);
+                player->CastSpell(player, info->summoningRitual.animSpell, TRIGGERED_OLD_TRIGGERED);
 
                 // for this case, summoningRitual.spellId is always triggered
-                triggered = true;
+                triggeredFlags = TRIGGERED_OLD_TRIGGERED;
             }
 
             // full amount unique participants including original summoner, need more
@@ -1539,7 +1539,7 @@ void GameObject::Use(Unit* user)
 
             // spell have reagent and mana cost but it not expected use its
             // it triggered spell in fact casted at currently channeled GO
-            triggered = true;
+            triggeredFlags = TRIGGERED_OLD_TRIGGERED;
 
             // finish owners spell
             if (owner)
@@ -1726,7 +1726,7 @@ void GameObject::Use(Unit* user)
         return;
     }
 
-    Spell* spell = new Spell(spellCaster, spellInfo, triggered, GetObjectGuid());
+    Spell* spell = new Spell(spellCaster, spellInfo, triggeredFlags, GetObjectGuid());
 
     // spell target is user of GO
     SpellCastTargets targets;

@@ -1467,7 +1467,7 @@ void Player::SetDeathState(DeathState s)
 
         // restore default warrior stance
         if (getClass() == CLASS_WARRIOR)
-            CastSpell(this, SPELL_ID_PASSIVE_BATTLE_STANCE, true);
+            CastSpell(this, SPELL_ID_PASSIVE_BATTLE_STANCE, TRIGGERED_OLD_TRIGGERED);
     }
 
     if (GetGroup())
@@ -2015,14 +2015,14 @@ void Player::ProcessDelayedOperations()
 
     if (m_DelayedOperations & DELAYED_SPELL_CAST_DESERTER)
     {
-        CastSpell(this, 26013, true);               // Deserter
+        CastSpell(this, 26013, TRIGGERED_OLD_TRIGGERED);               // Deserter
     }
 
     if (m_DelayedOperations & DELAYED_BG_MOUNT_RESTORE)
     {
         if (m_bgData.mountSpell)
         {
-            CastSpell(this, m_bgData.mountSpell, true);
+            CastSpell(this, m_bgData.mountSpell, TRIGGERED_OLD_TRIGGERED);
             m_bgData.mountSpell = 0;
         }
     }
@@ -3172,7 +3172,7 @@ bool Player::addSpell(uint32 spell_id, bool active, bool learning, bool dependen
             if (active)
             {
                 if (IsNeedCastPassiveLikeSpellAtLearn(spellInfo))
-                    CastSpell(this, spell_id, true);
+                    CastSpell(this, spell_id, TRIGGERED_OLD_TRIGGERED);
             }
             else if (IsInWorld())
             {
@@ -3390,16 +3390,16 @@ bool Player::addSpell(uint32 spell_id, bool active, bool learning, bool dependen
     if (talentPos && IsSpellHaveEffect(spellInfo, SPELL_EFFECT_LEARN_SPELL))
     {
         // ignore stance requirement for talent learn spell (stance set for spell only for client spell description show)
-        CastSpell(this, spell_id, true);
+        CastSpell(this, spell_id, TRIGGERED_OLD_TRIGGERED);
     }
     // also cast passive (and passive like) spells (including all talents without SPELL_EFFECT_LEARN_SPELL) with additional checks
     else if (IsNeedCastPassiveLikeSpellAtLearn(spellInfo))
     {
-        CastSpell(this, spell_id, true);
+        CastSpell(this, spell_id, TRIGGERED_OLD_TRIGGERED);
     }
     else if (IsSpellHaveEffect(spellInfo, SPELL_EFFECT_SKILL_STEP))
     {
-        CastSpell(this, spell_id, true);
+        CastSpell(this, spell_id, TRIGGERED_OLD_TRIGGERED);
         return false;
     }
 
@@ -4693,8 +4693,8 @@ void Player::BuildPlayerRepop()
     GetSession()->SendPacket(&data);
 
     if (getRace() == RACE_NIGHTELF)
-        CastSpell(this, 20584, true);                       // auras SPELL_AURA_INCREASE_SPEED(+speed in wisp form), SPELL_AURA_INCREASE_SWIM_SPEED(+swim speed in wisp form), SPELL_AURA_TRANSFORM (to wisp form)
-    CastSpell(this, 8326, true);                            // auras SPELL_AURA_GHOST, SPELL_AURA_INCREASE_SPEED(why?), SPELL_AURA_INCREASE_SWIM_SPEED(why?)
+        CastSpell(this, 20584, TRIGGERED_OLD_TRIGGERED);                       // auras SPELL_AURA_INCREASE_SPEED(+speed in wisp form), SPELL_AURA_INCREASE_SWIM_SPEED(+swim speed in wisp form), SPELL_AURA_TRANSFORM (to wisp form)
+    CastSpell(this, 8326, TRIGGERED_OLD_TRIGGERED);                            // auras SPELL_AURA_GHOST, SPELL_AURA_INCREASE_SPEED(why?), SPELL_AURA_INCREASE_SWIM_SPEED(why?)
 
     // there must be SMSG.FORCE_RUN_SPEED_CHANGE, SMSG.FORCE_SWIM_SPEED_CHANGE, SMSG.MOVE_WATER_WALK
     // there must be SMSG.STOP_MIRROR_TIMER
@@ -4800,7 +4800,7 @@ void Player::ResurrectPlayer(float restore_percent, bool applySickness)
     if (int32(getLevel()) >= startLevel)
     {
         // set resurrection sickness
-        CastSpell(this, SPELL_ID_PASSIVE_RESURRECTION_SICKNESS, true);
+        CastSpell(this, SPELL_ID_PASSIVE_RESURRECTION_SICKNESS, TRIGGERED_OLD_TRIGGERED);
 
         // not full duration
         if (int32(getLevel()) < startLevel + 9)
@@ -6468,7 +6468,7 @@ void Player::CheckAreaExploreAndOutdoor()
 
             if (!shapeShift || (shapeShift->Stances || shapeShift->StancesNot) && !IsNeedCastSpellAtFormApply(spellInfo, GetShapeshiftForm()))
                 continue;
-            CastSpell(this, itr->first, true, nullptr);
+            CastSpell(this, spellInfo, TRIGGERED_OLD_TRIGGERED, nullptr);
         }
     }
     else if (sWorld.getConfig(CONFIG_BOOL_VMAP_INDOOR_CHECK) && !isGameMaster())
@@ -7052,6 +7052,17 @@ void Player::UpdateArea(uint32 newArea)
         // removal in sanctuaries and capitals is handled in zone update
         if (IsFFAPvP() && !sWorld.IsFFAPvPRealm())
             SetFFAPvP(false);
+    }
+
+    if (area)
+    {
+        // Dalaran restricted flight zone
+        if ((area->flags & AREA_FLAG_CANNOT_FLY) && IsFreeFlying() && !isGameMaster() && !HasAura(58600))
+            CastSpell(this, 58600, TRIGGERED_OLD_TRIGGERED);                   // Restricted Flight Area
+
+        // TODO: implement wintergrasp parachute when battle in progress
+        /* if ((area->flags & AREA_FLAG_OUTDOOR_PVP) && IsFreeFlying() && <WINTERGRASP_BATTLE_IN_PROGRESS> && !isGameMaster())
+            CastSpell(this, 58730, TRIGGERED_OLD_TRIGGERED); */
     }
 
     UpdateAreaDependentAuras();
@@ -7681,7 +7692,7 @@ void Player::ApplyEquipSpell(SpellEntry const* spellInfo, Item* item, bool apply
 
         DEBUG_LOG("WORLD: cast %s Equip spellId - %i", (item ? "item" : "itemset"), spellInfo->Id);
 
-        CastSpell(this, spellInfo, true, item);
+        CastSpell(this, spellInfo, TRIGGERED_OLD_TRIGGERED, item);
     }
     else
     {
@@ -7767,7 +7778,7 @@ void Player::ApplyItemOnStoreSpell(Item* item, bool apply)
         {
             // can be attempt re-applied at move in inventory slots
             if (!HasAura(spellData.SpellId))
-                CastSpell(this, spellData.SpellId, true, item);
+                CastSpell(this, spellData.SpellId, TRIGGERED_OLD_TRIGGERED, item);
         }
         else
             RemoveAurasDueToItemSpell(item, spellData.SpellId);
@@ -7834,7 +7845,7 @@ void Player::_HandleDeadlyPoison(Unit* Target, WeaponAttackType attType, SpellEn
 
             if (SpellEntry const* combatEntry = sSpellStore.LookupEntry(pSecondEnchant->spellid[s]))
                 if (combatEntry->GetDispel() == DISPEL_POISON)
-                    CastSpell(Target, combatEntry, true, otherWeapon);
+                    CastSpell(Target, combatEntry, TRIGGERED_OLD_TRIGGERED, otherWeapon);
         }
     }
 }
@@ -7888,7 +7899,7 @@ void Player::CastItemCombatSpell(Unit* Target, WeaponAttackType attType)
         }
 
         if (roll_chance_f(chance))
-            CastSpell(Target, spellInfo->Id, true, item);
+            CastSpell(Target, spellInfo->Id, TRIGGERED_OLD_TRIGGERED, item);
     }
 
     // item combat enchantments
@@ -7926,14 +7937,14 @@ void Player::CastItemCombatSpell(Unit* Target, WeaponAttackType attType)
             if (roll_chance_f(chance))
             {
                 if (IsPositiveSpell(spellInfo->Id, this, Target))
-                    CastSpell(this, spellInfo->Id, true, item);
+                    CastSpell(this, spellInfo->Id, TRIGGERED_OLD_TRIGGERED, item);
                 else
                 {
                     // Deadly Poison, unique effect needs to be handled before casting triggered spell
                     if (spellInfo->IsFitToFamily(SPELLFAMILY_ROGUE, uint64(0x10000)))
                         _HandleDeadlyPoison(Target, attType, spellInfo);
 
-                    CastSpell(Target, spellInfo->Id, true, item);
+                    CastSpell(Target, spellInfo->Id, TRIGGERED_OLD_TRIGGERED, item);
                 }
             }
         }
@@ -10671,7 +10682,7 @@ Item* Player::EquipItem(uint16 pos, Item* pItem, bool update)
     }
     // Apply Titan's Grip damage penalty if necessary
     if ((slot == EQUIPMENT_SLOT_MAINHAND || slot == EQUIPMENT_SLOT_OFFHAND) && CanTitanGrip() && HasTwoHandWeaponInOneHand() && !HasAura(49152))
-        CastSpell(this, 49152, true);
+        CastSpell(this, 49152, TRIGGERED_OLD_TRIGGERED);
 
     // only for full equip instead adding to stack
     GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EQUIP_ITEM, pItem->GetEntry());
@@ -10698,7 +10709,7 @@ void Player::QuickEquipItem(uint16 pos, Item* pItem)
         }
         // Apply Titan's Grip damage penalty if necessary
         if ((slot == EQUIPMENT_SLOT_MAINHAND || slot == EQUIPMENT_SLOT_OFFHAND) && CanTitanGrip() && HasTwoHandWeaponInOneHand() && !HasAura(49152))
-            CastSpell(this, 49152, true);
+            CastSpell(this, 49152, TRIGGERED_OLD_TRIGGERED);
 
         GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EQUIP_ITEM, pItem->GetEntry());
         GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EQUIP_EPIC_ITEM, slot + 1);
@@ -11991,9 +12002,9 @@ void Player::ApplyEnchantment(Item* item, EnchantmentSlot slot, bool apply, bool
                             }
                             // Cast custom spell vs all equal basepoints got from enchant_amount
                             if (basepoints)
-                                CastCustomSpell(this, enchant_spell_id, &basepoints, &basepoints, &basepoints, true, item);
+                                CastCustomSpell(this, enchant_spell_id, &basepoints, &basepoints, &basepoints, TRIGGERED_OLD_TRIGGERED, item);
                             else
-                                CastSpell(this, enchant_spell_id, true, item);
+                                CastSpell(this, enchant_spell_id, TRIGGERED_OLD_TRIGGERED, item);
                         }
                         else
                             RemoveAurasDueToItemSpell(item, enchant_spell_id);
@@ -12553,7 +12564,7 @@ void Player::OnGossipSelect(WorldObject* pSource, uint32 gossipListId, uint32 me
         }
         case GOSSIP_OPTION_SPIRITHEALER:
             if (isDead())
-                ((Creature*)pSource)->CastSpell(((Creature*)pSource), 17251, true, nullptr, nullptr, GetObjectGuid());
+                ((Creature*)pSource)->CastSpell(((Creature*)pSource), 17251, TRIGGERED_OLD_TRIGGERED, nullptr, nullptr, GetObjectGuid());
             break;
         case GOSSIP_OPTION_QUESTGIVER:
             PrepareQuestMenu(guid);
@@ -13485,7 +13496,7 @@ void Player::RewardQuest(Quest const* pQuest, uint32 reward, Object* questGiver,
                 }
             }
 
-            caster->CastSpell(this, spellProto, true);
+            caster->CastSpell(this, spellProto, TRIGGERED_OLD_TRIGGERED);
         }
     }
 
@@ -15728,7 +15739,7 @@ void Player::_LoadAuras(QueryResult* result, uint32 timediff)
     }
 
     if (getClass() == CLASS_WARRIOR && !HasAuraType(SPELL_AURA_MOD_SHAPESHIFT))
-        CastSpell(this, SPELL_ID_PASSIVE_BATTLE_STANCE, true);
+        CastSpell(this, SPELL_ID_PASSIVE_BATTLE_STANCE, TRIGGERED_OLD_TRIGGERED);
 }
 
 void Player::_LoadGlyphs(QueryResult* result)
@@ -19551,7 +19562,7 @@ void Player::LeaveBattleground(bool teleportToEntryPoint)
                     return;
                 }
 
-                CastSpell(this, 26013, true);               // Deserter
+                CastSpell(this, 26013, TRIGGERED_OLD_TRIGGERED);               // Deserter
             }
         }
     }
@@ -19590,7 +19601,7 @@ void Player::ReportedAfkBy(Player* reporter)
         if (m_bgData.bgAfkReporter.size() >= 3)
         {
             // cast 'Idle' spell
-            CastSpell(this, 43680, true);
+            CastSpell(this, 43680, TRIGGERED_OLD_TRIGGERED);
             m_bgData.bgAfkReporter.clear();
         }
     }
@@ -19941,7 +19952,7 @@ void Player::SendInitialPacketsAfterAddToMap()
     ResetTimeSync();
     SendTimeSync();
 
-    CastSpell(this, 836, true);                             // LOGINEFFECT
+    CastSpell(this, 836, TRIGGERED_OLD_TRIGGERED);                             // LOGINEFFECT
 
     // set some aura effects that send packet to player client after add player to map
     // SendMessageToSet not send it to player not it map, only for aura that not changed anything at re-apply
@@ -20208,7 +20219,7 @@ void Player::learnQuestRewardedSpells(Quest const* quest)
         }
     }
 
-    CastSpell(this, spell_id, true);
+    CastSpell(this, spell_id, TRIGGERED_OLD_TRIGGERED);
 }
 
 void Player::learnQuestRewardedSpells()
@@ -20846,7 +20857,7 @@ void Player::ResurectUsingRequestData()
     if (m_resurrectToGhoul)
     {
         // we can cast raise ally spell
-        CastSpell(this, 46619, true);
+        CastSpell(this, 46619, TRIGGERED_OLD_TRIGGERED);
         ClearResurrectRequestData();
         return;
     }
@@ -21174,7 +21185,7 @@ void Player::UpdateUnderwaterState(Map* m, float x, float y, float z)
                             if (pInst->CheckConditionCriteriaMeet(this, INSTANCE_CONDITION_ID_LURKER, nullptr, CONDITION_FROM_HARDCODED))
                             {
                                 if (pInst->CheckConditionCriteriaMeet(this, INSTANCE_CONDITION_ID_SCALDING_WATER, nullptr, CONDITION_FROM_HARDCODED))
-                                    CastSpell(this, liquidSpellId, true);
+                                    CastSpell(this, liquidSpellId, TRIGGERED_OLD_TRIGGERED);
                                 else
                                 {
                                     SummonCreature(21508, 0, 0, 0, 0, TEMPSUMMON_TIMED_OOC_DESPAWN, 2000);
@@ -21185,7 +21196,7 @@ void Player::UpdateUnderwaterState(Map* m, float x, float y, float z)
                         }
                     }
                     else
-                        CastSpell(this, liquidSpellId, true);
+                        CastSpell(this, liquidSpellId, TRIGGERED_OLD_TRIGGERED);
                 }
             }
             else
@@ -21341,7 +21352,7 @@ void Player::ApplyGlyph(uint8 slot, bool apply)
         {
             if (apply)
             {
-                CastSpell(this, gp->SpellId, true);
+                CastSpell(this, gp->SpellId, TRIGGERED_OLD_TRIGGERED);
                 SetUInt32Value(PLAYER_FIELD_GLYPHS_1 + slot, glyph);
             }
             else

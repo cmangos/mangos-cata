@@ -380,16 +380,16 @@ void SendActionMenu_npc_prof_blacksmith(Player* pPlayer, Creature* pCreature, ui
         case GOSSIP_ACTION_INFO_DEF + 1:
             if (!pPlayer->HasSpell(S_ARMOR))
             {
-                pPlayer->CastSpell(pPlayer, S_LEARN_ARMOR, true);
-                // pCreature->CastSpell(pPlayer, S_REP_ARMOR, true);
+                pPlayer->CastSpell(pPlayer, S_LEARN_ARMOR, TRIGGERED_OLD_TRIGGERED);
+                // pCreature->CastSpell(pPlayer, S_REP_ARMOR, TRIGGERED_OLD_TRIGGERED);
             }
             pPlayer->CLOSE_GOSSIP_MENU();
             break;
         case GOSSIP_ACTION_INFO_DEF + 2:
             if (!pPlayer->HasSpell(S_WEAPON))
             {
-                pPlayer->CastSpell(pPlayer, S_LEARN_WEAPON, true);
-                // pCreature->CastSpell(pPlayer, S_REP_WEAPON, true);
+                pPlayer->CastSpell(pPlayer, S_LEARN_WEAPON, TRIGGERED_OLD_TRIGGERED);
+                // pCreature->CastSpell(pPlayer, S_REP_WEAPON, TRIGGERED_OLD_TRIGGERED);
             }
             pPlayer->CLOSE_GOSSIP_MENU();
             break;
@@ -404,10 +404,10 @@ void SendActionMenu_npc_prof_blacksmith(Player* pPlayer, Creature* pCreature, ui
             {
                 if (pPlayer->GetMoney() >= uint32(GetUnlearnCostLow(pPlayer)))
                 {
-                    pPlayer->CastSpell(pPlayer, S_UNLEARN_WEAPON, true);
+                    pPlayer->CastSpell(pPlayer, S_UNLEARN_WEAPON, TRIGGERED_OLD_TRIGGERED);
                     ProfessionUnlearnSpells(pPlayer, S_UNLEARN_WEAPON);
                     pPlayer->ModifyMoney(-GetUnlearnCostLow(pPlayer));
-                    pCreature->CastSpell(pPlayer, S_REP_ARMOR, true);
+                    pCreature->CastSpell(pPlayer, S_REP_ARMOR, TRIGGERED_OLD_TRIGGERED);
                     pPlayer->CLOSE_GOSSIP_MENU();
                 }
                 else
@@ -424,10 +424,10 @@ void SendActionMenu_npc_prof_blacksmith(Player* pPlayer, Creature* pCreature, ui
             {
                 if (pPlayer->GetMoney() >= uint32(GetUnlearnCostLow(pPlayer)))
                 {
-                    pPlayer->CastSpell(pPlayer, S_UNLEARN_ARMOR, true);
+                    pPlayer->CastSpell(pPlayer, S_UNLEARN_ARMOR, TRIGGERED_OLD_TRIGGERED);
                     ProfessionUnlearnSpells(pPlayer, S_UNLEARN_ARMOR);
                     pPlayer->ModifyMoney(-GetUnlearnCostLow(pPlayer));
-                    pCreature->CastSpell(pPlayer, S_REP_WEAPON, true);
+                    pCreature->CastSpell(pPlayer, S_REP_WEAPON, TRIGGERED_OLD_TRIGGERED);
                 }
                 else
                     pPlayer->SendBuyError(BUY_ERR_NOT_ENOUGHT_MONEY, pCreature, 0, 0);
@@ -438,15 +438,15 @@ void SendActionMenu_npc_prof_blacksmith(Player* pPlayer, Creature* pCreature, ui
             break;
             // Learn Hammer/Axe/Sword
         case GOSSIP_ACTION_INFO_DEF + 5:
-            pPlayer->CastSpell(pPlayer, S_LEARN_HAMMER, true);
+            pPlayer->CastSpell(pPlayer, S_LEARN_HAMMER, TRIGGERED_OLD_TRIGGERED);
             pPlayer->CLOSE_GOSSIP_MENU();
             break;
         case GOSSIP_ACTION_INFO_DEF + 6:
-            pPlayer->CastSpell(pPlayer, S_LEARN_AXE, true);
+            pPlayer->CastSpell(pPlayer, S_LEARN_AXE, TRIGGERED_OLD_TRIGGERED);
             pPlayer->CLOSE_GOSSIP_MENU();
             break;
         case GOSSIP_ACTION_INFO_DEF + 7:
-            pPlayer->CastSpell(pPlayer, S_LEARN_SWORD, true);
+            pPlayer->CastSpell(pPlayer, S_LEARN_SWORD, TRIGGERED_OLD_TRIGGERED);
             pPlayer->CLOSE_GOSSIP_MENU();
             break;
             // Unlearn Hammer/Axe/Sword
@@ -455,7 +455,7 @@ void SendActionMenu_npc_prof_blacksmith(Player* pPlayer, Creature* pCreature, ui
             {
                 if (pPlayer->GetMoney() >= uint32(GetUnlearnCostMedium(pPlayer)))
                 {
-                    pPlayer->CastSpell(pPlayer, S_UNLEARN_HAMMER, true);
+                    pPlayer->CastSpell(pPlayer, S_UNLEARN_HAMMER, TRIGGERED_OLD_TRIGGERED);
                     ProfessionUnlearnSpells(pPlayer, S_UNLEARN_HAMMER);
                     pPlayer->ModifyMoney(-GetUnlearnCostMedium(pPlayer));
                 }
@@ -471,7 +471,7 @@ void SendActionMenu_npc_prof_blacksmith(Player* pPlayer, Creature* pCreature, ui
             {
                 if (pPlayer->GetMoney() >= uint32(GetUnlearnCostMedium(pPlayer)))
                 {
-                    pPlayer->CastSpell(pPlayer, S_UNLEARN_AXE, true);
+                    pPlayer->CastSpell(pPlayer, S_UNLEARN_AXE, TRIGGERED_OLD_TRIGGERED);
                     ProfessionUnlearnSpells(pPlayer, S_UNLEARN_AXE);
                     pPlayer->ModifyMoney(-GetUnlearnCostMedium(pPlayer));
                 }
@@ -487,7 +487,7 @@ void SendActionMenu_npc_prof_blacksmith(Player* pPlayer, Creature* pCreature, ui
             {
                 if (pPlayer->GetMoney() >= uint32(GetUnlearnCostMedium(pPlayer)))
                 {
-                    pPlayer->CastSpell(pPlayer, S_UNLEARN_SWORD, true);
+                    pPlayer->CastSpell(pPlayer, S_UNLEARN_SWORD, TRIGGERED_OLD_TRIGGERED);
                     ProfessionUnlearnSpells(pPlayer, S_UNLEARN_SWORD);
                     pPlayer->ModifyMoney(-GetUnlearnCostMedium(pPlayer));
                 }
@@ -577,10 +577,10 @@ bool GossipSelect_npc_prof_blacksmith(Player* pPlayer, Creature* pCreature, uint
 /*bool QuestComplete_npc_prof_blacksmith(Player* pPlayer, Creature* pCreature, const Quest* pQuest)
 {
     if ((pQuest->GetQuestId() == 5283) || (pQuest->GetQuestId() == 5301))             // armorsmith
-        pCreature->CastSpell(pPlayer, 17451, true);
+        pCreature->CastSpell(pPlayer, 17451, TRIGGERED_OLD_TRIGGERED);
 
     if ((pQuest->GetQuestId() == 5284) || (pQuest->GetQuestId() == 5302))             // weaponsmith
-        pCreature->CastSpell(pPlayer, 17452, true);
+        pCreature->CastSpell(pPlayer, 17452, TRIGGERED_OLD_TRIGGERED);
 
     return true;
 }*/
@@ -642,7 +642,7 @@ void SendActionMenu_npc_prof_leather(Player* pPlayer, Creature* pCreature, uint3
             {
                 if (pPlayer->GetMoney() >= uint32(GetUnlearnCostMedium(pPlayer)))
                 {
-                    pPlayer->CastSpell(pPlayer, S_UNLEARN_DRAGON, true);
+                    pPlayer->CastSpell(pPlayer, S_UNLEARN_DRAGON, TRIGGERED_OLD_TRIGGERED);
                     ProfessionUnlearnSpells(pPlayer, S_UNLEARN_DRAGON);
                     pPlayer->ModifyMoney(-GetUnlearnCostMedium(pPlayer));
                 }
@@ -658,7 +658,7 @@ void SendActionMenu_npc_prof_leather(Player* pPlayer, Creature* pCreature, uint3
             {
                 if (pPlayer->GetMoney() >= uint32(GetUnlearnCostMedium(pPlayer)))
                 {
-                    pPlayer->CastSpell(pPlayer, S_UNLEARN_ELEMENTAL, true);
+                    pPlayer->CastSpell(pPlayer, S_UNLEARN_ELEMENTAL, TRIGGERED_OLD_TRIGGERED);
                     ProfessionUnlearnSpells(pPlayer, S_UNLEARN_ELEMENTAL);
                     pPlayer->ModifyMoney(-GetUnlearnCostMedium(pPlayer));
                 }
@@ -674,7 +674,7 @@ void SendActionMenu_npc_prof_leather(Player* pPlayer, Creature* pCreature, uint3
             {
                 if (pPlayer->GetMoney() >= uint32(GetUnlearnCostMedium(pPlayer)))
                 {
-                    pPlayer->CastSpell(pPlayer, S_UNLEARN_TRIBAL, true);
+                    pPlayer->CastSpell(pPlayer, S_UNLEARN_TRIBAL, TRIGGERED_OLD_TRIGGERED);
                     ProfessionUnlearnSpells(pPlayer, S_UNLEARN_TRIBAL);
                     pPlayer->ModifyMoney(-GetUnlearnCostMedium(pPlayer));
                 }
