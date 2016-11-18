@@ -1201,6 +1201,8 @@ bool AuctionBotSeller::Initialize()
                         continue;
                 break;
             }
+            default:
+                continue;
         }
 
         m_ItemPool[prototype->Quality][prototype->Class].push_back(itemID);
