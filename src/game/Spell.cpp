@@ -4712,7 +4712,7 @@ void Spell::TakeCastItem()
             // item has limited charges
             if (proto->Spells[i].SpellCharges)
             {
-                if (proto->Spells[i].SpellCharges < 0 && !(proto->ExtraFlags & ITEM_EXTRA_NON_CONSUMABLE))
+                if (proto->Spells[i].SpellCharges < 0)
                     expendable = true;
 
                 int32 charges = m_CastItem->GetSpellCharges(i);
@@ -7235,10 +7235,9 @@ SpellCastResult Spell::CheckItems()
                     // if CastItem is also spell reagent
                     if (m_CastItem && m_CastItem->GetEntry() == itemid)
                     {
-                        ItemPrototype const *proto = m_CastItem->GetProto();
-                        if (!proto)
-                            return SPELL_FAILED_REAGENTS;
-                        for(int s = 0; s < MAX_ITEM_PROTO_SPELLS; ++s)
+                        // CastItem will be used up and does not count as reagent
+                        int32 charges = m_CastItem->GetSpellCharges(s);
+                        if (proto->Spells[s].SpellCharges < 0 && abs(charges) < 2)
                         {
                             // CastItem will be used up and does not count as reagent
                             int32 charges = m_CastItem->GetSpellCharges(s);
