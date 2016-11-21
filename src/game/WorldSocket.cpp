@@ -83,7 +83,7 @@ struct ServerPktHeader
 
 WorldSocket::WorldSocket(boost::asio::io_service &service, std::function<void (Socket *)> closeHandler)
     : Socket(service, closeHandler), m_lastPingTime(std::chrono::system_clock::time_point::min()), m_overSpeedPings(0),
-      m_useExistingHeader(false), m_session(nullptr), m_deletable(true), m_seed(urand())
+      m_useExistingHeader(false), m_session(nullptr),m_seed(urand())
 {
     InitializeOpcodes();
 }
@@ -113,16 +113,12 @@ bool WorldSocket::Open()
     if (!Socket::Open())
         return false;
 
-	m_deletable = false;
-
     std::string ServerToClient = "RLD OF WARCRAFT CONNECTION - SERVER TO CLIENT";
     WorldPacket data(MSG_WOW_CONNECTION, 46);
 
     data << ServerToClient;
 
     SendPacket(data);
-
-	m_deletable = true;
 
     return true;
 }
@@ -141,8 +137,6 @@ bool WorldSocket::HandleWowConnection(WorldPacket& recvPacket)
     packet << uint8(1);
 
     SendPacket(packet);
-
-    m_deletable = true;
 
     return true;
 }
@@ -163,7 +157,6 @@ bool WorldSocket::ProcessIncomingData()
         if (!Read((char *)&header, sizeof(ClientPktHeader)))
         {
             errno = EBADMSG;
-            m_deletable = true;
             return false;
         }
 
@@ -180,7 +173,6 @@ bool WorldSocket::ProcessIncomingData()
         sLog.outError("WorldSocket::ProcessIncomingData: client sent malformed packet size = %u , cmd = %u", header.size, header.cmd);
     
         errno = EINVAL;
-        m_deletable = true;
         return false;
     }
 
@@ -199,17 +191,13 @@ bool WorldSocket::ProcessIncomingData()
         ReadSkip(-static_cast<int>(sizeof(ClientPktHeader)));
 
         errno = EBADMSG;
-        m_deletable = true;
         return false;
     }
 
     const Opcodes opcode = static_cast<Opcodes>(header.cmd);
 
     if (IsClosed())
-    {
-        m_deletable = true;
         return false;
-    }
 
     std::unique_ptr<WorldPacket> pct(new WorldPacket(opcode, validBytesRemaining));
 
@@ -233,7 +221,6 @@ bool WorldSocket::ProcessIncomingData()
                 if (m_session)
                 {
                     sLog.outError("WorldSocket::ProcessIncomingData: Player send CMSG_AUTH_SESSION again");
-                    m_deletable = true;
                     return false;
                 }
 
@@ -252,7 +239,6 @@ bool WorldSocket::ProcessIncomingData()
                 if (!m_session)
                 {
                     sLog.outError("WorldSocket::ProcessIncomingData: Client not authed opcode = %u", uint32(opcode));
-                    m_deletable = true;
                     return false;
                 }
 
@@ -277,7 +263,6 @@ bool WorldSocket::ProcessIncomingData()
         {
             DETAIL_LOG("Disconnecting session [account id %i / address %s] for badly formatted packet.",
                        m_session ? m_session->GetAccountId() : -1, GetRemoteAddress().c_str());
-            m_deletable = true;
             return false;
         }
     }
@@ -358,7 +343,6 @@ bool WorldSocket::HandleAuthSession(WorldPacket &recvPacket)
         SendPacket (packet);
 
         sLog.outError("WorldSocket::HandleAuthSession: Sent Auth Response (version mismatch).");
-        m_deletable = true;
         return false;
     }
 
@@ -394,7 +378,6 @@ bool WorldSocket::HandleAuthSession(WorldPacket &recvPacket)
         SendPacket (packet);
 
         sLog.outError("WorldSocket::HandleAuthSession: Sent Auth Response (unknown account).");
-        m_deletable = true;
         return false;
     }
 
@@ -432,7 +415,6 @@ bool WorldSocket::HandleAuthSession(WorldPacket &recvPacket)
 
             delete result;
             BASIC_LOG("WorldSocket::HandleAuthSession: Sent Auth Response (Account IP differs).");
-            m_deletable = true;
             return false;
         }
     }
@@ -472,7 +454,6 @@ bool WorldSocket::HandleAuthSession(WorldPacket &recvPacket)
         delete banresult;
 
         sLog.outError("WorldSocket::HandleAuthSession: Sent Auth Response (Account banned).");
-        m_deletable = true;
         return false;
     }
 
@@ -489,7 +470,6 @@ bool WorldSocket::HandleAuthSession(WorldPacket &recvPacket)
         SendPacket (packet);
 
         BASIC_LOG("WorldSocket::HandleAuthSession: User tries to login but his security level is not enough");
-        m_deletable = true;
         return false;
     }
 
@@ -516,7 +496,6 @@ bool WorldSocket::HandleAuthSession(WorldPacket &recvPacket)
         SendPacket (packet);
 
         sLog.outError("WorldSocket::HandleAuthSession: Sent Auth Response (authentification failed).");
-        m_deletable = true;
         return false;
     }
 
@@ -534,10 +513,7 @@ bool WorldSocket::HandleAuthSession(WorldPacket &recvPacket)
     stmt.PExecute(address.c_str(), accountName.c_str());
 
     if (!(m_session = new WorldSession(id, this, AccountTypes(security), expansion, mutetime, locale)))
-    {
-        m_deletable = true;
         return false;
-    }
 
     m_crypt.Init(&K);
 
@@ -580,8 +556,6 @@ bool WorldSocket::HandlePing(WorldPacket &recvPacket)
                     sLog.outError("WorldSocket::HandlePing: Player kicked for "
                                   "overspeeded pings address = %s",
                                   GetRemoteAddress().c_str());
-
-                    m_deletable = true;
                     return false;
                 }
             }
@@ -603,8 +577,6 @@ bool WorldSocket::HandlePing(WorldPacket &recvPacket)
                           "but is not authenticated or got recently kicked,"
                           " address = %s",
                           GetRemoteAddress().c_str());
-
-            m_deletable = true;
             return false;
         }
     }
