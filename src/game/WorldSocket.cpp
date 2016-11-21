@@ -83,7 +83,7 @@ struct ServerPktHeader
 
 WorldSocket::WorldSocket(boost::asio::io_service &service, std::function<void (Socket *)> closeHandler)
     : Socket(service, closeHandler), m_lastPingTime(std::chrono::system_clock::time_point::min()), m_overSpeedPings(0),
-      m_useExistingHeader(false), m_session(nullptr), m_deletable(false), m_seed(urand())
+      m_useExistingHeader(false), m_session(nullptr), m_deletable(true), m_seed(urand())
 {
     InitializeOpcodes();
 }
@@ -113,12 +113,16 @@ bool WorldSocket::Open()
     if (!Socket::Open())
         return false;
 
+	m_deletable = false;
+
     std::string ServerToClient = "RLD OF WARCRAFT CONNECTION - SERVER TO CLIENT";
     WorldPacket data(MSG_WOW_CONNECTION, 46);
 
     data << ServerToClient;
 
     SendPacket(data);
+
+	m_deletable = true;
 
     return true;
 }
@@ -137,6 +141,8 @@ bool WorldSocket::HandleWowConnection(WorldPacket& recvPacket)
     packet << uint8(1);
 
     SendPacket(packet);
+
+    m_deletable = true;
 
     return true;
 }
