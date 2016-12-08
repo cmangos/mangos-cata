@@ -5475,7 +5475,7 @@ float Player::GetExpertiseDodgeOrParryReduction(WeaponAttackType attType) const
     return 0.0f;
 }
 
-float Player::OCTRegenMPPerSpirit()
+float Player::OCTRegenHPPerSpirit() const
 {
     // Only healers have regen bonus from spirit. Others regenerate by combat regen.
     uint32 rolesMask = GetTalentTreeRolesMask(m_talentsPrimaryTree[m_activeSpec]);
@@ -5585,6 +5585,15 @@ void Player::UpdateRating(CombatRating cr)
                 UpdateAllSpellCritChances();
             break;
         case CR_RESILIENCE_DAMAGE_TAKEN:
+        case CR_HIT_TAKEN_MELEE:                            // Implemented in Unit::MeleeMissChanceCalc
+        case CR_HIT_TAKEN_RANGED:
+            break;
+        case CR_HIT_TAKEN_SPELL:                            // Implemented in Unit::MagicSpellHitResult
+            break;
+        case CR_CRIT_TAKEN_MELEE:                           // Implemented in Unit::CalculateEffectiveCritChance (only for chance to crit)
+        case CR_CRIT_TAKEN_RANGED:
+            break;
+        case CR_CRIT_TAKEN_SPELL:                           // Implemented in Unit::SpellCriticalBonus (only for chance to crit)
             break;
         case CR_HASTE_MELEE:                                // Implemented in Player::ApplyRatingMod
         case CR_HASTE_RANGED:

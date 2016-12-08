@@ -10892,14 +10892,14 @@ void Spell::EffectAddExtraAttacks(SpellEffectEntry const* /*effect*/)
 
 void Spell::EffectParry(SpellEffectEntry const* /*effect*/)
 {
-    if (unitTarget && unitTarget->GetTypeId() == TYPEID_PLAYER)
-        ((Player*)unitTarget)->SetCanParry(true);
+    if (unitTarget)
+        unitTarget->SetCanParry(true);
 }
 
 void Spell::EffectBlock(SpellEffectEntry const* /*effect*/)
 {
-    if (unitTarget && unitTarget->GetTypeId() == TYPEID_PLAYER)
-        ((Player*)unitTarget)->SetCanBlock(true);
+    if (unitTarget)
+        unitTarget->SetCanBlock(true);
 }
 
 void Spell::EffectLeapForward(SpellEffectEntry const* effect)

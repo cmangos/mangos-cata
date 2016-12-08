@@ -445,7 +445,7 @@ void Player::UpdateBlockPercentage()
         value += GetTotalAuraModifier(SPELL_AURA_MOD_BLOCK_CHANCE_PERCENT);
         // Increase from rating (exists only on auras)
         value += GetRatingBonusValue(CR_BLOCK);
-        value = value < 0.0f ? 0.0f : value;
+        value = std::max(0.0f, std::min(value, 100.0f));
     }
     SetStatFloatValue(PLAYER_BLOCK_PERCENTAGE, value);
 }
@@ -478,8 +478,8 @@ void Player::UpdateCritPercentage(WeaponAttackType attType)
 
     float value = GetTotalPercentageModValue(modGroup) + GetRatingBonusValue(cr);
     // Modify crit from weapon skill and maximized defense skill of same level victim difference
-    value += (int32(GetMaxSkillValueForLevel()) - int32(GetMaxSkillValueForLevel())) * 0.04f;
-    value = value < 0.0f ? 0.0f : value;
+    value += (int32(GetMaxSkillValueForLevel(attType)) - int32(GetMaxSkillValueForLevel())) * 0.04f;
+    value = std::max(0.0f, std::min(value, 100.0f));
     SetStatFloatValue(index, value);
 }
 
@@ -544,7 +544,7 @@ void Player::UpdateParryPercentage()
         // apply diminishing formula to diminishing parry chance
         value = nondiminishing + diminishing * parry_cap[pclass] /
                 (diminishing + parry_cap[pclass] * m_diminishing_k[pclass]);
-        value = value < 0.0f ? 0.0f : value;
+        value = std::max(0.0f, std::min(value, 100.0f));
     }
     SetStatFloatValue(PLAYER_PARRY_PERCENTAGE, value);
 }
@@ -578,7 +578,7 @@ void Player::UpdateDodgePercentage()
     uint32 pclass = getClass() - 1;
     float value = nondiminishing + (diminishing * dodge_cap[pclass] /
                                     (diminishing + dodge_cap[pclass] * m_diminishing_k[pclass]));
-    value = value < 0.0f ? 0.0f : value;
+    value = std::max(0.0f, std::min(value, 100.0f));
     SetStatFloatValue(PLAYER_DODGE_PERCENTAGE, value);
 }
 

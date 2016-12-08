@@ -1816,7 +1816,6 @@ class MANGOS_DLL_SPEC Player : public Unit
         // Returns base spellpower bonus from items without intellect bonus
         uint32 GetBaseSpellPowerBonus() const { return m_baseSpellPower; }
 
-        float GetExpertiseDodgeOrParryReduction(WeaponAttackType attType) const;
         void UpdateBlockPercentage();
         void UpdateCritPercentage(WeaponAttackType attType);
         void UpdateAllCritPercentages();
@@ -2004,6 +2003,8 @@ class MANGOS_DLL_SPEC Player : public Unit
         void SetCanParry(bool value);
         bool CanBlock() const { return m_canBlock; }
         void SetCanBlock(bool value);
+
+        uint32 GetShieldBlockValue() const override;        // overwrite Unit version (virtual)
         bool CanDualWield() const { return m_canDualWield; }
         void SetCanDualWield(bool value) { m_canDualWield = value; }
         bool CanTitanGrip() const { return m_canTitanGrip; }
@@ -2588,8 +2589,6 @@ class MANGOS_DLL_SPEC Player : public Unit
 
         uint32 m_WeaponProficiency;
         uint32 m_ArmorProficiency;
-        bool m_canParry;
-        bool m_canBlock;
         bool m_canDualWield;
         bool m_canTitanGrip;
         uint8 m_swingErrorMsg;
