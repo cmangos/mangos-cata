@@ -485,8 +485,8 @@ bool scan_patches(char* scanmatch, std::vector<std::string>& pArchiveNames)
 bool processArgv(int argc, char** argv)
 {
     bool result = true;
-    bool hasInputPathParam = false;
-    bool preciseVectorData = false;
+    hasInputPathParam = false;
+    preciseVectorData = false;
 
     for (int i = 1; i < argc; ++i)
     {
