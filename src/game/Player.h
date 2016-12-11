@@ -1805,11 +1805,11 @@ class MANGOS_DLL_SPEC Player : public Unit
         void UpdateAllRatings();
 
         void CalculateMinMaxDamage(WeaponAttackType attType, bool normalized, float& min_damage, float& max_damage);
-
+        void UpdateDefenseBonusesMod();
         float GetMeleeCritFromAgility();
-        void GetDodgeFromAgility(float& diminishing, float& nondiminishing);
-        void GetParryFromStrength(float& diminishing, float& nondiminishing);
+        float GetDodgeFromAgility(float amount);
         float GetSpellCritFromIntellect();
+        float OCTRegenHPPerSpirit();
         float OCTRegenMPPerSpirit();
         float GetRatingMultiplier(CombatRating cr) const;
         float GetRatingBonusValue(CombatRating cr) const;
@@ -2631,9 +2631,6 @@ class MANGOS_DLL_SPEC Player : public Unit
         Runes* m_runes;
         EquipmentSets m_EquipmentSets;
         uint8 m_slot;
-
-        /// class dependent melee diminishing constant for dodge/parry/missed chances
-        static const float m_diminishing_k[MAX_CLASSES];
 
     private:
         void _HandleDeadlyPoison(Unit* Target, WeaponAttackType attType, SpellEntry const* spellInfo);
