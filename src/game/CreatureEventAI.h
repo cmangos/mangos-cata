@@ -23,6 +23,10 @@
 #include "Creature.h"
 #include "CreatureAI.h"
 #include "Unit.h"
+#include "ObjectGuid.h"
+#include "WaypointManager.h"
+#include "WaypointMovementGenerator.h"
+#include "MotionMaster.h"
 
 class Player;
 class WorldObject;
@@ -65,6 +69,7 @@ enum EventAI_Type
     EVENT_T_TIMER_GENERIC           = 29,                   // InitialMin, InitialMax, RepeatMin, RepeatMax
     EVENT_T_RECEIVE_AI_EVENT        = 30,                   // AIEventType, Sender-Entry, unused, unused
     EVENT_T_ENERGY                  = 31,                   // EnergyMax%, EnergyMin%, RepeatMin, RepeatMax
+    EVENT_T_SPELLHIT_TARGET         = 32,                   // SpellID, School, RepeatMin, RepeatMax
 
     EVENT_T_END,
 };
@@ -121,6 +126,7 @@ enum EventAI_ActionType
     ACTION_T_SET_STAND_STATE            = 47,               // StandState, unused, unused
     ACTION_T_CHANGE_MOVEMENT            = 48,               // MovementType, WanderDistance, unused
     ACTION_T_DYNAMIC_MOVEMENT           = 49,               // EnableDynamicMovement (1 = on; 0 = off)
+    ACTION_T_SET_CURRENT_WAYPOINT       = 50,               // Creature can set alternative waypoint.
 
     ACTION_T_END,
 };
@@ -423,6 +429,13 @@ struct CreatureEventAI_Action
             uint32 unused1;
             uint32 unused2;
         } dynamicMovement;
+        // ACTION_T_SET_CURRENT_WAYPOINT                    = 50
+        struct
+        {
+            uint32 uiPointId;                               // Creature can set alternative waypoint.
+            uint32 unused1;
+            uint32 unused2;
+        } setCurrentWaypoint;
         // RAW
         struct
         {
@@ -577,6 +590,14 @@ struct CreatureEventAI_Event
             uint32 unused1;
             uint32 unused2;
         } receiveAIEvent;
+        // EVENT_T_SPELLHIT_TARGET                          = 32
+        struct
+        {
+            uint32 spellId;
+            uint32 schoolMask;                              // -1 (==0xffffffff) is ok value for full mask, or must be more limited mask like (0 < 1) = 1 for normal/physical school
+            uint32 repeatMin;
+            uint32 repeatMax;
+        } spell_hit_target;
         // RAW
         struct
         {
@@ -652,6 +673,10 @@ class MANGOS_DLL_SPEC CreatureEventAI : public CreatureAI
         void SummonedCreatureJustDied(Creature* unit) override;
         void SummonedCreatureDespawn(Creature* unit) override;
         void ReceiveAIEvent(AIEventType eventType, Creature* pSender, Unit* pInvoker, uint32 miscValue) override;
+        
+        void SpellHitTarget(Unit* pTarget, const SpellEntry* pSpell) override;
+        
+        void SetCurrentWaypoint(uint32 uiPointId);
 
         static int Permissible(const Creature*);
 

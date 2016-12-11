@@ -1054,6 +1054,14 @@ void CreatureEventAI::ProcessAction(CreatureEventAI_Action const& action, uint32
             SetCombatMovement(!m_DynamicMovement, true);
             break;
         }
+        case ACTION_T_SET_CURRENT_WAYPOINT:
+        {
+             m_creature->GetMotionMaster()->Clear();
+             m_creature->clearUnitState(UNIT_STAT_WAYPOINT_PAUSED);
+             m_creature->GetMotionMaster()->MoveWaypoint();
+             SetCurrentWaypoint(action.setCurrentWaypoint.uiPointId);
+             break;
+        }
         default:
             sLog.outError("CreatureEventAi::ProcessAction(): action(%u) not implemented", static_cast<uint32>(action.type));
             break;
@@ -1320,6 +1328,25 @@ void CreatureEventAI::SpellHit(Unit* pUnit, const SpellEntry* pSpell)
                     ProcessEvent(*i, pUnit);
 }
 
+void CreatureEventAI::SpellHitTarget(Unit* pTarget, const SpellEntry* pSpell)
+{
+     for (CreatureEventAIList::iterator i = m_CreatureEventAIList.begin(); i != m_CreatureEventAIList.end(); ++i)
+         if (i->Event.event_type == EVENT_T_SPELLHIT_TARGET)
+             // If spell id matches (or no spell id) & if spell school matches (or no spell school)
+             if (!i->Event.spell_hit_target.spellId || pSpell->Id == i->Event.spell_hit_target.spellId)
+                 if (pSpell->SchoolMask & i->Event.spell_hit_target.schoolMask)
+                     ProcessEvent(*i, pTarget);
+    
+}
+ 
+void CreatureEventAI::SetCurrentWaypoint(uint32 uiPointId)
+{
+    if (!m_creature->GetMotionMaster()->SetNextWaypoint(uiPointId))
+    {
+        sLog.outErrorEventAI("EventAI for %s current waypoint tried to set to id %u, but doesn't exist in this path", m_creature->GetGuidStr().c_str(), uiPointId);
+        return;
+    }
+}
 void CreatureEventAI::UpdateAI(const uint32 diff)
 {
     // Check if we are in combat (also updates calls threat update code)
