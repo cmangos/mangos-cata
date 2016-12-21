@@ -26,6 +26,7 @@
 #include "Cell.h"
 
 #include <list>
+#include <memory>
 
 struct SpellEntry;
 
@@ -581,7 +582,7 @@ class MANGOS_DLL_SPEC Creature : public Unit
 
         bool AIM_Initialize();
 
-        virtual CreatureAI* AI() override { if (m_charmInfo && m_charmInfo->GetAI()) return m_charmInfo->GetAI(); else return m_ai; }
+        virtual CreatureAI* AI() override { if (m_charmInfo && m_charmInfo->GetAI()) return m_charmInfo->GetAI(); else return m_ai.get(); }
         virtual CombatData* GetCombatData() override { if (m_charmInfo && m_charmInfo->GetCombatData()) return m_charmInfo->GetCombatData(); else return m_combatData; }
 
         void SetWalk(bool enable, bool asDefault = true);
@@ -800,7 +801,7 @@ class MANGOS_DLL_SPEC Creature : public Unit
 
         Position m_respawnPos;
 
-        CreatureAI* m_ai;
+        std::unique_ptr<CreatureAI> m_ai;
 
     private:
         GridReference<Creature> m_gridRef;
