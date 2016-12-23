@@ -5593,7 +5593,17 @@ void Spell::EffectSummonType(SpellEffectEntry const* effect)
                     if (prop_id == 121 || prop_id == 647)
                         summonResult = DoSummonTotem(effect);
                     else
-                        summonResult = DoSummonWild(summonPositions, summon_prop, effect, level);
+                    {
+                        switch (m_spellInfo->Id) // unable to distinguish based on prop_id, therefore spell by spell override
+                        {
+                            case 38544: // summon marmot, gives control of marmot pet
+                                summonResult = DoSummonPossessed(summonPositions, summon_prop, effect, level);
+                                break;
+                            default:
+                                summonResult = DoSummonWild(summonPositions, summon_prop, effect, level);
+                                break;
+                        }
+                    }
                     break;
                 }
                 case UNITNAME_SUMMON_TITLE_PET:
