@@ -6141,8 +6141,7 @@ void Spell::EffectDispel(SpellEffectEntry const* effect)
     std::list <std::pair<SpellAuraHolder*, uint32> > dispel_list;
 
     // Create dispel mask by dispel type
-    uint32 dispel_type = effect->EffectMiscValue;
-    uint32 dispelMask  = GetDispellMask( DispelType(dispel_type) );
+    uint32 dispelMask  = GetDispellMask(DispelType(effect->EffectMiscValue));
     Unit::SpellAuraHolderMap const& auras = unitTarget->GetSpellAuraHolderMap();
     for (Unit::SpellAuraHolderMap::const_iterator itr = auras.begin(); itr != auras.end(); ++itr)
     {
@@ -6204,6 +6203,7 @@ void Spell::EffectDispel(SpellEffectEntry const* effect)
             {
                 if (Player* modOwner = caster->GetSpellModOwner())
                     modOwner->ApplySpellMod(spellInfo->Id, SPELLMOD_RESIST_DISPEL_CHANCE, miss_chance);
+                miss_chance += caster->GetTotalAuraModifier(SPELL_AURA_MOD_DISPEL_RESIST);
             }
             // Try dispel
             if (roll_chance_i(miss_chance))

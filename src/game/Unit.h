@@ -1620,9 +1620,7 @@ class MANGOS_DLL_SPEC Unit : public WorldObject
 
         uint32 GetManaDrainReduction(uint32 amount) const { return GetCombatRatingDamageReduction(CR_CRIT_TAKEN_SPELL, 2.2f, 100.0f, amount); /*NOTE: Verify if cases with melee/ranged ratings exist*/ }
 
-        float  SpellResistChance(Unit* pVictim, SpellEntry const* spell);
         SpellMissInfo MeleeSpellHitResult(Unit* pVictim, SpellEntry const* spell);
-        float  MagicSpellMissChance(Unit* pVictim, SpellEntry const* spell);
         SpellMissInfo MagicSpellHitResult(Unit* pVictim, SpellEntry const* spell);
         SpellMissInfo SpellHitResult(Unit* pVictim, SpellEntry const* spell, bool canReflect = false);
 
@@ -1644,8 +1642,8 @@ class MANGOS_DLL_SPEC Unit : public WorldObject
         bool CanDodgeInCombat(const Unit* attacker) const;
         bool CanParryInCombat() const;
         bool CanParryInCombat(const Unit* attacker) const;
-        bool CanBlockInCombat() const;
-        bool CanBlockInCombat(const Unit* attacker) const;
+        bool CanBlockInCombat(SpellSchoolMask weaponSchoolMask = SPELL_SCHOOL_MASK_NORMAL) const;
+        bool CanBlockInCombat(const Unit* attacker, SpellSchoolMask weaponSchoolMask = SPELL_SCHOOL_MASK_NORMAL) const;
         bool CanCrushInCombat() const;
         bool CanCrushInCombat(const Unit* victim) const;
         bool CanGlanceInCombat() const { return CanGlance(); }
@@ -1683,6 +1681,9 @@ class MANGOS_DLL_SPEC Unit : public WorldObject
         float GetCritChance(WeaponAttackType attackType) const;
         float GetCritChance(SpellSchoolMask schoolMask) const;
 
+        float GetHitChance(WeaponAttackType attackType) const;
+        float GetHitChance(SpellSchoolMask schoolMask) const;
+
         float CalculateEffectiveCritChance(const Unit* victim, WeaponAttackType attType, bool weapon = true, bool ability = false) const;
         float CalculateEffectiveMissChance(const Unit* victim, WeaponAttackType attType, bool weapon = true, bool ability = false) const;
 
@@ -1690,10 +1691,20 @@ class MANGOS_DLL_SPEC Unit : public WorldObject
         float CalculateAbilityMissChance(const Unit* victim, WeaponAttackType attType, const SpellEntry* ability) const;
 
         float CalculateSpellCritChance(const Unit* victim, SpellSchoolMask schoolMask, const SpellEntry* spell) const;
+        float CalculateSpellMissChance(const Unit* victim, SpellSchoolMask schoolMask, const SpellEntry* spell) const;
 
         float GetExpertisePercent(WeaponAttackType attType) const;
 
-        virtual uint32 GetShieldBlockDamageValue() const = 0;
+        int32 GetResistancePenetration(SpellSchools school) const;
+
+        float CalculateEffectiveMagicResistancePercent(const Unit* attacker, SpellSchoolMask schoolMask, bool binary = false) const;
+
+        float CalculateSpellResistChance(const Unit* victim, SpellSchoolMask schoolMask, const SpellEntry* spell) const;
+
+        virtual uint32 GetShieldBlockValue() const = 0;
+        uint32 GetUnitMeleeSkill(Unit const* target = nullptr) const { return (target ? GetLevelForTarget(target) : getLevel()) * 5; }
+        uint32 GetDefenseSkillValue(Unit const* target = nullptr) const;
+        uint32 GetWeaponSkillValue(WeaponAttackType attType, Unit const* target = nullptr) const;
         float GetWeaponProcChance() const;
         float GetPPMProcChance(uint32 WeaponSpeed, float PPM) const;
 
@@ -2257,8 +2268,6 @@ class MANGOS_DLL_SPEC Unit : public WorldObject
         bool IsImmunedToDamage(SpellSchoolMask meleeSchoolMask);
         virtual bool IsImmuneToSpellEffect(SpellEntry const* spellInfo, SpellEffectIndex index, bool castOnSelf) const;
 
-        uint32 CalculateEffectiveMagicResistance(Unit* attacker, SpellSchoolMask schoolMask) const;
-        float CalculateMagicResistanceMitigation(Unit* attacker, uint32 resistance, SpellSchoolMask schoolMask, bool binary) const;
         uint32 CalcArmorReducedDamage(Unit* pVictim, const uint32 damage);
         void CalculateDamageAbsorbAndResist(Unit* pCaster, SpellSchoolMask schoolMask, DamageEffectType damagetype, const uint32 damage, uint32* absorb, uint32* resist, bool canReflect = false, bool ignoreResists = false, bool binary = false);
         void CalculateAbsorbResistBlock(Unit* pCaster, SpellNonMeleeDamage* damageInfo, SpellEntry const* spellProto, WeaponAttackType attType = BASE_ATTACK);
