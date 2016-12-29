@@ -142,6 +142,8 @@ CreatureEventAI::CreatureEventAI(Creature* c) : CreatureAI(c),
                     // Cache for fast use
                     if (i->event_type == EVENT_T_OOC_LOS)
                         m_HasOOCLoSEvent = true;
+                    if (i->event_type == EVENT_T_IC_LOS)
+                        m_HasICLoSEvent = true;
                 }
             }
         }
@@ -279,6 +281,10 @@ bool CreatureEventAI::ProcessEvent(CreatureEventAIHolder& pHolder, Unit* pAction
         case EVENT_T_OOC_LOS:
             // Repeat Timers
             pHolder.UpdateRepeatTimer(m_creature, event.ooc_los.repeatMin, event.ooc_los.repeatMax);
+            break;
+        case EVENT_T_IC_LOS:
+            // Repeat Timers
+            pHolder.UpdateRepeatTimer(m_creature, event.ic_los.repeatMin, event.ic_los.repeatMax);
             break;
         case EVENT_T_SPAWNED:
             break;
@@ -1281,6 +1287,24 @@ void CreatureEventAI::MoveInLineOfSight(Unit* who)
                         ProcessEvent(*itr, who);
                 }
             }
+        }
+    }
+    if (m_HasICLoSEvent && m_creature->getVictim())
+    {
+        for (CreatureEventAIList::iterator itr = m_CreatureEventAIList. begin(); itr != m_CreatureEventAIList.end(); ++itr)
+        {
+            if (itr->Event.event_type == EVENT_T_IC_LOS)
+               // can trigger if closer than fMaxAllowedTange
+               float fMaxAllowedRange = (float)itr->Event.ic_los.maxRange;
+               
+               // if friendly event && who is not hostile OR hostile event && who is hostile
+               if ((itr->Event.ic_los.noHostile && !m_creature->IsHostileTo(who)) ||
+                   ((!itr->Event.ic_los.noHostile) && m_creature->IsHostileTo(who)))
+               {
+                   // if tange is ok and we are actually in LOS
+                   if (m_creature->isWithinDistInMap(who, fMaxAllowedRange) && m_creature->IsWithinLOSInMap(who))
+                       ProcessEvent(*itr, who);
+               }
         }
     }
 
