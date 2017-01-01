@@ -4177,7 +4177,7 @@ SpellAuraProcResult Unit::HandleManaShieldAuraProc(Unit* pVictim, uint32 /*damag
         case SPELLFAMILY_MAGE:
         {
             // Incanter's Regalia set (add trigger chance to Mana Shield)
-            if (dummyClassOptions->IsFitToFamilyMask(uint64(0x0000000000008000)))
+            if (dummyClassOptions->IsFitToFamilyMask(uint64(0x0000000000008000)) && HasAura(37424)) // Improved Mana Shield
             {
                 if (GetTypeId() != TYPEID_PLAYER)
                     return SPELL_AURA_PROC_FAILED;
