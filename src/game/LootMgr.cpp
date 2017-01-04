@@ -426,7 +426,7 @@ LootItem::LootItem(uint32 _itemId, uint32 _count, uint32 _randomSuffix, int32 _r
         itemProto = ObjectMgr::GetItemPrototype(_itemId);
         if (itemProto)
         {
-            freeForAll = (itemProto->Flags & ITEM_FLAG_PARTY_LOOT) != 0;
+            freeForAll = (itemProto->Flags & ITEM_FLAG_MULTI_DROP) != 0;
             displayID = itemProto->DisplayInfoID;
         }
         else

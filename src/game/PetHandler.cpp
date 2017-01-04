@@ -645,8 +645,9 @@ void WorldSession::HandlePetAbandon(WorldPacket& recv_data)
 
         if (pet)
         {
-            if (pet->GetObjectGuid() == _player->GetPetGuid())
-                pet->ModifyPower(POWER_HAPPINESS, -50000);
+            // POWER_HAPPINESS unusued in 4.x.x
+            //if (pet->GetObjectGuid() == _player->GetPetGuid())
+            //    pet->ModifyPower(POWER_HAPPINESS, -50000);
 
             pet->Unsummon(PET_SAVE_AS_DELETED, _player);
         }

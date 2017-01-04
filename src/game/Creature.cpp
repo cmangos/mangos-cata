@@ -1662,6 +1662,15 @@ bool Creature::IsImmuneToSpell(SpellEntry const* spellInfo, bool castOnSelf)
     return Unit::IsImmuneToSpell(spellInfo, castOnSelf);
 }
 
+bool Creature::IsImmuneToDamage(SpellSchoolMask meleeSchoolMask)
+{
+    // Fix...
+    //if (GetCreatureInfo()->SchoolImmuneMask & meleeSchoolMask)
+    //    return true;
+
+    return Unit::IsImmuneToDamage(meleeSchoolMask);
+}
+
 bool Creature::IsImmuneToSpellEffect(SpellEntry const* spellInfo, SpellEffectIndex index, bool castOnSelf) const
 {
     SpellEffectEntry const* spellEffect = spellInfo->GetSpellEffect(index);

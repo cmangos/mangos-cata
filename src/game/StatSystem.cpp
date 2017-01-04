@@ -433,6 +433,13 @@ void Player::UpdateDamagePhysical(WeaponAttackType attType)
     }
 }
 
+void Player::UpdateDefenseBonusesMod()
+{
+    UpdateBlockPercentage();
+    UpdateParryPercentage();
+    UpdateDodgePercentage();
+}
+
 void Player::UpdateBlockPercentage()
 {
     float value = 0.0f;
@@ -442,7 +449,7 @@ void Player::UpdateBlockPercentage()
         // Base value
         value = 5.0f;
         // Increase from SPELL_AURA_MOD_BLOCK_PERCENT aura
-        value += GetTotalAuraModifier(SPELL_AURA_MOD_BLOCK_PERCENT);
+        value += GetTotalAuraModifier(SPELL_AURA_MOD_BLOCK_CHANCE_PERCENT);
         // Increase from rating
         value += GetRatingBonusValue(CR_BLOCK);
         real = value;
@@ -482,7 +489,7 @@ void Player::UpdateCritPercentage(WeaponAttackType attType)
     float value = GetTotalPercentageModValue(modGroup) + GetRatingBonusValue(cr);
     m_modCritChance[attType] = value;
     // Modify crit from weapon skill and maximized defense skill of same level victim difference
-    value += (int32(GetMaxSkillValueForLevel(attType)) - int32(GetMaxSkillValueForLevel())) * 0.04f;
+    value += (int32(GetMaxSkillValueForLevel()) - int32(GetMaxSkillValueForLevel())) * 0.04f;
     SetStatFloatValue(index, std::max(0.0f, std::min(value, 100.0f)));
 }
 

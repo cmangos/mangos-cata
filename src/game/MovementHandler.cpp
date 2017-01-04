@@ -214,7 +214,7 @@ void WorldSession::HandleMoveWorldportAckOpcode()
                 if (MountCapabilityEntry const* oldEntry = sMountCapabilityStore.LookupEntry(aura->GetModifier()->m_amount))
                     _player->RemoveAurasDueToSpell(oldEntry->SpeedModSpell);
 
-                _player->CastSpell(_player, entry->SpeedModSpell, true);
+                _player->CastSpell(_player, entry->SpeedModSpell, TRIGGERED_OLD_TRIGGERED);
 
                 const_cast<Aura*>(aura)->ChangeAmount(entry->Id);
             }

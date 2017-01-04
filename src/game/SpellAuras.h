@@ -333,7 +333,7 @@ class MANGOS_DLL_SPEC Aura
         void HandleAuraTrackResources(bool Apply, bool Real);
         void HandleAuraModParryPercent(bool Apply, bool Real);
         void HandleAuraModDodgePercent(bool Apply, bool Real);
-        void HandleAuraModBlockChancePercent(bool Apply, bool Real);
+        void HandleAuraModBlockPercent(bool Apply, bool Real);
         void HandleAuraModCritPercent(bool Apply, bool Real);
         void HandlePeriodicLeech(bool Apply, bool Real);
         void HandleModHitChance(bool Apply, bool Real);

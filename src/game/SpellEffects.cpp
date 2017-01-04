@@ -964,7 +964,12 @@ void Spell::EffectDummy(SpellEffectEntry const* effect)
                         {
                             SpellEntry const* spellInfo = sSpellStore.LookupEntry(itr->first);
 
-                            if (spellInfo->SpellFamilyName == SPELLFAMILY_ROGUE && (spellInfo->SpellFamilyFlags & uint64(0x0000026000000860)))
+                            if (!spellInfo)
+                                return;
+
+                            SpellClassOptionsEntry const* spellClassOptions = spellInfo->GetSpellClassOptions();
+
+                            if (spellClassOptions && spellClassOptions->SpellFamilyName == SPELLFAMILY_ROGUE && (spellClassOptions->SpellFamilyFlags.IsFitToFamilyMask(uint64(0x0000026000000860))))
                                 ((Player*)m_caster)->RemoveSpellCooldown((itr++)->first, true);
                             else
                                 ++itr;
@@ -2961,7 +2966,7 @@ void Spell::EffectDummy(SpellEffectEntry const* effect)
                 case 65206:                                 // Destabilization Matrix
                 {
                     if (unitTarget)
-                        m_caster->CastSpell(unitTarget, effect->CalculateSimpleValue() TRIGGERED_OLD_TRIGGERED);
+                        m_caster->CastSpell(unitTarget, effect->CalculateSimpleValue(), TRIGGERED_OLD_TRIGGERED);
 
                     return;
                 }
@@ -5508,7 +5513,7 @@ void Spell::EffectSummonType(SpellEffectEntry const* effect)
                 amount = 1;                                 // TODO HACK (needs a neat way of doing)
             }
         }
-        else if (CreatureInfo const* cInfo = ObjectMgr::GetCreatureTemplate(m_spellInfo->EffectMiscValue[eff_idx]))
+        else if (CreatureInfo const* cInfo = ObjectMgr::GetCreatureTemplate(effect->EffectMiscValue))
         {
             if (level >= cInfo->MaxLevel)
                 level = cInfo->MaxLevel;

@@ -1809,13 +1809,14 @@ class MANGOS_DLL_SPEC Player : public Unit
         float GetMeleeCritFromAgility();
         float GetDodgeFromAgility(float amount);
         float GetSpellCritFromIntellect();
-        float OCTRegenHPPerSpirit();
-        float OCTRegenMPPerSpirit();
+        float OCTRegenHPPerSpirit() const;
+        float OCTRegenMPPerSpirit() const;
         float GetRatingMultiplier(CombatRating cr) const;
         float GetRatingBonusValue(CombatRating cr) const;
         // Returns base spellpower bonus from items without intellect bonus
         uint32 GetBaseSpellPowerBonus() const { return m_baseSpellPower; }
 
+        float GetExpertiseDodgeOrParryReduction(WeaponAttackType attType) const;
         void UpdateBlockPercentage();
         void UpdateCritPercentage(WeaponAttackType attType);
         void UpdateAllCritPercentages();
@@ -2004,7 +2005,6 @@ class MANGOS_DLL_SPEC Player : public Unit
         bool CanBlock() const { return m_canBlock; }
         void SetCanBlock(bool value);
 
-        uint32 GetShieldBlockValue() const override;        // overwrite Unit version (virtual)
         bool CanDualWield() const { return m_canDualWield; }
         void SetCanDualWield(bool value) { m_canDualWield = value; }
         bool CanTitanGrip() const { return m_canTitanGrip; }

@@ -4639,10 +4639,10 @@ void Player::SetRoot(bool enable)
     {
         Player* pMover = (Player*)GetMover();
         if (pMover != this)
-            pMover->GetSession()->SendPacket(data);
+            pMover->GetSession()->SendPacket(&data);
     }
 
-    GetSession()->SendPacket(data);
+    GetSession()->SendPacket(&data);
 }
 
 void Player::SetWaterWalk(bool enable)
@@ -5459,6 +5459,24 @@ float Player::OCTRegenHPPerSpirit() const
     return regen;
 }
 
+float Player::OCTRegenMPPerSpirit() const
+{
+    uint32 level = getLevel();
+    uint32 pclass = getClass();
+
+    if (level > GT_MAX_LEVEL) level = GT_MAX_LEVEL;
+
+    //    GtOCTRegenMPEntry     const *baseRatio = sGtOCTRegenMPStore.LookupEntry((pclass-1)*GT_MAX_LEVEL + level-1);
+    GtRegenMPPerSptEntry  const* moreRatio = sGtRegenMPPerSptStore.LookupEntry((pclass - 1) * GT_MAX_LEVEL + level - 1);
+    if (moreRatio == nullptr)
+        return 0.0f;
+
+    // Formula get from PaperDollFrame script
+    float spirit = GetStat(STAT_SPIRIT);
+    float regen = spirit * moreRatio->ratio;
+    return regen;
+}
+
 void Player::ApplyRatingMod(CombatRating cr, int32 value, bool apply)
 {
     m_baseRatingValue[cr] += (apply ? value : -value);
@@ -5546,16 +5564,6 @@ void Player::UpdateRating(CombatRating cr)
                 UpdateAllSpellCritChances();
             break;
         case CR_RESILIENCE_DAMAGE_TAKEN:
-        case CR_HIT_TAKEN_MELEE:                            // Implemented in Unit::MeleeMissChanceCalc
-        case CR_HIT_TAKEN_RANGED:
-            break;
-        case CR_HIT_TAKEN_SPELL:                            // Implemented in Unit::MagicSpellHitResult
-            break;
-        case CR_CRIT_TAKEN_MELEE:                           // Implemented in Unit::CalculateEffectiveCritChance (only for chance to crit)
-        case CR_CRIT_TAKEN_RANGED:
-            break;
-        case CR_CRIT_TAKEN_SPELL:                           // Implemented in Unit::SpellCriticalBonus (only for chance to crit)
-            break;
         case CR_HASTE_MELEE:                                // Implemented in Player::ApplyRatingMod
         case CR_HASTE_RANGED:
         case CR_HASTE_SPELL:
@@ -5575,11 +5583,6 @@ void Player::UpdateRating(CombatRating cr)
             UpdateMasteryAuras();
             break;
         // deprecated
-        case CR_HIT_TAKEN_MELEE:
-        case CR_HIT_TAKEN_RANGED:
-        case CR_HIT_TAKEN_SPELL:
-        case CR_CRIT_TAKEN_SPELL:
-        case CR_CRIT_TAKEN_MELEE:
         case CR_WEAPON_SKILL_MAINHAND:
         case CR_WEAPON_SKILL_OFFHAND:
         case CR_WEAPON_SKILL_RANGED:
@@ -7036,7 +7039,7 @@ void Player::UpdateArea(uint32 newArea)
     if (area)
     {
         // Dalaran restricted flight zone
-        if ((area->flags & AREA_FLAG_CANNOT_FLY) && IsFreeFlying() && !isGameMaster() && !HasAura(58600))
+        if ((area->flags & AREA_FLAG_TP) && IsFreeFlying() && !isGameMaster() && !HasAura(58600))
             CastSpell(this, 58600, TRIGGERED_OLD_TRIGGERED);                   // Restricted Flight Area
 
         // TODO: implement wintergrasp parachute when battle in progress
@@ -13460,10 +13463,15 @@ void Player::RewardQuest(Quest const* pQuest, uint32 reward, Object* questGiver,
             {
                 for (uint8 i = 0; i < MAX_EFFECT_INDEX; ++i)
                 {
-                    if (spellProto->Effect[i] == SPELL_EFFECT_LEARN_SPELL ||
-                        spellProto->Effect[i] == SPELL_EFFECT_CREATE_ITEM ||
-                        spellProto->EffectImplicitTargetA[i] == TARGET_DUELVSPLAYER ||
-                        spellProto->EffectImplicitTargetA[i] == TARGET_SINGLE_FRIEND)
+                    SpellEffectEntry const* spellEffect = spellProto->GetSpellEffect(SpellEffectIndex(i));
+
+                    if (!spellEffect)
+                        break;
+
+                    if (spellEffect->Effect == SPELL_EFFECT_LEARN_SPELL ||
+                        spellEffect->Effect == SPELL_EFFECT_CREATE_ITEM ||
+                        spellEffect->EffectImplicitTargetA == TARGET_DUELVSPLAYER ||
+                        spellEffect->EffectImplicitTargetA == TARGET_SINGLE_FRIEND)
                     {
                         caster = (Unit*)questGiver;
                         break;
@@ -17987,7 +17995,7 @@ void Player::PetSpellInitialize()
     data << uint8(charmInfo->GetReactState()) << uint8(charmInfo->GetCommandState()) << uint16(0);
 
     // action bar loop
-    charmInfo->BuildActionBar(&data);
+    charmInfo->BuildActionBar(data);
 
     size_t spellsCountPos = data.wpos();
 
@@ -18071,7 +18079,7 @@ void Player::PossessSpellInitialize()
     data << uint32(0);
     data << uint32(0);
 
-    charmInfo->BuildActionBar(&data);
+    charmInfo->BuildActionBar(data);
 
     data << uint8(0);                                       // spells count
     data << uint8(0);                                       // cooldowns count
@@ -18115,7 +18123,7 @@ void Player::CharmSpellInitialize()
     data << uint32(0);
     data << uint8(charmInfo->GetReactState()) << uint8(charmInfo->GetCommandState()) << uint16(0);
 
-    charmInfo->BuildActionBar(&data);
+    charmInfo->BuildActionBar(data);
 
     data << uint8(addlist);
 
@@ -21472,7 +21480,7 @@ void Player::AddRuneByAuraEffect(uint8 index, RuneType newType, Aura const* aura
 {
     // Item - Death Knight T11 DPS 4P Bonus
     if (newType == RUNE_DEATH && HasAura(90459))
-        CastSpell(this, 90507, true);   // Death Eater
+        CastSpell(this, 90507, TRIGGERED_OLD_TRIGGERED);   // Death Eater
 
     SetRuneConvertAura(index, aura); ConvertRune(index, newType);
 }
@@ -21929,7 +21937,7 @@ void Player::HandleFall(MovementInfo const& movementInfo)
     // 14.57 can be calculated by resolving damageperc formula below to 0
     if (z_diff >= 14.57f && !isDead() && !isGameMaster() && /*!HasMovementFlag(MOVEFLAG_ONTRANSPORT) &&*/
             !HasAuraType(SPELL_AURA_HOVER) && !HasAuraType(SPELL_AURA_FEATHER_FALL) &&
-            !HasAuraType(SPELL_AURA_FLY) && !IsImmunedToDamage(SPELL_SCHOOL_MASK_NORMAL))
+            !HasAuraType(SPELL_AURA_FLY) && !IsImmuneToDamage(SPELL_SCHOOL_MASK_NORMAL))
     {
         // Safe fall, fall height reduction
         int32 safe_fall = GetTotalAuraModifier(SPELL_AURA_SAFE_FALL);
@@ -23765,7 +23773,7 @@ void Player::UpdateArmorSpecializations()
         if (!holder)
         {
             // cast absent spells that may be missing due to shapeshift form dependency
-            CastSpell(this, spellProto->Id, true);
+            CastSpell(this, spellProto->Id, TRIGGERED_OLD_TRIGGERED);
             continue;
         }
 

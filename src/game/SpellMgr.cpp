@@ -1419,7 +1419,7 @@ bool SpellMgr::IsSpellProcEventCanTriggeredBy(SpellProcEventEntry const* spellPr
             if (EventProcFlag == PROC_FLAG_ON_DO_PERIODIC)
             {
                 /// no aura with only PROC_FLAG_DONE_PERIODIC and spellFamilyName == 0 can proc from a HOT.
-                if (!procSpell->SpellFamilyName)
+                if (!procSpell->GetSpellFamilyName())
                     return false;
             }
             /// Aura must have positive procflags for a HOT to proc
@@ -1679,7 +1679,7 @@ bool SpellMgr::canStackSpellRanksInSpellBook(SpellEntry const* spellInfo) const
         return false;
 
     // FIXME: Seal of Righteousness, 2 version of same rank
-    if ((spellInfo->SpellFamilyFlags & uint64(0x0000000008000000)) && spellInfo->SpellIconID == 25)
+    if ((spellInfo->GetSpellClassOptions()->SpellFamilyFlags.IsFitToFamilyMask(uint64(0x0000000008000000))) && spellInfo->SpellIconID == 25)
         return false;
 
     return true;

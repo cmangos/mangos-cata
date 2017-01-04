@@ -845,7 +845,7 @@ void Spell::prepareDataForTriggerSystem()
         default:
             if (IsPositiveSpell(m_spellInfo->Id))           // Check for positive spell
             {
-                if (m_spellInfo->DmgClass & SPELL_DAMAGE_CLASS_NONE) // if dmg class none
+                if (m_spellInfo->GetDmgClass() & SPELL_DAMAGE_CLASS_NONE) // if dmg class none
                 {
                     m_procAttacker = PROC_FLAG_DONE_SPELL_NONE_DMG_CLASS_POS;
                     m_procVictim = PROC_FLAG_TAKEN_SPELL_NONE_DMG_CLASS_POS;
@@ -863,7 +863,7 @@ void Spell::prepareDataForTriggerSystem()
             }
             else                                           // Negative spell
             {
-                if (m_spellInfo->DmgClass & SPELL_DAMAGE_CLASS_NONE) // if dmg class none
+                if (m_spellInfo->GetDmgClass() & SPELL_DAMAGE_CLASS_NONE) // if dmg class none
                 {
                     m_procAttacker = PROC_FLAG_DONE_SPELL_NONE_DMG_CLASS_NEG;
                     m_procVictim = PROC_FLAG_TAKEN_SPELL_NONE_DMG_CLASS_NEG;
@@ -3930,7 +3930,13 @@ void Spell::finish(bool ok)
                 {
                     SpellEntry const* auraSpellInfo = (*i)->GetSpellProto();
                     SpellEffectIndex auraSpellIdx = (*i)->GetEffIndex();
-                    const uint32 procid = auraSpellInfo->EffectTriggerSpell[auraSpellIdx];
+
+                    SpellEffectEntry const* spellEffect = auraSpellInfo->GetSpellEffect(auraSpellIdx);
+
+                    if (!spellEffect)
+                        continue;
+
+                    const uint32 procid = spellEffect->EffectTriggerSpell;
                     // Quick target mode check for procs and triggers (do not cast at friendly targets stuff against hostiles only)
                     if (IsPositiveSpellTargetModeForSpecificTarget(m_spellInfo, ihit->effectMask, m_caster, unit) != IsPositiveSpellTargetModeForSpecificTarget(procid, ihit->effectMask, m_caster, unit))
                         continue;
@@ -7251,13 +7257,15 @@ SpellCastResult Spell::CheckItems()
                     // if CastItem is also spell reagent
                     if (m_CastItem && m_CastItem->GetEntry() == itemid)
                     {
-                        // CastItem will be used up and does not count as reagent
-                        int32 charges = m_CastItem->GetSpellCharges(s);
-                        if (proto->Spells[s].SpellCharges < 0 && abs(charges) < 2)
+                        ItemPrototype const* proto = m_CastItem->GetProto();
+                        if (!proto)
+                            return SPELL_FAILED_REAGENTS;
+
+                        for (int s = 0; s < MAX_ITEM_PROTO_SPELLS; ++s)
                         {
                             // CastItem will be used up and does not count as reagent
                             int32 charges = m_CastItem->GetSpellCharges(s);
-                            if (proto->Spells[s].SpellCharges < 0 && !(proto->ExtraFlags & ITEM_EXTRA_NON_CONSUMABLE) && abs(charges) < 2)
+                            if (proto->Spells[s].SpellCharges < 0 && abs(charges) < 2)
                             {
                                 ++itemcount;
                                 break;

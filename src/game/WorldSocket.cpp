@@ -209,7 +209,7 @@ bool WorldSocket::ProcessIncomingData()
 
     // Dump received packet.
     if (opcode != 0x4C524F57)
-        sLog.outWorldPacketDump(GetRemoteEndpoint().c_str(), pct->GetOpcode(), pct->GetOpcodeName(), pct, true);
+        sLog.outWorldPacketDump(GetRemoteEndpoint().c_str(), pct->GetOpcode(), pct->GetOpcodeName(), *pct, true);
 
     try
     {

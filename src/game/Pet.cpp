@@ -1999,7 +1999,7 @@ uint32 Pet::resetTalentsCost() const
         return (m_resetTalentsCost + 1 * GOLD > 10 * GOLD ? 10 * GOLD : m_resetTalentsCost + 1 * GOLD);
 }
 
-uint8 Pet::GetMaxTalentPointsForLevel(uint32 level)
+uint8 Pet::GetMaxTalentPointsForLevel(uint32 level) const
 {
     uint8 points = (level >= 20) ? ((level - 16) / 4) : 0;
     // Mod points from owner SPELL_AURA_MOD_PET_TALENT_POINTS

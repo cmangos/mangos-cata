@@ -223,7 +223,7 @@ inline bool IsSealSpell(SpellEntry const* spellInfo)
 
 inline bool IsAllowingDeadTarget(SpellEntry const* spellInfo)
 {
-    return spellInfo->HasAttribute(SPELL_ATTR_EX2_CAN_TARGET_DEAD) || spellInfo->Targets & (TARGET_FLAG_PVP_CORPSE | TARGET_FLAG_UNIT_CORPSE | TARGET_FLAG_CORPSE_ALLY);
+    return spellInfo->HasAttribute(SPELL_ATTR_EX2_CAN_TARGET_DEAD) || spellInfo->GetSpellTargetRestrictions()->Targets & (TARGET_FLAG_PVP_CORPSE | TARGET_FLAG_UNIT_CORPSE | TARGET_FLAG_CORPSE_ALLY);
 }
 
 inline bool IsElementalShield(SpellEntry const* spellInfo)
@@ -263,7 +263,11 @@ inline bool IsSpellEffectTriggerSpell(const SpellEntry* entry, SpellEffectIndex 
     if (!entry)
         return false;
 
-    switch (entry->Effect[effIndex])
+    SpellEffectEntry const* spellEffect = entry->GetSpellEffect(effIndex);
+    if (!spellEffect)
+        return false;
+
+    switch (spellEffect->Effect)
     {
         case SPELL_EFFECT_TRIGGER_MISSILE:
         case SPELL_EFFECT_TRIGGER_SPELL:
@@ -279,7 +283,11 @@ inline bool IsSpellEffectTriggerSpellByAura(const SpellEntry* entry, SpellEffect
     if (!entry || !IsAuraApplyEffect(entry, effIndex))
         return false;
 
-    switch (entry->EffectApplyAuraName[effIndex])
+    SpellEffectEntry const* spellEffect = entry->GetSpellEffect(effIndex);
+    if (!spellEffect)
+        return false;
+
+    switch (spellEffect->EffectApplyAuraName)
     {
         case SPELL_AURA_PERIODIC_TRIGGER_SPELL:
         case SPELL_AURA_PROC_TRIGGER_SPELL:
@@ -300,7 +308,12 @@ inline bool IsSpellTriggerSpellByAura(const SpellEntry* entry)
 
     for (uint32 i = EFFECT_INDEX_0; i < MAX_EFFECT_INDEX; ++i)
     {
-        if (entry->Effect[i] && IsSpellEffectTriggerSpellByAura(entry, SpellEffectIndex(i)))
+        SpellEffectEntry const* spellEffect = entry->GetSpellEffect(SpellEffectIndex(i));
+
+        if (!spellEffect)
+            return false;
+
+        if (spellEffect->Effect && IsSpellEffectTriggerSpellByAura(entry, SpellEffectIndex(i)))
             return true;
     }
     return false;
@@ -311,7 +324,12 @@ inline bool IsSpellEffectAbleToCrit(const SpellEntry* entry, SpellEffectIndex in
     if (!entry || entry->HasAttribute(SPELL_ATTR_EX2_CANT_CRIT))
         return false;
 
-    switch (entry->Effect[index])
+    SpellEffectEntry const* spellEffect = entry->GetSpellEffect(index);
+
+    if (!spellEffect)
+        return false;
+
+    switch (spellEffect->Effect)
     {
         case SPELL_EFFECT_SCHOOL_DAMAGE:
         case SPELL_EFFECT_HEAL:
@@ -321,7 +339,12 @@ inline bool IsSpellEffectAbleToCrit(const SpellEntry* entry, SpellEffectIndex in
         case SPELL_EFFECT_NORMALIZED_WEAPON_DMG:
             return true;
         case SPELL_EFFECT_ENERGIZE: // Mana Potion and similar spells, Lay on hands
-            return (entry->EffectMiscValue[index] == POWER_MANA && entry->SpellFamilyName && entry->DmgClass);
+            SpellClassOptionsEntry const* classOptions = entry->GetSpellClassOptions();
+
+            if (!classOptions)
+                return false;
+
+            return (spellEffect->EffectMiscValue == POWER_MANA && classOptions->SpellFamilyName && entry->GetDmgClass());
     }
     return false;
 }
@@ -333,7 +356,12 @@ inline bool IsSpellAbleToCrit(const SpellEntry* entry)
 
     for (uint32 i = EFFECT_INDEX_0; i < MAX_EFFECT_INDEX; ++i)
     {
-        if (entry->Effect[i] && IsSpellEffectAbleToCrit(entry, SpellEffectIndex(i)))
+        SpellEffectEntry const* spellEffect = entry->GetSpellEffect(SpellEffectIndex(i));
+
+        if (!spellEffect)
+            return false;
+
+        if (spellEffect->Effect && IsSpellEffectAbleToCrit(entry, SpellEffectIndex(i)))
             return true;
     }
     return false;
@@ -371,6 +399,7 @@ inline bool IsAutocastable(uint32 spellId)
 inline bool IsSpellRemoveAllMovementAndControlLossEffects(SpellEntry const* spellProto)
 {
     SpellEffectEntry const* spellEffect0 = spellProto->GetSpellEffect(EFFECT_INDEX_0);
+
     if (!spellEffect0)
         return false;
 
@@ -415,16 +444,18 @@ inline bool IsBinarySpell(SpellEntry const* spellInfo)
     uint32 mechmask = 0;    // A bitmask of effects: set bits are non-damage effects with additional mechanics
     for (uint32 i = EFFECT_INDEX_0; i < MAX_EFFECT_INDEX; ++i)
     {
-        if (!spellInfo->Effect[i] || IsSpellEffectTriggerSpell(spellInfo, SpellEffectIndex(i)))
+        SpellEffectEntry const* spellEffect = spellInfo->GetSpellEffect(SpellEffectIndex(i));
+
+        if (!spellEffect->Effect || IsSpellEffectTriggerSpell(spellInfo, SpellEffectIndex(i)))
             continue;
 
         effectmask |= (1 << i);
 
         bool damage = false;
-        if (!spellInfo->EffectApplyAuraName[i])
+        if (!spellEffect->EffectApplyAuraName)
         {
             // If its not an aura effect, check for damage effects
-            switch (spellInfo->Effect[i])
+            switch (spellEffect->Effect)
             {
                 case SPELL_EFFECT_SCHOOL_DAMAGE:
                 case SPELL_EFFECT_ENVIRONMENTAL_DAMAGE:
@@ -441,7 +472,7 @@ inline bool IsBinarySpell(SpellEntry const* spellInfo)
         if (!damage)
         {
             nondmgmask |= (1 << i);
-            if (spellInfo->EffectMechanic[i])
+            if (spellEffect->EffectMechanic)
                 mechmask |= (1 << i);
         }
     }
@@ -457,6 +488,11 @@ inline bool IsBinarySpell(SpellEntry const* spellInfo)
     // Binary spells execution order detection
     for (uint32 i = EFFECT_INDEX_0; i < MAX_EFFECT_INDEX; ++i)
     {
+        SpellEffectEntry const* spellEffect0 = spellInfo->GetSpellEffect(SpellEffectIndex(i));
+
+        if (!spellEffect0->Effect)
+            continue;
+
         // If effect is present and not a non-damage effect
         const uint32 effect = (1 << i);
         if ((effectmask & effect) && !(nondmgmask & effect))
@@ -464,10 +500,15 @@ inline bool IsBinarySpell(SpellEntry const* spellInfo)
             // Iterate over mechanics
             for (uint32 e = EFFECT_INDEX_0; e < MAX_EFFECT_INDEX; ++e)
             {
+                SpellEffectEntry const* spellEffect1 = spellInfo->GetSpellEffect(SpellEffectIndex(e));
+
+                if (!spellEffect1->Effect)
+                    continue;
+
                 // If effect is extra mechanic on the same target as damage effect
                 if ((mechmask & (1 << e)) &&
-                    spellInfo->EffectImplicitTargetA[i] == spellInfo->EffectImplicitTargetA[e] &&
-                    spellInfo->EffectImplicitTargetB[i] == spellInfo->EffectImplicitTargetB[e])
+                    spellEffect0->EffectImplicitTargetA == spellEffect1->EffectImplicitTargetA &&
+                    spellEffect0->EffectImplicitTargetB == spellEffect1->EffectImplicitTargetB)
                 {
                     return (e > i); // Post-2.3: checks the order of application
                 }
@@ -896,10 +937,15 @@ inline bool IsPositiveEffectTargetMode(const SpellEntry* entry, SpellEffectIndex
     if (!entry)
         return false;
 
+    SpellEffectEntry const* spellEffect = entry->GetSpellEffect(effIndex);
+
+    if (!spellEffect)
+        return false;;
+
     // Triggered spells case: prefer child spell via IsPositiveSpell()-like scan for triggered spell
     if (IsSpellEffectTriggerSpell(entry, effIndex))
     {
-        const uint32 spellid = entry->EffectTriggerSpell[effIndex];
+        const uint32 spellid = spellEffect->EffectTriggerSpell;
         // Its possible to go infinite cycle with triggered spells. We are interested to peek only at the first layer so far
         if (!recursive && spellid && (spellid != entry->Id))
         {
@@ -917,8 +963,8 @@ inline bool IsPositiveEffectTargetMode(const SpellEntry* entry, SpellEffectIndex
         return true;
     }
 
-    const uint32 a = entry->EffectImplicitTargetA[effIndex];
-    const uint32 b = entry->EffectImplicitTargetB[effIndex];
+    const uint32 a = spellEffect->EffectImplicitTargetA;
+    const uint32 b = spellEffect->EffectImplicitTargetB;
 
     if ((!a && !b) || IsEffectTargetPositive(a, b) || IsEffectTargetScript(a, b))
         return true;
@@ -934,9 +980,9 @@ inline bool IsPositiveEffectTargetMode(const SpellEntry* entry, SpellEffectIndex
         return (IsPointEffectTarget(Targets(b ? b : a)) || IsNeutralEffectTargetPositive((b ? b : a), caster, target));
 
     // If we ever get to this point, we have unhandled target. Gotta say something about it.
-    if (entry->Effect[effIndex])
+    if (spellEffect->Effect)
         DETAIL_LOG("IsPositiveEffectTargetMode: Spell %u's effect %u has unhandled targets (A:%u B:%u)", entry->Id, effIndex,
-                   entry->EffectImplicitTargetA[effIndex], entry->EffectImplicitTargetB[effIndex]);
+            spellEffect->EffectImplicitTargetA, spellEffect->EffectImplicitTargetB);
     return true;
 }
 
@@ -945,7 +991,12 @@ inline bool IsPositiveEffect(const SpellEntry* spellproto, SpellEffectIndex effI
     if (!spellproto)
         return false;
 
-    switch (spellproto->Effect[effIndex])
+    SpellEffectEntry const* spellEffect = spellproto->GetSpellEffect(effIndex);
+
+    if (!spellEffect)
+        return false;
+
+    switch (spellEffect->Effect)
     {
         case SPELL_EFFECT_SEND_TAXI:                // Some NPCs that send taxis are neutral, so target mode fails
         case SPELL_EFFECT_QUEST_COMPLETE:           // TODO: Spells with these effects should be casted by a proper caster to meet target mode.
@@ -986,7 +1037,7 @@ inline bool IsPositiveEffect(const SpellEntry* spellproto, SpellEffectIndex effI
         case SPELL_EFFECT_APPLY_AURA:
         case SPELL_EFFECT_APPLY_AREA_AURA_FRIEND:
         {
-            switch (spellproto->EffectApplyAuraName[effIndex])
+            switch (spellEffect->EffectApplyAuraName)
             {
                 case SPELL_AURA_DUMMY:
                 {
@@ -1044,9 +1095,16 @@ inline bool IsPositiveSpellTargetModeForSpecificTarget(const SpellEntry* entry, 
     // spells with at least one negative effect are considered negative
     // some self-applied spells have negative effects but in self casting case negative check ignored.
     for (int i = 0; i < MAX_EFFECT_INDEX; ++i)
+    {
+        SpellEffectEntry const* spellEffect = entry->GetSpellEffect(SpellEffectIndex(i));
+
+        if (!spellEffect)
+            return false;
+
         if (effectMask & (1 << i))
-            if (entry->Effect[i] && !IsPositiveEffectTargetMode(entry, SpellEffectIndex(i), caster, target))
+            if (spellEffect->Effect && !IsPositiveEffectTargetMode(entry, SpellEffectIndex(i), caster, target))
                 return false;
+    }
     return true;
 }
 
@@ -1064,8 +1122,13 @@ inline bool IsPositiveSpellTargetMode(const SpellEntry* entry, const WorldObject
     // spells with at least one negative effect are considered negative
     // some self-applied spells have negative effects but in self casting case negative check ignored.
     for (int i = 0; i < MAX_EFFECT_INDEX; ++i)
-        if (entry->Effect[i] && !IsPositiveEffectTargetMode(entry, SpellEffectIndex(i), caster, target))
+    {
+        SpellEffectEntry const* spellEffect = entry->GetSpellEffect(SpellEffectIndex(i));
+
+        if (!spellEffect || (spellEffect->Effect && !IsPositiveEffectTargetMode(entry, SpellEffectIndex(i), caster, target)))
             return false;
+    }
+
     return true;
 }
 
@@ -1083,8 +1146,13 @@ inline bool IsPositiveSpell(const SpellEntry* entry, const WorldObject* caster =
     // spells with at least one negative effect are considered negative
     // some self-applied spells have negative effects but in self casting case negative check ignored.
     for (int i = 0; i < MAX_EFFECT_INDEX; ++i)
-        if (entry->Effect[i] && !IsPositiveEffect(entry, SpellEffectIndex(i), caster, target))
+    {
+        SpellEffectEntry const* spellEffect = entry->GetSpellEffect(SpellEffectIndex(i));
+
+        if (spellEffect || (spellEffect->Effect && !IsPositiveEffect(entry, SpellEffectIndex(i), caster, target)))
             return false;
+    }
+
     return true;
 }
 
@@ -1142,7 +1210,7 @@ inline bool IsNeedCastSpellAtOutdoor(SpellEntry const* spellInfo)
 
 inline bool IsReflectableSpell(SpellEntry const* spellInfo)
 {
-    return spellInfo->DmgClass == SPELL_DAMAGE_CLASS_MAGIC && !spellInfo->HasAttribute(SPELL_ATTR_ABILITY)
+    return spellInfo->GetDmgClass() == SPELL_DAMAGE_CLASS_MAGIC && !spellInfo->HasAttribute(SPELL_ATTR_ABILITY)
         && !spellInfo->HasAttribute(SPELL_ATTR_EX_CANT_BE_REFLECTED) && !spellInfo->HasAttribute(SPELL_ATTR_UNAFFECTED_BY_INVULNERABILITY)
         && !spellInfo->HasAttribute(SPELL_ATTR_PASSIVE) && !IsPositiveSpell(spellInfo);
 }
