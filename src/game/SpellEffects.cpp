@@ -11185,7 +11185,14 @@ void Spell::EffectSummonDeadPet(SpellEffectEntry const* /*effect*/)
     Player* _player = (Player*)m_caster;
     Pet* pet = _player->GetPet();
     if (!pet)
+    {
+        pet = new Pet();
+        if (!pet->LoadPetFromDB(_player, 0, 0, true, damage))
+            delete pet;
+        // if above successfully loaded the pet all is done
         return;
+    }
+
     if (pet->isAlive())
         return;
 
