@@ -5512,7 +5512,7 @@ void Spell::EffectSummonType(SpellEffectEntry const* effect)
     {
         // pet players do not need this
         // TODO :: Totem, Pet and Critter may not use this. This is probably wrongly used and need more research.
-        uint32 resultLevel = level + std::max(effect->EffectMultipleValue, 1.0f);
+        uint32 resultLevel = level + std::max(effect->EffectMultipleValue, 0.0f);
 
         // result level should be a possible level for creatures
         if (resultLevel > 0 && resultLevel <= DEFAULT_MAX_CREATURE_LEVEL)
