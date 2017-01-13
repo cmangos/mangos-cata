@@ -5359,10 +5359,8 @@ void Spell::EffectOpenLock(SpellEffectEntry const* effect)
     if (itemTarget)
         itemTarget->SetFlag(ITEM_FIELD_FLAGS, ITEM_DYNFLAG_UNLOCKED);
 
-    SendLoot(guid, LOOT_SKINNING, LockType(effect->EffectMiscValue));
-
     // not allow use skill grow at item base open
-    if (!m_CastItem && skillId != SKILL_NONE)
+    if (!m_CastItem && skillId != SKILL_NONE && !gameObjTarget->loot)
     {
         // update skill if really known
         if (uint32 pureSkillValue = player->GetPureSkillValue(skillId))
@@ -5381,6 +5379,8 @@ void Spell::EffectOpenLock(SpellEffectEntry const* effect)
             }
         }
     }
+
+    SendLoot(guid, LOOT_SKINNING, LockType(effect->EffectMiscValue));
 }
 
 void Spell::EffectSummonChangeItem(SpellEffectEntry const* effect)
@@ -11053,8 +11053,18 @@ void Spell::EffectSkinning(SpellEffectEntry const* /*effect*/)
     uint32 skill = creature->GetCreatureInfo()->GetRequiredLootSkill();
 
     Loot*& loot = unitTarget->loot;
+
     if (!loot)
+    {
         loot = new Loot((Player*)m_caster, creature, LOOT_SKINNING);
+
+        int32 reqValue = targetLevel < 10 ? 0 : targetLevel < 20 ? (targetLevel - 10) * 10 : targetLevel * 5;
+
+        int32 skillValue = ((Player*)m_caster)->GetPureSkillValue(skill);
+
+        // Double chances for elites
+        ((Player*)m_caster)->UpdateGatherSkill(skill, skillValue, reqValue, creature->IsElite() ? 2 : 1);
+    }
     else
     {
         if (loot->GetLootType() != LOOT_SKINNING)
@@ -11066,13 +11076,6 @@ void Spell::EffectSkinning(SpellEffectEntry const* /*effect*/)
 
     loot->ShowContentTo((Player*)m_caster);
     creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SKINNABLE);
-
-    int32 reqValue = targetLevel < 10 ? 0 : targetLevel < 20 ? (targetLevel - 10) * 10 : targetLevel * 5;
-
-    int32 skillValue = ((Player*)m_caster)->GetPureSkillValue(skill);
-
-    // Double chances for elites
-    ((Player*)m_caster)->UpdateGatherSkill(skill, skillValue, reqValue, creature->IsElite() ? 2 : 1);
 }
 
 void Spell::EffectCharge(SpellEffectEntry const* /*effect*/)
