@@ -5844,7 +5844,7 @@ bool Spell::DoSummonGuardian(CreatureSummonPositions& list, SummonPropertiesEntr
             found = true;
         }
 
-        if (found && !(m_spellInfo->DurationIndex && m_spellInfo->Category))
+        if (found && !(m_spellInfo->DurationIndex && m_spellInfo->GetCategory()))
             return false;
     }
 

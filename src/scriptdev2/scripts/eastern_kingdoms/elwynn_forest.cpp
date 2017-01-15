@@ -123,7 +123,7 @@ struct npc_hoggerAI : public ScriptedAI
             pSummoned->AI()->AttackStart(m_creature->getVictim());
     }
 
-    void DamageTaken(Unit* pDealer, uint32& uiDamage) override
+    void DamageTaken(Unit* pDealer, uint32& uiDamage, DamageEffectType /*damagetype*/) override
     {
         // evade and start epilogue when near death
         if (uiDamage >= m_creature->GetHealth())

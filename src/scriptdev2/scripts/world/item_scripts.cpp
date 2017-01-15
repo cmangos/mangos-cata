@@ -49,7 +49,7 @@ bool ItemUse_item_orb_of_draconic_energy(Player* pPlayer, Item* pItem, const Spe
     {
         pPlayer->SendEquipError(EQUIP_ERR_NONE, pItem, NULL);
 
-        if (const SpellEntry* pSpellInfo = GetSpellStore()->LookupEntry<SpellEntry>(SPELL_DOMINION_SOUL))
+        if (const SpellEntry* pSpellInfo = GetSpellStore()->LookupEntry(SPELL_DOMINION_SOUL))
             Spell::SendCastResult(pPlayer, pSpellInfo, 1, SPELL_FAILED_TARGET_AURASTATE);
 
         return true;
