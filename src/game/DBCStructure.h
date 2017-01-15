@@ -1102,6 +1102,7 @@ struct GtOCTHpPerStaminaEntry
 
 struct GtNPCManaCostScalerEntry
 {
+    //uint32 level;
     float    ratio;
 };
 
