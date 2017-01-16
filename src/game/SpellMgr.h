@@ -223,7 +223,10 @@ inline bool IsSealSpell(SpellEntry const* spellInfo)
 
 inline bool IsAllowingDeadTarget(SpellEntry const* spellInfo)
 {
-    return spellInfo->HasAttribute(SPELL_ATTR_EX2_CAN_TARGET_DEAD) || spellInfo->GetSpellTargetRestrictions()->Targets & (TARGET_FLAG_PVP_CORPSE | TARGET_FLAG_UNIT_CORPSE | TARGET_FLAG_CORPSE_ALLY);
+    SpellTargetRestrictionsEntry const* spellTargetRestriction = spellInfo->GetSpellTargetRestrictions();
+
+    return spellInfo->HasAttribute(SPELL_ATTR_EX2_CAN_TARGET_DEAD) || 
+           (spellTargetRestriction && spellTargetRestriction->Targets & (TARGET_FLAG_PVP_CORPSE | TARGET_FLAG_UNIT_CORPSE | TARGET_FLAG_CORPSE_ALLY));
 }
 
 inline bool IsElementalShield(SpellEntry const* spellInfo)
@@ -446,7 +449,7 @@ inline bool IsBinarySpell(SpellEntry const* spellInfo)
     {
         SpellEffectEntry const* spellEffect = spellInfo->GetSpellEffect(SpellEffectIndex(i));
 
-        if (!spellEffect->Effect || IsSpellEffectTriggerSpell(spellInfo, SpellEffectIndex(i)))
+        if (!spellEffect || !spellEffect->Effect || IsSpellEffectTriggerSpell(spellInfo, SpellEffectIndex(i)))
             continue;
 
         effectmask |= (1 << i);

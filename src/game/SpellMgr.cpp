@@ -1678,8 +1678,10 @@ bool SpellMgr::canStackSpellRanksInSpellBook(SpellEntry const* spellInfo) const
     if (spellInfo->HasAttribute(SPELL_ATTR_EX2_DISPLAY_IN_STANCE_BAR) || IsSpellHaveAura(spellInfo, SPELL_AURA_MOD_SHAPESHIFT))
         return false;
 
+    SpellClassOptionsEntry const* spellClassOptions = spellInfo->GetSpellClassOptions();
+
     // FIXME: Seal of Righteousness, 2 version of same rank
-    if ((spellInfo->GetSpellClassOptions()->SpellFamilyFlags.IsFitToFamilyMask(uint64(0x0000000008000000))) && spellInfo->SpellIconID == 25)
+    if (!spellClassOptions || (spellClassOptions->SpellFamilyFlags.IsFitToFamilyMask(uint64(0x0000000008000000))) && spellInfo->SpellIconID == 25)
         return false;
 
     return true;
