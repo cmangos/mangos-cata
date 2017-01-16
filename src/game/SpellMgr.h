@@ -1153,7 +1153,7 @@ inline bool IsPositiveSpell(const SpellEntry* entry, const WorldObject* caster =
     {
         SpellEffectEntry const* spellEffect = entry->GetSpellEffect(SpellEffectIndex(i));
 
-        if (spellEffect || (spellEffect->Effect && !IsPositiveEffect(entry, SpellEffectIndex(i), caster, target)))
+        if (!spellEffect || (spellEffect->Effect && !IsPositiveEffect(entry, SpellEffectIndex(i), caster, target)))
             return false;
     }
 
