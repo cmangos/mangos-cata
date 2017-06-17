@@ -101,6 +101,7 @@ uint16* LiqType = 0;
 uint32 map_count;
 char output_path[128] = ".";
 char input_path[1024] = ".";
+bool hasInputPathParam = false;
 bool preciseVectorData = false;
 
 // Constants
