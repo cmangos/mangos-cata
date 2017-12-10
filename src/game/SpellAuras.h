@@ -518,7 +518,7 @@ class MANGOS_DLL_SPEC Aura
         void PeriodicTick();
         void PeriodicDummyTick();
 
-        bool IsCritFromAbilityAura(Unit* caster, uint32& damage);
+        bool IsCritFromAbilityAura(Unit* caster, uint32& damage) const;
         void ReapplyAffectedPassiveAuras();
 
         Modifier m_modifier;

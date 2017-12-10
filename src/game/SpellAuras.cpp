@@ -8883,9 +8883,9 @@ void Aura::HandleAuraSafeFall(bool Apply, bool Real)
         ((Player*)GetTarget())->ActivateTaxiPathTo(506, GetId()); // on DB load flight path is initiated on its own after its safe to do so
 }
 
-bool Aura::IsCritFromAbilityAura(Unit* caster, uint32& damage)
+bool Aura::IsCritFromAbilityAura(Unit* caster, uint32& damage) const
 {
-    if (caster->IsSpellCrit(GetTarget(), GetSpellProto(), GetSpellSchoolMask(GetSpellProto())))
+    if (caster->RollSpellCritOutcome(GetTarget(), GetSpellSchoolMask(GetSpellProto()), GetSpellProto()))
     {
         damage = caster->CalculateCritAmount(GetTarget(), damage, GetSpellProto());
         return true;
