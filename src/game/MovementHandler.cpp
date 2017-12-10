@@ -183,7 +183,6 @@ void WorldSession::HandleMoveWorldportAckOpcode()
                 }
             }
         }
-    }
 
     // mount allow check
     if (!mEntry->IsMountAllowed())

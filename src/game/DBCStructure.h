@@ -1378,20 +1378,6 @@ struct MapEntry
     bool IsBattleArena() const { return map_type == MAP_ARENA; }
     bool IsBattleGroundOrArena() const { return map_type == MAP_BATTLEGROUND || map_type == MAP_ARENA; }
 
-    bool IsMountAllowed() const
-    {
-        return !IsDungeon() ||
-            MapID==209 || MapID==269 || MapID==309 ||       // TanarisInstance, CavernsOfTime, Zul'gurub
-            MapID==509 || MapID==534 || MapID==560 ||       // AhnQiraj, HyjalPast, HillsbradPast
-            MapID==564 || MapID==568 || MapID==580 ||       // Black Temple, ZulAman, Sunwell Plateau,
-            MapID==595 || MapID==603 || MapID==615 ||       // Ulduar, The Obsidian Sanctum, Culling of Stratholme
-            MapID==616 || MapID==631 || MapID==658 ||       // Icecrown Citadel, Pit of Saron, The Eye Of Eternity
-            MapID==724 || MapID==644 || MapID==720 ||       // Halls of Origination,  Ruby Sanctum, Firelands
-            MapID==721 || MapID==734 || MapID==755 ||       // Ahn'Qiraj Terrace, Lost City of Tol'Vir, Firelands
-            MapID==859 || MapID==938 || MapID==939 ||       // End Time, Well of Eternity, Zul'Gurub
-            MapID==940 || MapID==967;                       // Dragon SoulHour of Twilight
-    }
-
     bool IsContinent() const
     {
         return MapID == 0 || MapID == 1 || MapID == 530 || MapID == 571;
