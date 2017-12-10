@@ -5360,19 +5360,19 @@ void Spell::EffectOpenLock(SpellEffectEntry const* effect)
         itemTarget->SetFlag(ITEM_FIELD_FLAGS, ITEM_DYNFLAG_UNLOCKED);
 
     // not allow use skill grow at item base open
-    if (!m_CastItem && skillId != SKILL_NONE && !gameObjTarget->loot)
+    if (!m_CastItem && skillId != SKILL_NONE)
     {
         // update skill if really known
         if (uint32 pureSkillValue = player->GetPureSkillValue(skillId))
         {
-            if (gameObjTarget)
+            if (gameObjTarget && !gameObjTarget->loot)
             {
                 // Allow one skill-up until respawned
                 if (!gameObjTarget->IsInSkillupList(player) &&
                         player->UpdateGatherSkill(skillId, pureSkillValue, reqSkillValue))
                     gameObjTarget->AddToSkillupList(player);
             }
-            else if (itemTarget)
+            else if (itemTarget && !itemTarget->loot)
             {
                 // Do one skill-up
                 player->UpdateGatherSkill(skillId, pureSkillValue, reqSkillValue);
@@ -11054,6 +11054,15 @@ void Spell::EffectSkinning(SpellEffectEntry const* /*effect*/)
 
     Loot*& loot = unitTarget->loot;
 
+    if (loot)
+    {
+        if (loot->GetLootType() != LOOT_SKINNING)
+        {
+            delete loot;
+            loot = nullptr;
+        }
+    }
+
     if (!loot)
     {
         loot = new Loot((Player*)m_caster, creature, LOOT_SKINNING);
@@ -11064,14 +11073,6 @@ void Spell::EffectSkinning(SpellEffectEntry const* /*effect*/)
 
         // Double chances for elites
         ((Player*)m_caster)->UpdateGatherSkill(skill, skillValue, reqValue, creature->IsElite() ? 2 : 1);
-    }
-    else
-    {
-        if (loot->GetLootType() != LOOT_SKINNING)
-        {
-            delete loot;
-            loot = new Loot((Player*)m_caster, creature, LOOT_SKINNING);
-        }
     }
 
     loot->ShowContentTo((Player*)m_caster);
