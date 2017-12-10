@@ -184,58 +184,56 @@ void WorldSession::HandleMoveWorldportAckOpcode()
             }
         }
 
-    // mount allow check
-    if (!mEntry->IsMountAllowed())
-    {
-        _player->RemoveSpellsCausingAura(SPELL_AURA_MOUNTED);
-        _player->RemoveSpellsCausingAura(SPELL_AURA_FLY);
-    }
-    else
-    {
-        // recheck mount capabilities at far teleport
-        Unit::AuraList const& mMountAuras = _player->GetAurasByType(SPELL_AURA_MOUNTED);
-        for (Unit::AuraList::const_iterator itr = mMountAuras.begin(); itr != mMountAuras.end(); )
+        // mount allow check
+        if (!mInstance->mountAllowed)
+            _player->RemoveSpellsCausingAura(SPELL_AURA_MOUNTED);
+        else
         {
-            Aura const* aura = *itr;
-
-            // mount is no longer suitable
-            MountCapabilityEntry const* entry = _player->GetMountCapability(aura->GetSpellEffect()->EffectMiscValueB);
-            if (!entry)
+            // recheck mount capabilities at far teleport
+            Unit::AuraList const& mMountAuras = _player->GetAurasByType(SPELL_AURA_MOUNTED);
+            for (Unit::AuraList::const_iterator itr = mMountAuras.begin(); itr != mMountAuras.end(); )
             {
-                _player->RemoveAurasDueToSpell(aura->GetId());
-                itr = mMountAuras.begin();
-                continue;
+                Aura const* aura = *itr;
+
+                // mount is no longer suitable
+                MountCapabilityEntry const* entry = _player->GetMountCapability(aura->GetSpellEffect()->EffectMiscValueB);
+                if (!entry)
+                {
+                    _player->RemoveAurasDueToSpell(aura->GetId());
+                    itr = mMountAuras.begin();
+                    continue;
+                }
+
+                // mount capability changed
+                if (entry->Id != aura->GetModifier()->m_amount)
+                {
+                    if (MountCapabilityEntry const* oldEntry = sMountCapabilityStore.LookupEntry(aura->GetModifier()->m_amount))
+                        _player->RemoveAurasDueToSpell(oldEntry->SpeedModSpell);
+
+                    _player->CastSpell(_player, entry->SpeedModSpell, TRIGGERED_OLD_TRIGGERED);
+
+                    const_cast<Aura*>(aura)->ChangeAmount(entry->Id);
+                }
+
+                ++itr;
             }
 
-            // mount capability changed
-            if (entry->Id != aura->GetModifier()->m_amount)
+            uint32 zone, area;
+            _player->GetZoneAndAreaId(zone, area);
+            // recheck fly auras
+            Unit::AuraList const& mFlyAuras = _player->GetAurasByType(SPELL_AURA_FLY);
+            for (Unit::AuraList::const_iterator itr = mFlyAuras.begin(); itr != mFlyAuras.end(); )
             {
-                if (MountCapabilityEntry const* oldEntry = sMountCapabilityStore.LookupEntry(aura->GetModifier()->m_amount))
-                    _player->RemoveAurasDueToSpell(oldEntry->SpeedModSpell);
+                Aura const* aura = *itr;
+                if (!_player->CanStartFlyInArea(_player->GetMapId(), zone, area))
+                {
+                    _player->RemoveAurasDueToSpell(aura->GetId());
+                    itr = mFlyAuras.begin();
+                    continue;
+                }
 
-                _player->CastSpell(_player, entry->SpeedModSpell, TRIGGERED_OLD_TRIGGERED);
-
-                const_cast<Aura*>(aura)->ChangeAmount(entry->Id);
+                ++itr;
             }
-
-            ++itr;
-        }
-
-        uint32 zone, area;
-        _player->GetZoneAndAreaId(zone, area);
-        // recheck fly auras
-        Unit::AuraList const& mFlyAuras = _player->GetAurasByType(SPELL_AURA_FLY);
-        for (Unit::AuraList::const_iterator itr = mFlyAuras.begin(); itr != mFlyAuras.end(); )
-        {
-            Aura const* aura = *itr;
-            if (!_player->CanStartFlyInArea(_player->GetMapId(), zone, area))
-            {
-                _player->RemoveAurasDueToSpell(aura->GetId());
-                itr = mFlyAuras.begin();
-                continue;
-            }
-
-            ++itr;
         }
     }
 
@@ -336,7 +334,7 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
         plMover->HandleFall(movementInfo);
 
     // Remove auras that should be removed at landing on ground or water
-    if (opcode == MSG_MOVE_FALL_LAND || opcode == MSG_MOVE_START_SWIM)
+    if (opcode == CMSG_MOVE_FALL_LAND || opcode == CMSG_MOVE_START_SWIM)
         mover->RemoveAurasWithInterruptFlags(AURA_INTERRUPT_FLAG_LANDING); // Parachutes
 
     /* process position-change */
