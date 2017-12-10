@@ -9066,6 +9066,8 @@ void Unit::ClearInCombat()
     }
     else
         ((Player*)this)->UpdatePotionCooldown();
+
+    RemoveAurasWithInterruptFlags(AURA_INTERRUPT_FLAG_LEAVE_COMBAT);
 }
 
 bool Unit::isTargetableForAttack(bool inverseAlive /*=false*/) const
@@ -9873,7 +9875,7 @@ bool Unit::IsTargetUnderControl(Unit const& target) const
 
     if (!charmerGuid)
         return false;
-    
+
     if (target.GetCharmerGuid() == charmerGuid)
         return true;
 
@@ -13019,7 +13021,7 @@ Unit* Unit::TakePossessOf(SpellEntry const* spellEntry, SummonPropertiesEntry co
 
     // set temp possess ai (creature will not be able to react by itself)
     charmInfo->SetCharmState("PossessedAI");
-    
+
     if (player)
     {
         // Initialize pet bar
@@ -13098,7 +13100,7 @@ bool Unit::TakePossessOf(Unit* possessed)
                 return true;
             }
         }
-        
+
         // player pet is unsmumoned while possessing
         player->UnsummonPetTemporaryIfAny();
 
