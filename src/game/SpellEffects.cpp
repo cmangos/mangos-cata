@@ -8999,6 +8999,14 @@ void Spell::EffectScriptEffect(SpellEffectEntry const* effect)
                     unitTarget->RemoveSpellsCausingAura(SPELL_AURA_MOD_STUN);
                     return;
                 }
+                case 54640:                                 // Teleport
+                {
+                    if (!unitTarget || unitTarget->GetTypeId() != TYPEID_PLAYER)
+                        return;
+
+                    m_caster->CastSpell(unitTarget, m_spellInfo->CalculateSimpleValue(eff_idx), TRIGGERED_OLD_TRIGGERED, nullptr, nullptr, m_originalCasterGUID);
+                    return;
+                }
                 case 55693:                                 // Remove Collapsing Cave Aura
                 {
                     if (!unitTarget)
