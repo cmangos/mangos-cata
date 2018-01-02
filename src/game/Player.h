@@ -2210,7 +2210,8 @@ class Player : public Unit
         }
         void HandleFall(MovementInfo const& movementInfo);
 
-        bool isMoving() const { return m_movementInfo.HasMovementFlag(movementFlagsMask); }
+        void BuildTeleportAckMsg(WorldPacket& data, float x, float y, float z, float ang) const;
+
         bool isMovingOrTurning() const { return m_movementInfo.HasMovementFlag(movementOrTurningFlagsMask); }
 
         bool CanSwim() const { return true; }
