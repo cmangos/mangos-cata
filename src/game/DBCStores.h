@@ -98,7 +98,8 @@ bool IsPointInAreaTriggerZone(AreaTriggerEntry const* atEntry, uint32 mapid, flo
 PvPDifficultyEntry const* GetBattlegroundBracketByLevel(uint32 mapid, uint32 level);
 PvPDifficultyEntry const* GetBattlegroundBracketById(uint32 mapid, BattleGroundBracketId id);
 
-MANGOS_DLL_SPEC uint32 GetCreatureModelRace(uint32 model_id);
+MANGOS_DLL_SPEC uint32 GetCreatureModelRace(uint32 modelId);
+MANGOS_DLL_SPEC float GetModelMidpoint(uint32 modelId);
 
 float GetCurrencyPrecision(uint32 currencyId);
 
