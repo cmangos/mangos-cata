@@ -225,7 +225,7 @@ inline bool IsAllowingDeadTarget(SpellEntry const* spellInfo)
 {
     SpellTargetRestrictionsEntry const* spellTargetRestriction = spellInfo->GetSpellTargetRestrictions();
 
-    return spellInfo->HasAttribute(SPELL_ATTR_EX2_CAN_TARGET_DEAD) || 
+    return spellInfo->HasAttribute(SPELL_ATTR_EX2_CAN_TARGET_DEAD) || spellInfo->HasAttribute(SPELL_ATTR_PASSIVE) || 
            (spellTargetRestriction && spellTargetRestriction->Targets & (TARGET_FLAG_PVP_CORPSE | TARGET_FLAG_UNIT_CORPSE | TARGET_FLAG_CORPSE_ALLY));
 }
 
