@@ -9004,7 +9004,7 @@ void Spell::EffectScriptEffect(SpellEffectEntry const* effect)
                     if (!unitTarget || unitTarget->GetTypeId() != TYPEID_PLAYER)
                         return;
 
-                    m_caster->CastSpell(unitTarget, m_spellInfo->CalculateSimpleValue(eff_idx), TRIGGERED_OLD_TRIGGERED, nullptr, nullptr, m_originalCasterGUID);
+                    m_caster->CastSpell(unitTarget, effect->CalculateSimpleValue(), TRIGGERED_OLD_TRIGGERED, nullptr, nullptr, m_originalCasterGUID);
                     return;
                 }
                 case 55693:                                 // Remove Collapsing Cave Aura
