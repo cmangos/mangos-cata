@@ -30,7 +30,7 @@ npc_light_orb_collector
 EndContentData */
 
 #include "AI/ScriptDevAI/include/precompiled.h"
-#include "TemporarySummon.h"
+#include "Entities/TemporarySummon.h"
 
 /*######
 ## mobs_nether_drake
