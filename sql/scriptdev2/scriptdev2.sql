@@ -401,12 +401,17 @@ UPDATE creature_template SET ScriptName='npc_daranelle' WHERE entry=21469;
 UPDATE creature_template SET ScriptName='npc_bloodmaul_stout_trigger' WHERE entry=21241;
 UPDATE creature_template SET ScriptName='npc_simon_game_bunny' WHERE entry=22923;
 UPDATE creature_template SET ScriptName='npc_light_orb_collector' WHERE entry IN (21926,22333);
+UPDATE creature_template SET ScriptName='npc_bloodmaul_dire_wolf' WHERE entry=20058;
+UPDATE creature_template SET ScriptName='npc_vimgol_visual_bunny' WHERE entry=23040;
+UPDATE creature_template SET ScriptName='npc_vimgol_middle_bunny' WHERE entry=23081;
+UPDATE creature_template SET ScriptName='npc_vimgol' WHERE entry=22911;
 
 /* BLASTED LANDS */
 UPDATE creature_template SET ScriptName='npc_fallen_hero_of_horde' WHERE entry=7572;
 
 /* BLOODMYST ISLE */
 UPDATE creature_template SET ScriptName='mob_webbed_creature' WHERE entry=17680;
+UPDATE creature_template SET ScriptName='npc_demolitionist_legoso' WHERE entry=17982;
 
 /* BOREAN TUNDRA */
 UPDATE creature_template SET ScriptName='npc_nesingwary_trapper' WHERE entry=25835;
@@ -419,6 +424,8 @@ UPDATE creature_template SET ScriptName='npc_nexus_drake_hatchling' WHERE entry=
 UPDATE creature_template SET ScriptName='npc_scourged_flamespitter' WHERE entry=25582;
 UPDATE creature_template SET ScriptName='npc_bonker_togglevolt' WHERE entry=25589;
 UPDATE creature_template SET ScriptName='npc_jenny' WHERE entry=25969;
+UPDATE creature_template SET ScriptName='npc_seaforium_depth_charge' WHERE entry=25401;
+UPDATE creature_template SET ScriptName='npc_mootoo_the_younger' WHERE entry=25504;
 
 /* BURNING STEPPES */
 UPDATE creature_template SET ScriptName='npc_ragged_john' WHERE entry=9563;
