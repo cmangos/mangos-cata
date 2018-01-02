@@ -439,15 +439,13 @@ Spell::Spell(Unit* caster, SpellEntry const* info, uint32 triggeredFlags, Object
 
     m_needAliveTargetMask = 0;
 
-    m_ignoreHitResult = false;
-    m_ignoreUnselectableTarget = m_IsTriggeredSpell;
+    m_ignoreHitResult = !!(triggeredFlags & TRIGGERED_IGNORE_HIT_CALCULATION);
+    m_ignoreUnselectableTarget = m_IsTriggeredSpell | (triggeredFlags & TRIGGERED_IGNORE_UNSELECTABLE_FLAG);
+    m_ignoreUnattackableTarget = triggeredFlags & TRIGGERED_IGNORE_UNATTACKABLE_FLAG;
 
     m_reflectable = IsReflectableSpell(m_spellInfo);
     m_spellFlags = SPELL_FLAG_NORMAL;
 
-
-    if (triggeredFlags & TRIGGERED_IGNORE_UNSELECTABLE_FLAG)
-        m_ignoreUnselectableTarget = true;
 
     CleanupTargetList();
 }
@@ -2018,17 +2016,6 @@ void Spell::SetTargetMap(SpellEffectIndex effIndex, uint32 targetMode, UnitList&
 
             if (!tempTargetUnitMap.empty())
                 CheckSpellScriptTargets(bounds, tempTargetUnitMap, targetUnitMap, effIndex);
-            else
-            {
-                // remove not targetable units if spell has no script targets
-                for (UnitList::iterator itr = targetUnitMap.begin(); itr != targetUnitMap.end();)
-                {
-                    if (!(*itr)->isTargetableForAttack(m_spellInfo->HasAttribute(SPELL_ATTR_EX3_CAST_ON_DEAD)))
-                        targetUnitMap.erase(itr++);
-                    else
-                        ++itr;
-                }
-            }
             break;
         }
         case TARGET_AREAEFFECT_GO_AROUND_SOURCE:
@@ -7771,7 +7758,7 @@ bool Spell::CheckTarget(Unit* target, SpellEffectIndex eff)
         if (target->GetCharmerOrOwnerGuid() != m_caster->GetObjectGuid())
         {
             // any unattackable target skipped
-            if (target->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE))
+            if (!m_ignoreUnattackableTarget && target->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE))
                 return false;
 
             // unselectable targets skipped in all cases except TARGET_SCRIPT targeting
@@ -7790,6 +7777,12 @@ bool Spell::CheckTarget(Unit* target, SpellEffectIndex eff)
                 spellEffect->EffectImplicitTargetB != TARGET_NARROW_FRONTAL_CONE &&
                 spellEffect->EffectImplicitTargetA != TARGET_NARROW_FRONTAL_CONE_2 &&
                 spellEffect->EffectImplicitTargetB != TARGET_NARROW_FRONTAL_CONE_2)
+                return false;
+
+            SQLMultiStorage::SQLMSIteratorBounds<SpellTargetEntry> bounds = sSpellScriptTargetStorage.getBounds<SpellTargetEntry>(m_spellInfo->Id);
+
+            // Experimental: Test out TC theory that this flag should be Immune to Player
+            if (bounds.first == bounds.second && target->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_OOC_NOT_ATTACKABLE) && m_caster->GetTypeId() == TYPEID_PLAYER)
                 return false;
         }
 
@@ -7853,6 +7846,9 @@ bool Spell::CheckTarget(Unit* target, SpellEffectIndex eff)
 
     if (target->GetTypeId() != TYPEID_PLAYER && m_spellInfo->HasAttribute(SPELL_ATTR_EX3_TARGET_ONLY_PLAYER)
         && spellEffect->EffectImplicitTargetA != TARGET_SCRIPT && spellEffect->EffectImplicitTargetA != TARGET_SELF)
+        return false;
+
+    if (m_spellInfo->HasAttribute(SPELL_ATTR_EX3_CAST_ON_DEAD) && target->isAlive())
         return false;
 
     if (!IsAllowingDeadTarget(m_spellInfo) && !target->isAlive() && !(target == m_caster && m_spellInfo->HasAttribute(SPELL_ATTR_CASTABLE_WHILE_DEAD)) && m_caster->GetTypeId() == TYPEID_PLAYER)
