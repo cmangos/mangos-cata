@@ -8524,7 +8524,7 @@ void Aura::PeriodicDummyTick()
                         return;
 
                     Spell::UnitList::const_iterator itr = targets.begin();
-                    std::advance(itr, rand() % targets.size());
+                    std::advance(itr, urand() % targets.size());
                     Unit* victim = *itr;
 
                     target->CastSpell(victim, 57840, TRIGGERED_OLD_TRIGGERED);
