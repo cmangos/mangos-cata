@@ -1625,6 +1625,13 @@ void Spell::EffectDummy(SpellEffectEntry const* effect)
 
                     return;
                 }
+                case 42442:                                 // Vengeance Landing Cannonfire
+                {
+                    if (unitTarget)
+                        unitTarget->CastSpell(unitTarget, 31958, TRIGGERED_OLD_TRIGGERED);
+
+                    return;
+                }
                 case 42485:                                 // End of Ooze Channel
                 {
                     if (!unitTarget || unitTarget->GetTypeId() != TYPEID_UNIT)
@@ -4494,7 +4501,7 @@ void Spell::EffectTeleportUnits(SpellEffectEntry const* effect)   // TODO - Use 
     // post effects for TARGET_TABLE_X_Y_Z_COORDINATES
     switch (m_spellInfo->Id)
     {
-        case 23441:                                 // Ultrasafe Transporter: Gadgetzan 
+        case 23441:                                 // Ultrasafe Transporter: Gadgetzan
         {
             // Wrong destination already rolled for, only handle minor malfunction on sucess
             m_caster->CastSpell(m_caster, 23450, TRIGGERED_OLD_TRIGGERED); // Transporter Arrival
