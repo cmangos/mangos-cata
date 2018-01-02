@@ -1125,7 +1125,7 @@ void Spell::EffectDummy(SpellEffectEntry const* effect)
                 }
                 case 19869:                                 // Dragon Orb
                 {
-                    if (unitTarget && unitTarget->GetTypeId() == TYPEID_PLAYER && unitTarget->HasAura(23958))
+                    if (unitTarget && unitTarget->GetTypeId() == TYPEID_PLAYER && !unitTarget->HasAura(23958))
                         unitTarget->CastSpell(unitTarget, 19832, TRIGGERED_OLD_TRIGGERED);
 
                     return;
