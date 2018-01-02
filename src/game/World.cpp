@@ -37,7 +37,7 @@
 #include "ArenaTeam.h"
 #include "AuctionHouseMgr.h"
 #include "ObjectMgr.h"
-#include "AI/CreatureEventAIMgr.h"
+#include "AI/EventAI/CreatureEventAIMgr.h"
 #include "GuildMgr.h"
 #include "SpellMgr.h"
 #include "Chat.h"
@@ -48,6 +48,7 @@
 #include "ItemEnchantmentMgr.h"
 #include "MapManager.h"
 #include "ScriptMgr.h"
+#include "AI/ScriptDevAI/ScriptDevAIMgr.h"
 #include "AI/CreatureAIRegistry.h"
 #include "Policies/Singleton.h"
 #include "BattleGround/BattleGroundMgr.h"
@@ -147,7 +148,6 @@ void World::CleanupsBeforeStop()
     UpdateSessions(1);                               // real players unload required UpdateSessions call
     sBattleGroundMgr.DeleteAllBattleGrounds();       // unload battleground templates before different singletons destroyed
     sMapMgr.UnloadAll();                             // unload all grids (including locked in memory)
-    sScriptMgr.UnloadScriptLibrary();                // unload all scripts
 }
 
 /// Find a session by its id
@@ -954,7 +954,7 @@ void World::SetInitialWorldSettings()
     sObjectMgr.LoadSpellTemplate();
 
     sLog.outString("Loading Script Names...");
-    sScriptMgr.LoadScriptNames();
+    sScriptDevAIMgr.LoadScriptNames();
 
     sLog.outString("Loading WorldTemplate...");
     sObjectMgr.LoadWorldTemplate();
@@ -1148,10 +1148,10 @@ void World::SetInitialWorldSettings()
     sObjectMgr.LoadTavernAreaTriggers();
 
     sLog.outString("Loading AreaTrigger script names...");
-    sScriptMgr.LoadAreaTriggerScripts();
+    sScriptDevAIMgr.LoadAreaTriggerScripts();
 
     sLog.outString("Loading event id script names...");
-    sScriptMgr.LoadEventIdScripts();
+    sScriptDevAIMgr.LoadEventIdScripts();
 
     sLog.outString("Loading Graveyard-zone links...");
     sObjectMgr.LoadGraveyardZones();
@@ -1319,18 +1319,7 @@ void World::SetInitialWorldSettings()
 
     ///- Load and initialize scripting library
     sLog.outString("Initializing Scripting Library...");
-    switch (sScriptMgr.LoadScriptLibrary(MANGOS_SCRIPT_NAME))
-    {
-        case SCRIPT_LOAD_OK:
-            sLog.outString("Scripting library loaded.");
-            break;
-        case SCRIPT_LOAD_ERR_NOT_FOUND:
-            sLog.outError("Scripting library not found or not accessible.");
-            break;
-        case SCRIPT_LOAD_ERR_WRONG_API:
-            sLog.outError("Scripting library has wrong list functions (outdated?).");
-            break;
-    }
+    sScriptDevAIMgr.Initialize();
     sLog.outString();
 
     ///- Initialize game time and timers

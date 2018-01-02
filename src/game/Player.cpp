@@ -56,7 +56,7 @@
 #include "Chat.h"
 #include "Database/DatabaseImpl.h"
 #include "Spell.h"
-#include "ScriptMgr.h"
+#include "AI/ScriptDevAI/ScriptDevAIMgr.h"
 #include "SocialMgr.h"
 #include "AchievementMgr.h"
 #include "Mail.h"
@@ -13203,14 +13203,14 @@ void Player::AddQuest(Quest const* pQuest, Object* questGiver)
         switch (questGiver->GetTypeId())
         {
             case TYPEID_UNIT:
-                sScriptMgr.OnQuestAccept(this, (Creature*)questGiver, pQuest);
+                sScriptDevAIMgr.OnQuestAccept(this, (Creature*)questGiver, pQuest);
                 break;
             case TYPEID_ITEM:
             case TYPEID_CONTAINER:
-                sScriptMgr.OnQuestAccept(this, (Item*)questGiver, pQuest);
+                sScriptDevAIMgr.OnQuestAccept(this, (Item*)questGiver, pQuest);
                 break;
             case TYPEID_GAMEOBJECT:
-                sScriptMgr.OnQuestAccept(this, (GameObject*)questGiver, pQuest);
+                sScriptDevAIMgr.OnQuestAccept(this, (GameObject*)questGiver, pQuest);
                 break;
         }
 
@@ -13451,10 +13451,10 @@ void Player::RewardQuest(Quest const* pQuest, uint32 reward, Object* questGiver,
     switch (questGiver->GetTypeId())
     {
         case TYPEID_UNIT:
-            handled = sScriptMgr.OnQuestRewarded(this, (Creature*)questGiver, pQuest);
+            handled = sScriptDevAIMgr.OnQuestRewarded(this, (Creature*)questGiver, pQuest);
             break;
         case TYPEID_GAMEOBJECT:
-            handled = sScriptMgr.OnQuestRewarded(this, (GameObject*)questGiver, pQuest);
+            handled = sScriptDevAIMgr.OnQuestRewarded(this, (GameObject*)questGiver, pQuest);
             break;
     }
 
@@ -14825,7 +14825,7 @@ void Player::SendQuestGiverStatusMultiple()
             if (!questgiver->HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_QUESTGIVER))
                 continue;
 
-            uint8 dialogStatus = sScriptMgr.GetDialogStatus(this, questgiver);
+            uint8 dialogStatus = sScriptDevAIMgr.GetDialogStatus(this, questgiver);
 
             if (dialogStatus == DIALOG_STATUS_REWARD_REP)
                 dialogStatus = GetSession()->getDialogStatus(this, questgiver, DIALOG_STATUS_NONE);
@@ -14844,7 +14844,7 @@ void Player::SendQuestGiverStatusMultiple()
             if (questgiver->GetGoType() != GAMEOBJECT_TYPE_QUESTGIVER)
                 continue;
 
-            uint8 dialogStatus = sScriptMgr.GetDialogStatus(this, questgiver);
+            uint8 dialogStatus = sScriptDevAIMgr.GetDialogStatus(this, questgiver);
 
             if (dialogStatus == DIALOG_STATUS_REWARD_REP)
                 dialogStatus = GetSession()->getDialogStatus(this, questgiver, DIALOG_STATUS_NONE);
