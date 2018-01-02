@@ -6721,9 +6721,6 @@ SpellCastResult Spell::CheckPetCast(Unit* target)
         // for target dead/target not valid
         if (_target && m_targets.m_targetMask & TARGET_FLAG_UNIT)
         {
-            if (!_target->isTargetableForAttack())
-                return SPELL_FAILED_BAD_TARGETS;            // guessed error
-
             if (IsPositiveSpell(m_spellInfo->Id, m_caster, _target))
             {
                 if (m_caster->IsHostileTo(_target))
@@ -6731,6 +6728,9 @@ SpellCastResult Spell::CheckPetCast(Unit* target)
             }
             else
             {
+                if (!_target->isTargetableForAttack())
+                    return SPELL_FAILED_BAD_TARGETS;            // guessed error
+
                 bool duelvsplayertar = false;
                 for (int j = 0; j < MAX_EFFECT_INDEX; ++j)
                 {
