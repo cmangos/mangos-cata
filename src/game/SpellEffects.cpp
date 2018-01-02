@@ -10879,9 +10879,6 @@ void Spell::EffectSummonObject(SpellEffectEntry const* effect)
 
     pGameObj->SummonLinkedTrapIfAny();
 
-    if (gameobject_id == 177746)
-        pGameObj->Use(m_caster);
-
     // Notify Summoner
     if (m_originalCaster && (m_originalCaster != m_caster) && (m_originalCaster->AI()))
         m_originalCaster->AI()->JustSummoned(pGameObj);
