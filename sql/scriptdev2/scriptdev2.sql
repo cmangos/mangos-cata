@@ -586,6 +586,7 @@ UPDATE creature_template SET ScriptName='npc_dalinda_malem' WHERE entry=5644;
 UPDATE creature_template SET ScriptName='npc_melizza_brimbuzzle' WHERE entry=12277;
 UPDATE creature_template SET ScriptName='npc_cork_gizelton' WHERE entry=11625;
 UPDATE creature_template SET ScriptName='npc_rigger_gizelton' WHERE entry=11626;
+UPDATE creature_template SET ScriptName='npc_magrami_spectre' WHERE entry=11560;
 
 /* DIRE MAUL */
 UPDATE instance_template SET ScriptName='instance_dire_maul' WHERE map=429;
@@ -2941,7 +2942,55 @@ INSERT INTO script_texts (entry,content_default,sound,type,language,emote,commen
 (-1001194,'Blast those stupid centaurs! Sigh - well, it seems you kept your bargain. Up the road you shall find Smeed Scrabblescrew, he has your money.',0,0,0,1,'SAY_CORK_END'),
 (-1001195,'Eeck! Demons hungry for the kodos!',0,0,0,0,'SAY_RIGGER_AMBUSH1'),
 (-1001196,'What am I paying you for? The kodos are nearly dead!',0,0,0,0,'SAY_RIGGER_AMBUSH2'),
-(-1001197,'Wow! We did it... not sure why we thought we needed the likes of you. Nevertheless, speak with Smeed Srablescrew; he will give you your earnings!',0,0,0,0,'SAY_RIGGER_END');
+(-1001197,'Wow! We did it... not sure why we thought we needed the likes of you. Nevertheless, speak with Smeed Srablescrew; he will give you your earnings!',0,0,0,0,'SAY_RIGGER_END'),
+
+(-1001198,'Cover me!',0,0,0,5,'demolitionist_legoso SAY_ESCORT_2'),
+(-1001199,'It won\'t be much longer, $n. Just keep them off me while I work.',0,0,0,133,'demolitionist_legoso SAY_ESCORT_3'),
+(-1001200,'That\'ll do it! Quickly, take cover!',0,0,0,5,'demolitionist_legoso SAY_ESCORT_4'),
+(-1001201,'3...',0,0,0,0,'demolitionist_legoso SAY_ESCORT_COUNT_3'),
+(-1001202,'2...',0,0,0,0,'demolitionist_legoso SAY_ESCORT_COUNT_2'),
+(-1001203,'1...',0,0,0,0,'demolitionist_legoso SAY_ESCORT_COUNT_1'),
+(-1001204,'Don\'t get too excited, hero, that was the easy part. The challenge lies ahead! Let\'s go.',0,0,0,1,'demolitionist_legoso SAY_ESCORT_CONTINUE'),
+(-1001205,'What in the Nether is that?!?!',0,0,0,5,'demolitionist_legoso SAY_ESCORT_5'),
+(-1001206,'Be ready for anything, $n.',0,0,0,1,'demolitionist_legoso SAY_ESCORT_6'),
+(-1001207,'Blessed Light! She\'s siphoning energy right out of the Vector Coil!',0,0,0,34,'demolitionist_legoso SAY_ESCORT_7'),
+(-1001208,'Cover me, we have to do this quickly. Once I blow the support on this side, it will disrupt the energy beams and she\'ll break out! I doubt very much that she\'ll be happy to see us.',0,0,0,1,'demolitionist_legoso SAY_ESCORT_8'),
+(-1001209,'I\'ve almost got it! Just a little more time...',0,0,0,0,'demolitionist_legoso SAY_ESCORT_9'),
+(-1001210,'Take cover and be ready for the fight of your life, $n!',0,0,0,5,'demolitionist_legoso SAY_ESCORT_10'),
+(-1001211,'Holy mother of O\'ros!',0,0,0,5,'demolitionist_legoso SAY_ESCORT_AGGRO'),
+(-1001212,'I... I can\'t believe it\'s over. You did it! You\'ve destroyed the blood elves and their leader!',0,0,0,1,'demolitionist_legoso SAY_ESCORT_COMPLETE_1'),
+(-1001213,'Get back to Blood Watch. I\'ll see you there...',0,0,0,1,'demolitionist_legoso SAY_ESCORT_COMPLETE_2'),
+
+(-1001214,'%s becomes unstable with brimming energy.',0,2,0,0,'living_flare EMOTE_UNSTABLE'),
+(-1001215,'%s releases its energy, engulfing its surroundings in flames!',0,2,0,0,'living_flare EMOTE_BURST'),
+
+(-1001216,'The last thing I remember is the ship falling and us getting into the pods. I\'ll go see how I can help. Thank you!',0,0,7,0,'draenei_survivor SAY_HEAL1'),
+(-1001217,'Where am I? Who are you? Oh no! What happened to the ship?',0,0,7,0,'draenei_survivor SAY_HEAL2'),
+(-1001218,'$C You saved me! I owe you a debt that I can never repay. I\'ll go see if I can help the others.',0,0,7,0,'draenei_survivor SAY_HEAL3'),
+(-1001219,'Ugh... what is this place? Is that all that\'s left of the ship over there?',0,0,7,0,'draenei_survivor SAY_HEAL4'),
+(-1001220,'Many thanks to you, $c. I''d best get to the crash site and see how I can help out. Until we meet again.',0,0,7,0,'draenei_survivor SAY_HEAL5'),
+(-1001221,'Huh? What happened? Oh... my head feels like it''s going to explode! I''d best get back to the crash site.',0,0,7,0,'draenei_survivor SAY_HEAL6'),
+(-1001222,'Oh, the pain...',0,0,7,0,'draenei_survivor SAY_HELP1'),
+(-1001223,'Everything hurts. Please, make it stop...',0,0,7,0,'draenei_survivor SAY_HELP2'),
+(-1001224,'Ughhh... I hurt. Can you help me?',0,0,7,0,'draenei_survivor SAY_HELP3'),
+(-1001225,'I don''t know if I can make it. Please help me...',0,0,7,0,'draenei_survivor SAY_HELP4'),
+
+(-1001226,'Thank you for doing this, $r. I... I think I know how to get back to my father. Please don\'t let the bad things hurt me.',0,0,0,1,'SAY_MOOTOO_Y_START'),
+(-1001227,'I thought for sure that I would die like all the others!',0,0,0,1,'SAY_1_MOOTOO_Y'),
+(-1001228,'I can feel my father\'s aura. He\'s definitely this way... come on, $n.',0,0,0,1,'SAY_2_MOOTOO_Y'),
+(-1001229,'The mist is death... senseless, without compassion.',0,0,0,1,'SAY_3_MOOTOO_Y'),
+(-1001230,'So cold...',0,0,0,1,'SAY_4_MOOTOO_Y'),
+(-1001231,'What was that! Did you see that?',0,0,0,0,'SAY_5_MOOTOO_Y'),
+(-1001232,'Everyone is dead... Everyone and everything...',0,0,0,1,'SAY_6_MOOTOO_Y'),
+(-1001233,'I see a break in the mist up ahead. We\'re getting closer!',0,0,0,5,'SAY_7_MOOTOO_Y'),
+(-1001234,'How will we overcome the mist?',0,0,0,1,'SAY_8_MOOTOO_Y'),
+(-1001235,'FATHER! Father, I\'m saved!',0,0,0,1,'SAY_CREDIT_MOOTOO_Y'),
+(-1001236,'Daughter! You have returned!',0,0,0,5,'SAY_1_ELDER_MOOTOO'),
+(-1001237,'%s hugs Elder Mootoo.',0,2,0,5,'SAY_9_MOOTOO_Y'),
+(-1001238,'Mootoo thanks you, $n.',0,0,0,1,'SAY_2_ELDER_MOOTOO'),
+
+(-1001239,'%s is drawn to the ghost magnet...',0,2,0,0,'Magrami Spectre on spawn 1'),
+(-1001240,'%s is angered!',0,2,0,0,'Magrami Spectre on spawn 2');
 
 -- -1 004 000 GENERAL MAPS - CATACLYSM (not instance maps)
 INSERT INTO script_texts (entry,content_default,sound,type,language,emote,comment) VALUES
