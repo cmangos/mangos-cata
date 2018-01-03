@@ -1124,7 +1124,7 @@ struct npc_jennyAI : public FollowerAI
     {
         if (!m_bFollowStarted)
         {
-            if (Player* pSummoner = m_creature->GetCharmerOrOwnerPlayerOrPlayerItself())
+            if (Player* pSummoner = m_creature->GetBeneficiaryPlayer())
             {
                 StartFollow(pSummoner, pSummoner->getFaction(), GetQuestTemplateStore(QUEST_ID_LOADER_UP));
 
@@ -1149,6 +1149,174 @@ struct npc_jennyAI : public FollowerAI
 CreatureAI* GetAI_npc_jenny(Creature* pCreature)
 {
     return new npc_jennyAI(pCreature);
+}
+
+/*######
+## npc_seaforium_depth_charge
+######*/
+
+enum
+{
+    SPELL_SEAFORIUM_DEPTH_EXPLOSION         = 45502,
+};
+
+// Note: Creature is summoned as a TotemAI in the core. This script is required in order to tweak the creature's behavior
+struct npc_seaforium_depth_chargeAI : public Scripted_NoMovementAI
+{
+    npc_seaforium_depth_chargeAI(Creature* pCreature) : Scripted_NoMovementAI(pCreature) { Reset(); }
+
+    uint32 m_uiExplosionTimer;
+
+    void Reset() override
+    {
+        m_uiExplosionTimer = 10000;
+    }
+
+    void AttackStart(Unit* /*pWho*/) override { }
+    void MoveInLineOfSight(Unit* /*pWho*/) override { }
+
+    void UpdateAI(const uint32 uiDiff) override
+    {
+        if (m_uiExplosionTimer < uiDiff)
+        {
+            if (DoCastSpellIfCan(m_creature, SPELL_SEAFORIUM_DEPTH_EXPLOSION) == CAST_OK)
+            {
+                m_creature->ForcedDespawn(1000);
+                m_uiExplosionTimer = 10000;
+            }
+        }
+        else
+            m_uiExplosionTimer -= uiDiff;
+    }
+};
+
+CreatureAI* GetAI_npc_seaforium_depth_charge(Creature* pCreature)
+{
+    return new npc_seaforium_depth_chargeAI(pCreature);
+}
+
+/*######
+## npc_mootoo_the_younger
+######*/
+
+enum
+{
+    SAY_MOOTOO_Y_START      = -1001226,
+    SAY_1_MOOTOO_Y          = -1001227,
+    SAY_2_MOOTOO_Y          = -1001228,
+    SAY_3_MOOTOO_Y          = -1001229,
+    SAY_4_MOOTOO_Y          = -1001230,
+    SAY_5_MOOTOO_Y          = -1001231,
+    SAY_6_MOOTOO_Y          = -1001232,
+    SAY_7_MOOTOO_Y          = -1001233,
+    SAY_8_MOOTOO_Y          = -1001234,
+    SAY_9_MOOTOO_Y          = -1001237,
+    SAY_CREDIT_MOOTOO_Y     = -1001235,
+    SAY_1_ELDER_MOOTOO      = -1001236,
+    SAY_2_ELDER_MOOTOO      = -1001238,
+
+    NPC_ELDER_MOOTOO        = 25503,
+
+    QUEST_ESCAPING_THE_MIST = 11664
+};
+
+struct npc_mootoo_the_youngerAI : public npc_escortAI
+{
+    npc_mootoo_the_youngerAI(Creature* pCreature) : npc_escortAI(pCreature) { Reset(); }
+
+    void Reset() override
+    {
+        if (!HasEscortState(STATE_ESCORT_ESCORTING))
+            m_creature->SetStandState(UNIT_STAND_STATE_SIT);
+    }
+
+    void WaypointReached(uint32 uiPointId) override
+    {
+        switch (uiPointId)
+        {
+            case 1:
+                m_creature->SetStandState(UNIT_STAND_STATE_STAND);
+                if (Player* pPlayer = GetPlayerForEscort())
+                    DoScriptText(SAY_MOOTOO_Y_START, m_creature, pPlayer);
+                break;
+            case 4:
+                DoScriptText(SAY_1_MOOTOO_Y, m_creature);
+                break;
+            case 9:
+                if (Player* pPlayer = GetPlayerForEscort())
+                    DoScriptText(SAY_2_MOOTOO_Y, m_creature, pPlayer);
+                break;
+            case 10:
+                m_creature->HandleEmote(EMOTE_ONESHOT_POINT);
+                break;
+            case 12:
+                DoScriptText(SAY_3_MOOTOO_Y, m_creature);
+                break;
+            case 14:
+                DoScriptText(SAY_4_MOOTOO_Y, m_creature);
+                break;
+            case 15:
+                DoScriptText(SAY_5_MOOTOO_Y, m_creature);
+                break;
+            case 16:
+                DoScriptText(SAY_6_MOOTOO_Y, m_creature);
+                break;
+            case 18:
+                DoScriptText(SAY_4_MOOTOO_Y, m_creature);
+                break;
+            case 19:
+                DoScriptText(SAY_7_MOOTOO_Y, m_creature);
+                break;
+            case 20:
+                DoScriptText(SAY_8_MOOTOO_Y, m_creature);
+                break;
+            case 22:
+                DoScriptText(SAY_CREDIT_MOOTOO_Y, m_creature);
+                SetRun();
+                break;
+            case 23:
+                if (Player* pPlayer = GetPlayerForEscort())
+                    pPlayer->GroupEventHappens(QUEST_ESCAPING_THE_MIST, m_creature);
+                if (Creature* pFather = GetClosestCreatureWithEntry(m_creature, NPC_ELDER_MOOTOO, 30.0f))
+                    DoScriptText(SAY_1_ELDER_MOOTOO, pFather);
+                break;
+            case 24:
+                DoScriptText(SAY_9_MOOTOO_Y, m_creature);
+                if (Player* pPlayer = GetPlayerForEscort())
+                    if (Creature* pFather = GetClosestCreatureWithEntry(m_creature, NPC_ELDER_MOOTOO, 30.0f))
+                        DoScriptText(SAY_2_ELDER_MOOTOO, pFather, pPlayer);
+                break;
+            case 25:
+                if (Player* pPlayer = GetPlayerForEscort())
+                    if (Creature* pFather = GetClosestCreatureWithEntry(m_creature, NPC_ELDER_MOOTOO, 30.0f))
+                        pFather->HandleEmote(EMOTE_ONESHOT_BOW);
+                SetEscortPaused(true);
+                m_creature->ForcedDespawn(10000);
+                break;
+        }
+    }
+
+    void ReceiveAIEvent(AIEventType eventType, Creature* /*pSender*/, Unit* pInvoker, uint32 uiMiscValue) override
+    {
+        if (eventType == AI_EVENT_START_ESCORT && pInvoker->GetTypeId() == TYPEID_PLAYER)
+            Start(false, (Player*)pInvoker, GetQuestTemplateStore(uiMiscValue));
+    }
+};
+
+bool QuestAccept_npc_mootoo_the_younger(Player* pPlayer, Creature* pCreature, const Quest* pQuest)
+{
+    if (pQuest->GetQuestId() == QUEST_ESCAPING_THE_MIST)
+    {
+        pCreature->AI()->SendAIEvent(AI_EVENT_START_ESCORT, pPlayer, pCreature, pQuest->GetQuestId());
+        return true;
+    }
+
+    return false;
+}
+
+CreatureAI* GetAI_npc_mootoo_the_youngerAI(Creature* pCreature)
+{
+    return new npc_mootoo_the_youngerAI(pCreature);
 }
 
 void AddSC_borean_tundra()
@@ -1210,5 +1378,16 @@ void AddSC_borean_tundra()
     pNewScript = new Script;
     pNewScript->Name = "npc_jenny";
     pNewScript->GetAI = &GetAI_npc_jenny;
+    pNewScript->RegisterSelf();
+
+    pNewScript = new Script;
+    pNewScript->Name = "npc_seaforium_depth_charge";
+    pNewScript->GetAI = &GetAI_npc_seaforium_depth_charge;
+    pNewScript->RegisterSelf();
+
+    pNewScript = new Script;
+    pNewScript->Name = "npc_mootoo_the_younger";
+    pNewScript->GetAI = &GetAI_npc_mootoo_the_youngerAI;
+    pNewScript->pQuestAcceptNPC = &QuestAccept_npc_mootoo_the_younger;
     pNewScript->RegisterSelf();
 }

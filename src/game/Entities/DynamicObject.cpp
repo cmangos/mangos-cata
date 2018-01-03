@@ -78,7 +78,7 @@ bool DynamicObject::Create(uint32 guidlow, Unit* caster, uint32 spellId, SpellEf
     SetEntry(spellId);
     SetObjectScale(DEFAULT_OBJECT_SCALE);
 
-    SetGuidValue(DYNAMICOBJECT_CASTER, caster->GetObjectGuid());
+    SetCasterGuid(caster->GetObjectGuid());
 
     SetUInt32Value(DYNAMICOBJECT_BYTES, spellProto->SpellVisual[0] | (type << 28));
 

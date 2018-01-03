@@ -746,6 +746,17 @@ void GameObject::DeleteFromDB()
     WorldDatabase.PExecuteLog("DELETE FROM gameobject_battleground WHERE guid = '%u'", GetGUIDLow());
 }
 
+void GameObject::SetOwnerGuid(ObjectGuid guid)
+{
+    m_spawnedByDefault = false;                     // all object with owner is despawned after delay
+    SetGuidValue(OBJECT_FIELD_CREATED_BY, guid);
+}
+
+Unit* GameObject::GetOwner() const
+{
+    return ObjectAccessor::GetUnit(*this, GetOwnerGuid());
+}
+
 GameObjectInfo const* GameObject::GetGOInfo() const
 {
     return m_goInfo;
@@ -795,11 +806,6 @@ bool GameObject::IsDynTransport() const
     // Fix...
     //return gInfo->type == GAMEOBJECT_TYPE_MO_TRANSPORT || (gInfo->type == GAMEOBJECT_TYPE_TRANSPORT && !gInfo->transport.pause);
     return gInfo->type == GAMEOBJECT_TYPE_MO_TRANSPORT || (gInfo->type == GAMEOBJECT_TYPE_TRANSPORT);
-}
-
-Unit* GameObject::GetOwner() const
-{
-    return ObjectAccessor::GetUnit(*this, GetOwnerGuid());
 }
 
 void GameObject::SaveRespawnTime()
@@ -1852,7 +1858,7 @@ bool GameObject::IsHostileTo(Unit const* unit) const
     if (Unit const* owner = GetOwner())
         return owner->IsHostileTo(unit);
 
-    if (Unit const* targetOwner = unit->GetCharmerOrOwner())
+    if (Unit const* targetOwner = unit->GetMaster())
         return IsHostileTo(targetOwner);
 
     // for not set faction case: be hostile towards player, not hostile towards not-players
@@ -1895,7 +1901,7 @@ bool GameObject::IsFriendlyTo(Unit const* unit) const
     if (Unit const* owner = GetOwner())
         return owner->IsFriendlyTo(unit);
 
-    if (Unit const* targetOwner = unit->GetCharmerOrOwner())
+    if (Unit const* targetOwner = unit->GetMaster())
         return IsFriendlyTo(targetOwner);
 
     // for not set faction case (wild object) use hostile case
@@ -2022,7 +2028,7 @@ void GameObject::SetLootRecipient(Unit* pUnit)
         return;
     }
 
-    Player* player = pUnit->GetCharmerOrOwnerPlayerOrPlayerItself();
+    Player* player = pUnit->GetBeneficiaryPlayer();
     if (!player)                                            // normal creature, no player involved
         return;
 
@@ -2333,7 +2339,7 @@ void GameObject::DealGameObjectDamage(uint32 damage, uint32 spell, Unit* caster)
     WorldPacket data(SMSG_DESTRUCTIBLE_BUILDING_DAMAGE, 9 + 9 + 9 + 4 + 4);
     data << GetPackGUID();
     data << caster->GetPackGUID();
-    data << caster->GetCharmerOrOwnerOrSelf()->GetPackGUID();
+    data << caster->GetBeneficiary()->GetPackGUID();
     data << uint32(damage);
     data << uint32(spell);
     SendMessageToSet(&data, false);
@@ -2368,7 +2374,7 @@ void GameObject::ForceGameObjectHealth(int32 diff, Unit* caster)
         m_useTimes = GetMaxHealth();
         // Start Event if exist
         if (caster && m_goInfo->destructibleBuilding.rebuildingEvent)
-            StartEvents_Event(GetMap(), m_goInfo->destructibleBuilding.rebuildingEvent, this, caster->GetCharmerOrOwnerOrSelf(), true, caster->GetCharmerOrOwnerOrSelf());
+            StartEvents_Event(GetMap(), m_goInfo->destructibleBuilding.rebuildingEvent, this, caster->GetBeneficiary(), true, caster->GetBeneficiary());
     }
     else                                                    // Set to value
         m_useTimes = uint32(diff);
@@ -2386,7 +2392,7 @@ void GameObject::ForceGameObjectHealth(int32 diff, Unit* caster)
 
         // Start Event if exist
         if (caster && m_goInfo->destructibleBuilding.intactEvent)
-            StartEvents_Event(GetMap(), m_goInfo->destructibleBuilding.intactEvent, this, caster->GetCharmerOrOwnerOrSelf(), true, caster->GetCharmerOrOwnerOrSelf());
+            StartEvents_Event(GetMap(), m_goInfo->destructibleBuilding.intactEvent, this, caster->GetBeneficiary(), true, caster->GetBeneficiary());
     }
     else if (m_useTimes == 0)                               // Destroyed
     {
@@ -2413,7 +2419,7 @@ void GameObject::ForceGameObjectHealth(int32 diff, Unit* caster)
 
             // Start Event if exist
             if (caster && m_goInfo->destructibleBuilding.destroyedEvent)
-                StartEvents_Event(GetMap(), m_goInfo->destructibleBuilding.destroyedEvent, this, caster->GetCharmerOrOwnerOrSelf(), true, caster->GetCharmerOrOwnerOrSelf());
+                StartEvents_Event(GetMap(), m_goInfo->destructibleBuilding.destroyedEvent, this, caster->GetBeneficiary(), true, caster->GetBeneficiary());
         }
     }
     else if (m_useTimes <= m_goInfo->destructibleBuilding.damagedNumHits) // Damaged
@@ -2432,7 +2438,7 @@ void GameObject::ForceGameObjectHealth(int32 diff, Unit* caster)
 
             // Start Event if exist
             if (caster && m_goInfo->destructibleBuilding.damagedEvent)
-                StartEvents_Event(GetMap(), m_goInfo->destructibleBuilding.damagedEvent, this, caster->GetCharmerOrOwnerOrSelf(), true, caster->GetCharmerOrOwnerOrSelf());
+                StartEvents_Event(GetMap(), m_goInfo->destructibleBuilding.damagedEvent, this, caster->GetBeneficiary(), true, caster->GetBeneficiary());
         }
     }
 
