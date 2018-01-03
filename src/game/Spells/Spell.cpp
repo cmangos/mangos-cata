@@ -4185,6 +4185,13 @@ void Spell::SendSpellStart()
     DEBUG_FILTER_LOG(LOG_FILTER_SPELL_CAST, "Sending SMSG_SPELL_START id=%u", m_spellInfo->Id);
 
     uint32 castFlags = CAST_FLAG_HAS_TRAJECTORY;
+
+    if (HasPersistentAuraEffect(m_spellInfo))
+        castFlags |= CAST_FLAG_PERSISTENT_AA;
+
+    if (m_CastItem)
+        castFlags |= CAST_FLAG_UNKNOWN7;
+
     if (m_spellInfo->runeCostID)
         castFlags |= CAST_FLAG_UNKNOWN19;
 
@@ -4280,6 +4287,9 @@ void Spell::SendSpellGo()
     DEBUG_FILTER_LOG(LOG_FILTER_SPELL_CAST, "Sending SMSG_SPELL_GO id=%u", m_spellInfo->Id);
 
     uint32 castFlags = CAST_FLAG_UNKNOWN9;
+
+    if (m_CastItem)
+        castFlags |= CAST_FLAG_UNKNOWN7;
 
     if ((m_caster->GetTypeId() == TYPEID_PLAYER ||
         m_caster->GetTypeId() == TYPEID_UNIT && ((Creature*)m_caster)->IsPet()) &&
