@@ -5883,8 +5883,8 @@ bool Spell::DoSummonCritter(CreatureSummonPositions& list, SummonPropertiesEntry
 
     m_caster->SetMiniPet(critter);
 
-    if (m_caster->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP_ATTACKABLE))
-        critter->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP_ATTACKABLE);
+    if (m_caster->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PLAYER_CONTROLLED))
+        critter->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PLAYER_CONTROLLED);
 
     critter->SetByteValue(UNIT_FIELD_BYTES_2, 1, UNIT_BYTE2_FLAG_SUPPORTABLE | UNIT_BYTE2_FLAG_UNK5);
 
@@ -5959,8 +5959,8 @@ bool Spell::DoSummonGuardian(CreatureSummonPositions& list, SummonPropertiesEntr
 
         spawnCreature->InitStatsForLevel(level);
 
-        if (m_caster->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP_ATTACKABLE))
-            spawnCreature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP_ATTACKABLE);
+        if (m_caster->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PLAYER_CONTROLLED))
+            spawnCreature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PLAYER_CONTROLLED);
 
         if (m_caster->IsPvP())
             spawnCreature->SetPvP(true);
@@ -6037,8 +6037,8 @@ bool Spell::DoSummonTotem(SpellEffectEntry const* effect, uint8 slot_dbc)
 
     pTotem->SetUInt32Value(UNIT_CREATED_BY_SPELL, m_spellInfo->Id);
 
-    if (m_caster->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP_ATTACKABLE))
-        pTotem->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP_ATTACKABLE);
+    if (m_caster->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PLAYER_CONTROLLED))
+        pTotem->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PLAYER_CONTROLLED);
 
     if (m_caster->IsPvP())
         pTotem->SetPvP(true);
@@ -6890,8 +6890,8 @@ void Spell::EffectSummonPet(SpellEffectEntry const* effect)
     m_caster->SetPet(NewSummon);
     DEBUG_LOG("New Pet has guid %u", NewSummon->GetGUIDLow());
 
-    if (m_caster->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP_ATTACKABLE))
-        NewSummon->SetUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP_ATTACKABLE);
+    if (m_caster->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PLAYER_CONTROLLED))
+        NewSummon->SetUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_PLAYER_CONTROLLED);
 
     if (m_caster->GetTypeId() == TYPEID_PLAYER)
     {
