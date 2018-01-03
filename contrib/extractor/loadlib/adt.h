@@ -18,9 +18,17 @@ enum LiquidType
 //**************************************************************************************
 // ADT file class
 //**************************************************************************************
+
 #define ADT_CELLS_PER_GRID    16
 #define ADT_CELL_SIZE         8
 #define ADT_GRID_SIZE         (ADT_CELLS_PER_GRID*ADT_CELL_SIZE)
+
+#define fcc_MHDR 0x4d484452 // MHDR
+#define fcc_MCIN 0x4d43494e // MCIN
+#define fcc_MH2O 0x4d48324f // MH2O
+#define fcc_MCNK 0x4d434e4b // MCNK
+#define fcc_MCVT 0x4d435654 // MCVT
+#define fcc_MCLQ 0x4d434c51 // MCLQ
 
 //
 // Adt file height map chunk
@@ -28,12 +36,10 @@ enum LiquidType
 class ADT_file;
 class adt_MCVT
 {
-        union
-        {
-            uint32 fcc;
-            char   fcc_txt[4];
-        };
+    private:
+        uint32 fcc;
         uint32 size;
+
     public:
         float height_map[(ADT_CELL_SIZE + 1) * (ADT_CELL_SIZE + 1) + ADT_CELL_SIZE * ADT_CELL_SIZE];
 
@@ -45,12 +51,10 @@ class adt_MCVT
 //
 class adt_MCLQ
 {
-        union
-        {
-            uint32 fcc;
-            char   fcc_txt[4];
-        };
+    private:
+        uint32 fcc;
         uint32 size;
+
     public:
         float height1;
         float height2;
@@ -76,12 +80,10 @@ class adt_MCLQ
 //
 class adt_MCNK
 {
-        union
-        {
-            uint32 fcc;
-            char   fcc_txt[4];
-        };
+    private:
+        uint32 fcc;
         uint32 size;
+
     public:
         uint32 flags;
         uint32 ix;
@@ -137,12 +139,10 @@ class adt_MCNK
 //
 class adt_MCIN
 {
-        union
-        {
-            uint32 fcc;
-            char   fcc_txt[4];
-        };
+    private:
+        uint32 fcc;
         uint32 size;
+
     public:
         struct adt_CELLS
         {
@@ -184,14 +184,11 @@ struct adt_liquid_header
 //
 class adt_MH2O
 {
-    public:
-        union
-        {
-            uint32 fcc;
-            char   fcc_txt[4];
-        };
+    private:
+        uint32 fcc;
         uint32 size;
 
+    public:
         struct adt_LIQUID
         {
             uint32 offsData1;
@@ -257,15 +254,9 @@ class adt_MH2O
 //
 class adt_MHDR
 {
-        union
-        {
-            uint32 fcc;
-            char   fcc_txt[4];
-        };
-
-    public:
+    private:
+        uint32 fcc;
         uint32 size;
-
         uint32 flags;
         uint32 offsMCIN;           // MCIN
         uint32 offsTex;            // MTEX
