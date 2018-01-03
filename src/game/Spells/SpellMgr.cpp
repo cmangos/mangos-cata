@@ -150,8 +150,13 @@ uint32 GetSpellCastTime(SpellEntry const* spellInfo, Spell const* spell)
             castTime = spellCastTimeEntry->MinCastTime;
     }
     else
-        // not all spells have cast time index and this is all is pasiive abilities
+        // not all spells have cast time index and this is all is passive abilities
         return 0;
+
+    // Multi shot: Only (alternative set CastingTimeIndex = 3)
+    SpellClassOptionsEntry const* classOpt = spellInfo->GetSpellClassOptions();
+    if (spellInfo->HasAttribute(SPELL_ATTR_RANGED) && (classOpt && classOpt->SpellFamilyFlags & 0x0000000000001000) && (!spell || !spell->IsAutoRepeat()))
+        castTime += 500;
 
     if (spell)
     {
@@ -166,9 +171,6 @@ uint32 GetSpellCastTime(SpellEntry const* spellInfo, Spell const* spell)
                 castTime = int32(castTime * spell->GetCaster()->m_modAttackSpeedPct[RANGED_ATTACK]);
         }
     }
-
-    if (spellInfo->HasAttribute(SPELL_ATTR_RANGED) && (!spell || !spell->IsAutoRepeat()))
-        castTime += 500;
 
     return (castTime > 0) ? uint32(castTime) : 0;
 }
