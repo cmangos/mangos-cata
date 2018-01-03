@@ -22,7 +22,7 @@
 #include "ProgressBar.h"
 #include "Globals/SharedDefines.h"
 #include "Server/SQLStorages.h"
-#include "ObjectGuid.h"
+#include "Entities/ObjectGuid.h"
 
 #include "DBCfmt.h"
 

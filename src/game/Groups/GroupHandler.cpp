@@ -25,6 +25,7 @@
 #include "World/World.h"
 #include "Globals/ObjectMgr.h"
 #include "Entities/Player.h"
+#include "Spells/SpellAuras.h"
 #include "Groups/Group.h"
 #include "Social/SocialMgr.h"
 #include "Util.h"
@@ -170,7 +171,7 @@ void WorldSession::HandleGroupInviteOpcode(WorldPacket& recv_data)
         SendPartyResult(PARTY_OP_INVITE, membername, ERR_ALREADY_IN_GROUP_S);
 
         // tell the player that they were invited but it failed as they were already in a group
-        player->GetSession()->SendGroupInvite(recipient, true);
+        recipient->GetSession()->SendGroupInvite(recipient, true);
 
         return;
     }
@@ -219,7 +220,7 @@ void WorldSession::HandleGroupInviteOpcode(WorldPacket& recv_data)
         }
     }
 
-    player->GetSession()->SendGroupInvite(recipient);
+    recipient->GetSession()->SendGroupInvite(recipient);
     SendPartyResult(PARTY_OP_INVITE, membername, ERR_PARTY_RESULT_OK);
 }
 

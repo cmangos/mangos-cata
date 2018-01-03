@@ -27,7 +27,7 @@
 #include "Entities/Item.h"
 #include "Spells/Spell.h"
 #include "Social/SocialMgr.h"
-#include "Language.h"
+#include "Tools/Language.h"
 #include "Server/DBCStores.h"
 
 void WorldSession::SendTradeStatus(TradeStatus status)

@@ -44,10 +44,8 @@
 #include "Util.h"
 #include "Chat/Chat.h"
 #include "Server/DB2Stores.h"
-#include "Server/SQLStorages.h"
 #include "Entities/Vehicle.h"
 #include "Entities/TemporarySummon.h"
-#include "Server/SQLStorages.h"
 #include "MotionGenerators/PathFinder.h"
 
 extern pEffect SpellEffects[TOTAL_SPELL_EFFECTS];
@@ -8436,7 +8434,7 @@ void Spell::GetSpellRangeAndRadius(SpellEffectEntry const* spellEffect, float& r
         }
     }
 
-    switch (m_spellInfo->SpellFamilyName)
+    switch (m_spellInfo->GetSpellFamilyName())
     {
         case SPELLFAMILY_PALADIN:
             if (m_spellInfo->Id == 20424)                   // Seal of Command (2 more target for single targeted spell)

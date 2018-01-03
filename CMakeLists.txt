@@ -15,7 +15,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-project(CMaNGOS_WoTLK)
+project(CMaNGOS_Cataclysm)
 
 # Define here name of the binaries
 set(CMANGOS_BINARY_SERVER_NAME "mangosd")
@@ -226,6 +226,8 @@ if(WIN32)
   set(ZLIB_LIBRARIES "z")
   set(BZIP2_INCLUDE_DIRS "${CMAKE_SOURCE_DIR}/dep/src/bzip2")
   set(BZIP2_LIBRARIES "bzip2")
+  set(STORMLIB_INCLUDE_DIRS "${CMAKE_SOURCE_DIR}/dep/StormLib")
+  set(STORMLIB_LIBRARIES "storm")
 endif()
 
 # *nix-specific packages

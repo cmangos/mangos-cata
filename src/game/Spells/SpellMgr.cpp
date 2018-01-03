@@ -750,7 +750,7 @@ bool IsSingleTargetSpells(SpellEntry const* spellInfo1, SpellEntry const* spellI
 uint32 GetAffectedTargets(SpellEntry const * spellInfo, Unit * caster)
 {
     // custom target amount cases
-    switch (spellInfo->SpellFamilyName)
+    switch (spellInfo->GetSpellFamilyName())
     {
         case SPELLFAMILY_GENERIC:
         {
@@ -993,7 +993,7 @@ uint32 GetAffectedTargets(SpellEntry const * spellInfo, Unit * caster)
             break;
     }
 
-    return spellInfo->MaxAffectedTargets;
+    return spellInfo->GetMaxAffectedTargets();
 }
 
 SpellCastResult GetErrorAtShapeshiftedCast(SpellEntry const* spellInfo, uint32 form)

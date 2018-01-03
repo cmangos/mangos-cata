@@ -34,6 +34,6 @@ if (APPLE)
   add_definitions("-Dftello64=ftello")
 endif()
 
-include_directories(${CMAKE_SOURCE_DIR}/dep/libmpq)
+include_directories(${CMAKE_SOURCE_DIR}/dep/StormLib)
 
 add_subdirectory(vmapextract)

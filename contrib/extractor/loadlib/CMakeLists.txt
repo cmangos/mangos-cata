@@ -12,5 +12,5 @@
 add_compile_options(-w)
 
 add_library (loadlib STATIC loadlib.cpp  adt.cpp  wdt.cpp)
-# link loadlib with zlib
-target_link_libraries (loadlib z)
+# link loadlib with zlib and StormLib
+target_link_libraries (loadlib z storm)

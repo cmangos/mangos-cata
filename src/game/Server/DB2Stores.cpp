@@ -21,8 +21,8 @@
 #include "Policies/Singleton.h"
 #include "Log.h"
 #include "ProgressBar.h"
-#include "SharedDefines.h"
-#include "ObjectGuid.h"
+#include "Globals/SharedDefines.h"
+#include "Entities/ObjectGuid.h"
 
 #include "DB2fmt.h"
 

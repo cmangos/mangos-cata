@@ -36,7 +36,7 @@
 #include "Entities/Object.h"
 #include "BattleGround/BattleGround.h"
 #include "OutdoorPvP/OutdoorPvP.h"
-#include "Guild.h"
+#include "Guilds/Guild.h"
 #include "Entities/Pet.h"
 #include "Social/SocialMgr.h"
 #include "Server/DBCEnums.h"

@@ -34,6 +34,7 @@
 #include "Skills/SkillDiscovery.h"
 #include "Accounts/AccountMgr.h"
 #include "Achievements/AchievementMgr.h"
+#include "Arena/ArenaTeam.h"
 #include "AuctionHouse/AuctionHouseMgr.h"
 #include "Globals/ObjectMgr.h"
 #include "AI/EventAI/CreatureEventAIMgr.h"

@@ -1008,7 +1008,7 @@ struct FactionTemplateEntry
         }
         return (enemyGroupMask & entry.factionGroupMask) != 0;
     }
-    bool IsHostileToPlayers() const { return (hostileMask & FACTION_MASK_PLAYER) !=0; }
+    bool IsHostileToPlayers() const { return (enemyGroupMask & FACTION_GROUP_MASK_PLAYER) !=0; }
     bool IsNeutralToAll() const
     {
         for(int i = 0; i < 4; ++i)
