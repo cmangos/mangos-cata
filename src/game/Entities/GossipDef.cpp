@@ -485,25 +485,27 @@ void PlayerMenu::SendQuestGiverQuestDetails(Quest const* pQuest, ObjectGuid guid
     }
     else*/
     {
-        data << uint32(pQuest->GetRewChoiceItemsCount());
+        uint32 rewChocieItemCount = pQuest->GetRewChoiceItemsCount();
+        data << uint32(rewChocieItemCount);
 
-        for (uint32 i = 0; i < QUEST_REWARD_CHOICES_COUNT; ++i)
+        for (uint32 i = 0; i < rewChocieItemCount; ++i)
             data << uint32(pQuest->RewChoiceItemId[i]);
-        for (uint32 i = 0; i < QUEST_REWARD_CHOICES_COUNT; ++i)
+        for (uint32 i = 0; i < rewChocieItemCount; ++i)
             data << uint32(pQuest->RewChoiceItemCount[i]);
-        for (uint32 i = 0; i < QUEST_REWARD_CHOICES_COUNT; ++i)
+        for (uint32 i = 0; i < rewChocieItemCount; ++i)
             if (ItemPrototype const* IProto = ObjectMgr::GetItemPrototype(pQuest->RewChoiceItemId[i]))
                 data << uint32(IProto->DisplayInfoID);
             else
                 data << uint32(0);
 
-        data << uint32(pQuest->GetRewItemsCount());
+        uint32 rewItemCount = pQuest->GetRewItemsCount();
+        data << uint32(rewItemCount);
 
-        for (uint32 i = 0; i < QUEST_REWARDS_COUNT; ++i)
+        for (uint32 i = 0; i < rewItemCount; ++i)
             data << uint32(pQuest->RewItemId[i]);
-        for (uint32 i = 0; i < QUEST_REWARDS_COUNT; ++i)
+        for (uint32 i = 0; i < rewItemCount; ++i)
             data << uint32(pQuest->RewItemCount[i]);
-        for (uint32 i = 0; i < QUEST_REWARDS_COUNT; ++i)
+        for (uint32 i = 0; i < rewItemCount; ++i)
             if (ItemPrototype const* IProto = ObjectMgr::GetItemPrototype(pQuest->RewItemId[i]))
                 data << uint32(IProto->DisplayInfoID);
             else
@@ -548,9 +550,10 @@ void PlayerMenu::SendQuestGiverQuestDetails(Quest const* pQuest, ObjectGuid guid
     data << uint32(pQuest->GetRewSkill());
     data << uint32(pQuest->GetRewSkillValue());
 
-    data << uint32(QUEST_EMOTE_COUNT);
+    uint32 detailsEmotesCount = pQuest->GetDetailsEmoteCount();
+    data << uint32(detailsEmotesCount);
 
-    for (uint32 i = 0; i < QUEST_EMOTE_COUNT; ++i)
+    for (uint32 i = 0; i < detailsEmotesCount; ++i)
     {
         data << uint32(pQuest->DetailsEmote[i]);
         data << uint32(pQuest->DetailsEmoteDelay[i]);       // DetailsEmoteDelay (in ms)
