@@ -2124,7 +2124,7 @@ void Creature::SetInCombatWithZone()
     }
 }
 
-bool Creature::MeetsSelectAttackingRequirement(Unit* pTarget, SpellEntry const* pSpellInfo, uint32 selectFlags) const
+bool Creature::MeetsSelectAttackingRequirement(Unit* pTarget, SpellEntry const* pSpellInfo, uint32 selectFlags, SelectAttackingTargetParams params) const
 {
     if (selectFlags)
     {
@@ -2190,12 +2190,12 @@ bool Creature::MeetsSelectAttackingRequirement(Unit* pTarget, SpellEntry const* 
     return true;
 }
 
-Unit* Creature::SelectAttackingTarget(AttackingTarget target, uint32 position, uint32 uiSpellEntry, uint32 selectFlags) const
+Unit* Creature::SelectAttackingTarget(AttackingTarget target, uint32 position, uint32 uiSpellEntry, uint32 selectFlags, SelectAttackingTargetParams params /*= SelectAttackingTargetParams()*/) const
 {
     return SelectAttackingTarget(target, position, sSpellStore.LookupEntry(uiSpellEntry), selectFlags);
 }
 
-Unit* Creature::SelectAttackingTarget(AttackingTarget target, uint32 position, SpellEntry const* pSpellInfo /*= nullptr*/, uint32 selectFlags/*= 0*/) const
+Unit* Creature::SelectAttackingTarget(AttackingTarget target, uint32 position, SpellEntry const* pSpellInfo /*= nullptr*/, uint32 selectFlags/*= 0*/, SelectAttackingTargetParams params /*= SelectAttackingTargetParams()*/) const
 {
     if (!CanHaveThreatList())
         return nullptr;
@@ -2220,7 +2220,7 @@ Unit* Creature::SelectAttackingTarget(AttackingTarget target, uint32 position, S
             {
                 if (Unit* pTarget = GetMap()->GetUnit((*itr)->getUnitGuid()))
                 {
-                    if ((!selectFlags && !pSpellInfo) || MeetsSelectAttackingRequirement(pTarget, pSpellInfo, selectFlags))
+                    if ((!selectFlags && !pSpellInfo) || MeetsSelectAttackingRequirement(pTarget, pSpellInfo, selectFlags, params))
                         suitableUnits.push_back(pTarget);
                 }
             }
@@ -2239,7 +2239,7 @@ Unit* Creature::SelectAttackingTarget(AttackingTarget target, uint32 position, S
             {
                 if (Unit* pTarget = GetMap()->GetUnit((*itr)->getUnitGuid()))
                 {
-                    if ((!selectFlags && !pSpellInfo) || MeetsSelectAttackingRequirement(pTarget, pSpellInfo, selectFlags))
+                    if ((!selectFlags && !pSpellInfo) || MeetsSelectAttackingRequirement(pTarget, pSpellInfo, selectFlags, params))
                         return pTarget;
                 }
             }
@@ -2257,7 +2257,7 @@ Unit* Creature::SelectAttackingTarget(AttackingTarget target, uint32 position, S
             {
                 if (Unit* pTarget = GetMap()->GetUnit((*ritr)->getUnitGuid()))
                 {
-                    if ((!selectFlags && !pSpellInfo) || MeetsSelectAttackingRequirement(pTarget, pSpellInfo, selectFlags))
+                    if ((!selectFlags && !pSpellInfo) || MeetsSelectAttackingRequirement(pTarget, pSpellInfo, selectFlags, params))
                         return pTarget;
                 }
             }
@@ -2273,7 +2273,7 @@ Unit* Creature::SelectAttackingTarget(AttackingTarget target, uint32 position, S
             {
                 if (Unit* pTarget = GetMap()->GetUnit((*itr)->getUnitGuid()))
                 {
-                    if ((!selectFlags && !pSpellInfo) || MeetsSelectAttackingRequirement(pTarget, pSpellInfo, selectFlags))
+                    if ((!selectFlags && !pSpellInfo) || MeetsSelectAttackingRequirement(pTarget, pSpellInfo, selectFlags, params))
                         suitableUnits.push_back(pTarget);
                 }
             }
