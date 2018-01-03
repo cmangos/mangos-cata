@@ -68,18 +68,19 @@
 #include "Calendar/Calendar.h"
 #include "Loot/LootMgr.h"
 
-// ------ Playerbot mod ------ //
-#include "PlayerBot/Base/PlayerbotAI.h"
-#include "PlayerBot/Base/PlayerbotMgr.h"
-#include "Config/Config.h"
-// ---- End Playerbot mod ---- //
+#ifdef BUILD_PLAYERBOT
+    #include "PlayerBot/Base/PlayerbotAI.h"
+    #include "PlayerBot/Base/PlayerbotMgr.h"
+    #include "Config/Config.h"
+#endif
 
 #include <cmath>
 
 #define ZONE_UPDATE_INTERVAL (1*IN_MILLISECONDS)
 
-// ------ Playerbot mod ------ //
-extern Config botConfig;
+#ifdef BUILD_PLAYERBOT
+    extern Config botConfig;
+#endif
 
 enum CharacterFlags
 {
@@ -390,11 +391,10 @@ Player::Player(WorldSession* session): Unit(), m_mover(this), m_camera(this), m_
 {
     m_transport = nullptr;
 
-    // ------ Playerbot mod ------ //
+#ifdef BUILD_PLAYERBOT
     m_playerbotAI = 0;
     m_playerbotMgr = 0;
-    // ---- End Playerbot mod ---- //
-
+#endif
     m_speakTime = 0;
     m_speakCount = 0;
 
@@ -622,7 +622,7 @@ Player::~Player()
     delete m_declinedname;
     delete m_runes;
 
-    // ------ Playerbot mod ------ //
+#ifdef BUILD_PLAYERBOT
     if (m_playerbotAI)
     {
         delete m_playerbotAI;
@@ -633,7 +633,7 @@ Player::~Player()
         delete m_playerbotMgr;
         m_playerbotMgr = 0;
     }
-    // ---- End Playerbot mod ---- //
+#endif
 }
 
 void Player::CleanupsBeforeDelete()
@@ -1444,12 +1444,12 @@ void Player::Update(uint32 update_diff, uint32 p_time)
     if (IsHasDelayedTeleport())
         TeleportTo(m_teleport_dest, m_teleport_options);
 
-    // ------ Playerbot mod ------ //
+#ifdef BUILD_PLAYERBOT
     if (m_playerbotAI)
         m_playerbotAI->UpdateAI(p_time);
     else if (m_playerbotMgr)
         m_playerbotMgr->UpdateAI(p_time);
-    // ---- End Playerbot mod ---- //
+#endif
 }
 
 void Player::SetDeathState(DeathState s)
@@ -1754,12 +1754,12 @@ bool Player::TeleportTo(uint32 mapid, float x, float y, float z, float orientati
 
     MapEntry const* mEntry = sMapStore.LookupEntry(mapid);  // Validity checked in IsValidMapCoord
 
-    // ------ Playerbot mod ------ //
+#ifdef BUILD_PLAYERBOT
     // If this user has bots, tell them to stop following master
     // so they don't try to follow the master after the master teleports
     if (GetPlayerbotMgr())
         GetPlayerbotMgr()->Stay();
-    // ---- End Playerbot mod ---- //
+#endif
 
     // don't let enter battlegrounds without assigned battleground id (for example through areatrigger)...
     // don't let gm level > 1 either
@@ -12431,7 +12431,7 @@ void Player::PrepareGossipMenu(WorldObject* pSource, uint32 menuId)
                 case GOSSIP_OPTION_AUCTIONEER:
                 case GOSSIP_OPTION_MAILBOX:
                     break;                                  // no checks
-                // ------ Playerbot mod ------ //
+#ifdef BUILD_PLAYERBOT
                 case GOSSIP_OPTION_BOT:
                 {
                     if(botConfig.GetBoolDefault("PlayerbotAI.DisableBots", false) && !pCreature->isInnkeeper())
@@ -12448,7 +12448,7 @@ void Player::PrepareGossipMenu(WorldObject* pSource, uint32 menuId)
                     hasMenuItem = false;
                     break;
                 }
-                // ---- End Playerbot mod ---- //
+#endif
                 default:
                     sLog.outErrorDb("Creature entry %u have unknown gossip option %u for menu %u", pCreature->GetEntry(), gossipMenu.option_id, gossipMenu.menu_id);
                     hasMenuItem = false;
@@ -12694,7 +12694,7 @@ void Player::OnGossipSelect(WorldObject* pSource, uint32 gossipListId, uint32 me
             GetSession()->SendBattlegGroundList(guid, bgTypeId);
             break;
         }
-        // ------ Playerbot mod ------ //
+#ifdef BUILD_PLAYERBOT
         case GOSSIP_OPTION_BOT:
         {
             // DEBUG_LOG("GOSSIP_OPTION_BOT");
@@ -12748,7 +12748,7 @@ void Player::OnGossipSelect(WorldObject* pSource, uint32 gossipListId, uint32 me
             }
             return;
         }
-        // ---- End Playerbot mod ---- //
+#endif
     }
 
     if (pMenuData.m_gAction_script)

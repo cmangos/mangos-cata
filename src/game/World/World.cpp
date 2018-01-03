@@ -1415,9 +1415,9 @@ void World::SetInitialWorldSettings()
     sAuctionBot.Initialize();
     sLog.outString();
 
-    // ------ Playerbot mod ------ //
+#ifdef BUILD_PLAYERBOT
     PlayerbotMgr::SetInitialWorldSettings();
-
+#endif
     sLog.outString("---------------------------------------");
     sLog.outString("      CMANGOS: World initialized       ");
     sLog.outString("---------------------------------------");
