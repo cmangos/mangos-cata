@@ -852,14 +852,14 @@ void Spell::EffectDummy(SpellEffectEntry const* effect)
 
                     return;
                 }
-                case 8606: //Summon Cyclonian
+                case 8606:                                  //Summon Cyclonian
                 {
                     if (!(m_targets.m_targetMask & TARGET_FLAG_DEST_LOCATION))
                         return;
 
                     float x, y, z;
                     m_targets.getDestination(x, y, z); // database loaded coordinates due to target type
-                    Creature* pCreature = m_caster->SummonCreature(6239, x, y, z, 0.0f, TEMPSUMMON_TIMED_OOC_DESPAWN, 30 * IN_MILLISECONDS);
+                    m_caster->SummonCreature(6239, x, y, z, 0.0f, TEMPSUMMON_TIMED_OOC_DESPAWN, 30 * IN_MILLISECONDS);
 
                     return;
                 }
