@@ -133,8 +133,7 @@ bool FileLoader::prepareLoadedData()
 {
     // Check version
     version = (file_MVER*) data;
-
-    if (version->fcc != 'MVER')
+    if (version->fcc != uint32('MVER'))
         return false;
 
     if (version->ver != FILE_FORMAT_VERSION)
