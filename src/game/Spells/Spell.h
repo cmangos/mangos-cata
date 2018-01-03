@@ -464,6 +464,7 @@ class Spell
         bool m_ignoreHitResult;
         bool m_ignoreUnselectableTarget;
         bool m_ignoreUnattackableTarget;
+        bool m_triggerAutorepeat;
 
         int32 GetCastTime() const { return m_casttime; }
         uint32 GetCastedTime() { return m_timer; }
