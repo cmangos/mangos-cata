@@ -1211,6 +1211,17 @@ inline bool IsPositiveSpell(uint32 spellId, const WorldObject* caster = nullptr,
     return IsPositiveSpell(sSpellStore.LookupEntry(spellId), caster, target);
 }
 
+inline bool IsSpellDoNotReportFailure(SpellEntry const* spellInfo)
+{
+    switch (spellInfo->Id)
+    {
+        case 32172:     // Thrallmars/Honor holds favor trigger spell
+            return true;
+        default:
+            return false;
+    }
+}
+
 inline bool IsDispelSpell(SpellEntry const* spellInfo)
 {
     return IsSpellHaveEffect(spellInfo, SPELL_EFFECT_DISPEL);
