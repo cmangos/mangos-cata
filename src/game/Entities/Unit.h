@@ -1628,7 +1628,7 @@ class Unit : public WorldObject
         void Unmount(bool from_aura = false);
         MountCapabilityEntry const* GetMountCapability(uint32 mountType) const;
 
-        VehicleInfo* GetVehicleInfo() { return m_vehicleInfo; }
+        VehicleInfo* GetVehicleInfo() const { return m_vehicleInfo; }
         bool IsVehicle() const { return m_vehicleInfo != nullptr; }
         void SetVehicleId(uint32 entry, uint32 overwriteNpcEntry);
 
