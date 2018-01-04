@@ -253,7 +253,7 @@ void PlayerbotMgr::HandleMasterIncomingPacket(const WorldPacket& packet)
                         flight->Interrupt(*bot);                // will reset at map landing
 
                         flight->SetCurrentNodeAfterTeleport();
-                        TaxiPathNodeEntry const& node = flight->GetPath()[flight->GetCurrentNode()];
+                        TaxiPathNodeEntry const& node = *flight->GetPath()[flight->GetCurrentNode()];
                         flight->SkipCurrentNode();
 
                         bot->TeleportTo(curDestNode->map_id, node.x, node.y, node.z, bot->GetOrientation());
