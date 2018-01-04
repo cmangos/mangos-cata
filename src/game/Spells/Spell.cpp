@@ -907,6 +907,12 @@ void Spell::prepareDataForTriggerSystem()
     // Gives your Immolation Trap, Frost Trap, Explosive Trap, and Snake Trap ....
     if (m_spellInfo->IsFitToFamily(SPELLFAMILY_HUNTER, uint64(0x000020000000001C)))
         m_procAttacker |= PROC_FLAG_ON_TRAP_ACTIVATION;
+
+    if (IsNextMeleeSwingSpell())
+    {
+        m_procAttacker |= PROC_FLAG_SUCCESSFUL_MELEE_HIT;
+        m_procVictim |= PROC_FLAG_TAKEN_MELEE_HIT;
+    }
 }
 
 void Spell::CleanupTargetList()
