@@ -7778,12 +7778,6 @@ bool Spell::CheckTarget(Unit* target, SpellEffectIndex eff)
                 spellEffect->EffectImplicitTargetA != TARGET_NARROW_FRONTAL_CONE_2 &&
                 spellEffect->EffectImplicitTargetB != TARGET_NARROW_FRONTAL_CONE_2)
                 return false;
-
-            SQLMultiStorage::SQLMSIteratorBounds<SpellTargetEntry> bounds = sSpellScriptTargetStorage.getBounds<SpellTargetEntry>(m_spellInfo->Id);
-
-            // Experimental: Test out TC theory that this flag should be Immune to Player
-            if (bounds.first == bounds.second && target->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_OOC_NOT_ATTACKABLE) && m_caster->GetTypeId() == TYPEID_PLAYER)
-                return false;
         }
 
         // Check player targets and remove if in GM mode or GM invisibility (for not self casting case)
@@ -7840,7 +7834,7 @@ bool Spell::CheckTarget(Unit* target, SpellEffectIndex eff)
             {
                 if (target != m_caster)
                 {
-                    if (m_spellInfo->EffectImplicitTargetA[eff] == TARGET_DYNAMIC_OBJECT_COORDINATES)
+                    if (spellEffect->EffectImplicitTargetA == TARGET_DYNAMIC_OBJECT_COORDINATES)
                     {
                         if (DynamicObject* dynObj = m_caster->GetDynObject(m_triggeredByAuraSpell ? m_triggeredByAuraSpell->Id : m_spellInfo->Id))
                             if (!target->IsWithinLOSInMap(dynObj))

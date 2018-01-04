@@ -76,7 +76,7 @@ struct npc_hoggerAI : public ScriptedAI
         // start epilogue event
         if (m_bEncounterFinished)
         {
-            m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_OOC_NOT_ATTACKABLE);
+            m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PLAYER);
             m_creature->GetMotionMaster()->MoveWaypoint();
         }
         else
@@ -88,24 +88,6 @@ struct npc_hoggerAI : public ScriptedAI
         }
 
         m_creature->SetLootRecipient(NULL);
-    }
-
-    void AttackStart(Unit* pWho) override
-    {
-        // special case for epilogue
-        if (m_creature->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_OOC_NOT_ATTACKABLE))
-            return;
-
-        ScriptedAI::AttackStart(pWho);
-    }
-
-    void MoveInLineOfSight(Unit* pWho) override
-    {
-        // special case for epilogue
-        if (m_creature->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_OOC_NOT_ATTACKABLE))
-            return;
-
-        ScriptedAI::MoveInLineOfSight(pWho);
     }
 
     void MovementInform(uint32 uiMoveType, uint32 uiPointId) override
