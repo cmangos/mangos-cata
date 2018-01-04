@@ -10420,7 +10420,7 @@ void Spell::EffectSanctuary(SpellEffectEntry const* /*effect*/)
         return;
     // unitTarget->CombatStop();
 
-    unitTarget->CombatStop();
+    unitTarget->CombatStop(false, false);
     unitTarget->getHostileRefManager().deleteReferences();  // stop all fighting
 
     // Vanish allows to remove all threat and cast regular stealth so other spells can be used
