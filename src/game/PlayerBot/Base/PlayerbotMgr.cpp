@@ -236,7 +236,7 @@ void PlayerbotMgr::HandleMasterIncomingPacket(const WorldPacket& packet)
                 // 1) end taxi path in far (multi-node) flight
                 // 2) switch from one map to other in case multi-map taxi path
                 // we need process only (1)
-                uint32 curDest = bot->m_taxi.GetTaxiDestination();
+                uint32 curDest = bot->m_taxi.GetNextTaxiDestination();
                 if (!curDest)
                     return;
 
