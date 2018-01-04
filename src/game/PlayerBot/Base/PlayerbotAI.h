@@ -1829,7 +1829,6 @@ public:
 
     bool CanReceiveSpecificSpell(uint8 spec, Unit* target) const;
 
-    bool HasTool(uint32 TC);
     bool PickPocket(Unit* pTarget);
     bool HasSpellReagents(uint32 spellId);
     void ItemCountInInv(uint32 itemid, uint32 &count);
@@ -2108,7 +2107,6 @@ private:
     ObjectGuid m_lootPrev;              // previous loot
     BotEntryList m_collectObjects;      // object entries searched for in findNearbyGO
     BotTaxiNode m_taxiNodes;            // flight node chain
-    BotEntryList m_noToolList;          // list of required tools
     BotObjectList m_being_rolled_on;    // list of targets currently involved in item rolls
 
     uint8 m_collectionFlags;            // what the bot should look for to loot

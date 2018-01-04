@@ -715,7 +715,7 @@ inline bool HasPersistentAuraEffect(SpellEntry const* spellInfo)
     {
         SpellEffectEntry const* spellEffect = spellInfo->GetSpellEffect(SpellEffectIndex(i));
         if (!spellEffect)
-            return false;;
+            return false;
 
         if (IsPersistentAuraEffect(spellEffect))
             return true;

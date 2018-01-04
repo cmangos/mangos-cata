@@ -393,9 +393,9 @@ CombatManeuverReturns PlayerbotPriestAI::HealPlayer(Player* target)
         for (Unit::SpellAuraHolderMap::const_iterator itr = auras.begin(); itr != auras.end(); ++itr)
         {
             SpellAuraHolder *holder = itr->second;
-            if ((1 << holder->GetSpellProto()->Dispel) & dispelMask)
+            if ((1 << holder->GetSpellProto()->GetDispel()) & dispelMask)
             {
-                if (holder->GetSpellProto()->Dispel == DISPEL_DISEASE)
+                if (holder->GetSpellProto()->GetDispel() == DISPEL_DISEASE)
                 {
                     m_ai->CastSpell(CURE_DISEASE, *target);
                     return RETURN_CONTINUE;

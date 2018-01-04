@@ -313,27 +313,27 @@ CombatManeuverReturns PlayerbotShamanAI::HealPlayer(Player* target)
         for (Unit::SpellAuraHolderMap::const_iterator itr = auras.begin(); itr != auras.end(); ++itr)
         {
             SpellAuraHolder *holder = itr->second;
-            if ((1 << holder->GetSpellProto()->Dispel) & dispelMask)
+            if ((1 << holder->GetSpellProto()->GetDispel()) & dispelMask)
             {
-                if (holder->GetSpellProto()->Dispel == DISPEL_POISON)
+                if (holder->GetSpellProto()->GetDispel() == DISPEL_POISON)
                 {
                     if (m_ai->CastSpell(DISPEL, *target))
                         return RETURN_CONTINUE;
                     return RETURN_NO_ACTION_ERROR;
                 }
             }
-            else if ((1 << holder->GetSpellProto()->Dispel) & dispelMask2)
+            else if ((1 << holder->GetSpellProto()->GetDispel()) & dispelMask2)
             {
-                if (holder->GetSpellProto()->Dispel == DISPEL_DISEASE)
+                if (holder->GetSpellProto()->GetDispel() == DISPEL_DISEASE)
                 {
                     if (m_ai->CastSpell(DISPEL, *target))
                         return RETURN_CONTINUE;
                     return RETURN_NO_ACTION_ERROR;
                 }
             }
-            else if ((1 << holder->GetSpellProto()->Dispel) & dispelMask3 & (DISPEL == CLEANSE_SPIRIT))
+            else if ((1 << holder->GetSpellProto()->GetDispel()) & dispelMask3 & (DISPEL == CLEANSE_SPIRIT))
             {
-                if (holder->GetSpellProto()->Dispel == DISPEL_CURSE)
+                if (holder->GetSpellProto()->GetDispel() == DISPEL_CURSE)
                 {
                     if (m_ai->CastSpell(DISPEL, *target))
                         return RETURN_CONTINUE;

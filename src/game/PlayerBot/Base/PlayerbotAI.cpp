@@ -253,7 +253,10 @@ uint32 PlayerbotAI::getSpellId(const char* args, bool master) const
             continue;
 
         bool isExactMatch = (name.length() == wnamepart.length()) ? true : false;
-        bool usesNoReagents = (pSpellInfo->Reagent[0] <= 0) ? true : false;
+        SpellReagentsEntry const* spellReagents = pSpellInfo->GetSpellReagents();
+        if (!spellReagents)
+            continue;
+        bool usesNoReagents = (spellReagents->Reagent[0] <= 0) ? true : false;
 
         // if we already found a spell
         bool useThisSpell = true;
@@ -316,7 +319,10 @@ uint32 PlayerbotAI::getPetSpellId(const char* args) const
             continue;
 
         bool isExactMatch = (name.length() == wnamepart.length()) ? true : false;
-        bool usesNoReagents = (pSpellInfo->Reagent[0] <= 0) ? true : false;
+        SpellReagentsEntry const* spellReagents = pSpellInfo->GetSpellReagents();
+        if (!spellReagents)
+            continue;
+        bool usesNoReagents = (spellReagents->Reagent[0] <= 0) ? true : false;
 
         // if we already found a spell
         bool useThisSpell = true;
@@ -362,6 +368,9 @@ uint32 PlayerbotAI::initSpell(uint32 spellId)
     if (next == 0)
     {
         const SpellEntry* const pSpellInfo = sSpellTemplate.LookupEntry<SpellEntry>(spellId);
+        if (!pSpellInfo)
+            return spellId;
+
         DEBUG_LOG ("[PlayerbotAI]: initSpell - Playerbot spell init: %s is %u", pSpellInfo->SpellName[0], spellId);
 
         // Add spell to spellrange map
@@ -596,11 +605,11 @@ void PlayerbotAI::AutoUpgradeEquipment() // test for autoequip
         if (!pItem2) // no item to compare to see if has stats useful for this bots class/style so check for stats and equip if possible
         {
             ItemPrototype const *pProto2 = pItem->GetProto();
-            if (pProto2->StatsCount > 0)
-            {
+            //if (pProto2->StatsCount > 0)
+            //{
                 if (!ItemStatComparison(pProto2, pProto2))
                     continue;
-            }
+            //}
             EquipItem(pItem); // no item equipped so equip new one and go to next item.
             continue;
         }
@@ -630,11 +639,11 @@ void PlayerbotAI::AutoUpgradeEquipment() // test for autoequip
                 if (!pItem2)
                 {
                     ItemPrototype const *pProto2 = pItem->GetProto();
-                    if (pProto2->StatsCount > 0)
-                    {
+                    //if (pProto2->StatsCount > 0)
+                    //{
                         if (!ItemStatComparison(pProto2, pProto2))
                             continue;
-                    }
+                    //}
 
                     EquipItem(pItem); //no item equipped so equip new one if useable stats and go to next item.
                     continue;
@@ -672,39 +681,39 @@ void PlayerbotAI::AutoEquipComparison(Item *pItem, Item *pItem2)
     case ITEM_CLASS_ARMOR:
         {
             // now in case they are same itemlevel, but one is better than the other..
-            if (pProto->ItemLevel == pProto2->ItemLevel && pProto->Quality < pProto2->Quality && pProto->Armor <= pProto2->Armor &&
+            if (pProto->ItemLevel == pProto2->ItemLevel && pProto->Quality < pProto2->Quality && pProto->GetArmor() <= pProto2->GetArmor() &&
                 m_bot->HasSkill(item_armor_skills[pProto2->SubClass]) && !m_bot->HasSkill(item_armor_skills[pProto2->SubClass + 1])) // itemlevel + armour + armour class
             {
                 // First check to see if this item has stats, and if the bot REALLY wants to lose its old item
-                if (pProto2->StatsCount > 0)
-                {
+                //if (pProto2->StatsCount > 0)
+                //{
                     if (!ItemStatComparison(pProto, pProto2))
                         return; // stats on equipped item are better, OR stats are not useful for this bots class/style
-                }
+                //}
                 EquipItem(pItem);
                 break;
             }
-            if (pProto->ItemLevel <= pProto2->ItemLevel && pProto->Quality < pProto2->Quality && pProto->Armor > pProto2->Armor &&
+            if (pProto->ItemLevel <= pProto2->ItemLevel && pProto->Quality < pProto2->Quality && pProto->GetArmor() > pProto2->GetArmor() &&
                 m_bot->HasSkill(item_armor_skills[pProto2->SubClass]) && !m_bot->HasSkill(item_armor_skills[pProto2->SubClass + 1])) // itemlevel + armour + armour class
             {
                 // First check to see if this item has stats, and if the bot REALLY wants to lose its old item
-                if (pProto2->StatsCount > 0)
-                {
+                //if (pProto2->StatsCount > 0)
+                //{
                     if (!ItemStatComparison(pProto, pProto2))
                         return; // stats on equipped item are better, OR stats are not useful for this bots class/style
-                }
+                //}
                 EquipItem(pItem);
                 break;
             }
-            if (pProto->ItemLevel <= pProto2->ItemLevel && pProto->Armor <= pProto2->Armor && m_bot->HasSkill(item_armor_skills[pProto2->SubClass]) &&
+            if (pProto->ItemLevel <= pProto2->ItemLevel && pProto->GetArmor() <= pProto2->GetArmor() && m_bot->HasSkill(item_armor_skills[pProto2->SubClass]) &&
                 !m_bot->HasSkill(item_armor_skills[pProto2->SubClass + 1])) // itemlevel + armour + armour class
             {
                 // First check to see if this item has stats, and if the bot REALLY wants to lose its old item
-                if (pProto2->StatsCount > 0)
-                {
+                //if (pProto2->StatsCount > 0)
+                //{
                     if (!ItemStatComparison(pProto, pProto2))
                         return; // stats on equipped item are better, OR stats are not useful for this bots class/style
-                }
+                //}
                 EquipItem(pItem);
                 break;
             }
@@ -757,10 +766,10 @@ bool PlayerbotAI::ItemStatComparison(const ItemPrototype *pProto, const ItemProt
                 continue;
         }
         // caster stats
-        if (itemmod == ITEM_MOD_MANA || itemmod == ITEM_MOD_INTELLECT || itemmod == ITEM_MOD_SPIRIT || itemmod == ITEM_MOD_HIT_SPELL_RATING ||
+        if (itemmod == ITEM_MOD_INTELLECT || itemmod == ITEM_MOD_SPIRIT || itemmod == ITEM_MOD_HIT_SPELL_RATING ||
             itemmod == ITEM_MOD_CRIT_SPELL_RATING || itemmod == ITEM_MOD_HASTE_SPELL_RATING || itemmod == ITEM_MOD_SPELL_DAMAGE_DONE ||
             itemmod == ITEM_MOD_MANA_REGENERATION || itemmod == ITEM_MOD_SPELL_POWER || itemmod == ITEM_MOD_SPELL_PENETRATION ||
-            itemmod2 == ITEM_MOD_MANA || itemmod2 == ITEM_MOD_INTELLECT || itemmod2 == ITEM_MOD_SPIRIT || itemmod2 == ITEM_MOD_HIT_SPELL_RATING ||
+            itemmod2 == ITEM_MOD_INTELLECT || itemmod2 == ITEM_MOD_SPIRIT || itemmod2 == ITEM_MOD_HIT_SPELL_RATING ||
             itemmod2 == ITEM_MOD_CRIT_SPELL_RATING || itemmod2 == ITEM_MOD_HASTE_SPELL_RATING || itemmod2 == ITEM_MOD_SPELL_DAMAGE_DONE ||
             itemmod2 == ITEM_MOD_MANA_REGENERATION || itemmod2 == ITEM_MOD_SPELL_POWER || itemmod2 == ITEM_MOD_SPELL_PENETRATION)
         {
@@ -1828,7 +1837,7 @@ void PlayerbotAI::HandleBotOutgoingPacket(const WorldPacket& packet)
                     }
                 case SPELL_FAILED_REQUIRES_SPELL_FOCUS: // 102
                     {
-                        switch (spellInfo->RequiresSpellFocus) // SpellFocusObject.dbc id
+                        switch (spellInfo->GetRequiresSpellFocus()) // SpellFocusObject.dbc id
                         {
                         case 1:  // need an anvil
                             out << "|cffff0000I require an anvil.";
@@ -1843,7 +1852,7 @@ void PlayerbotAI::HandleBotOutgoingPacket(const WorldPacket& packet)
                             out << "|cffff0000I require a cooking fire.";
                             break;
                         default:
-                            out << "|cffff0000I Require Spell Focus on " << spellInfo->RequiresSpellFocus;
+                            out << "|cffff0000I Require Spell Focus on " << spellInfo->GetRequiresSpellFocus();
                         }
                         break;
                     }
@@ -1928,8 +1937,8 @@ void PlayerbotAI::HandleBotOutgoingPacket(const WorldPacket& packet)
                 {
                     int32 master_speed1 = 0;
                     int32 master_speed2 = 0;
-                    master_speed1 = GetMaster()->GetAurasByType(SPELL_AURA_MOUNTED).front()->GetSpellProto()->EffectBasePoints[1];
-                    master_speed2 = GetMaster()->GetAurasByType(SPELL_AURA_MOUNTED).front()->GetSpellProto()->EffectBasePoints[2];
+                    master_speed1 = GetMaster()->GetAurasByType(SPELL_AURA_MOUNTED).front()->GetSpellProto()->GetSpellEffect(SpellEffectIndex(1))->EffectBasePoints;
+                    master_speed2 = GetMaster()->GetAurasByType(SPELL_AURA_MOUNTED).front()->GetSpellProto()->GetSpellEffect(SpellEffectIndex(2))->EffectBasePoints;
 
                     //Bot Part
                     uint32 spellMount = 0;
@@ -1942,34 +1951,45 @@ void PlayerbotAI::HandleBotOutgoingPacket(const WorldPacket& packet)
                         if (!pSpellInfo)
                             continue;
 
-                        if (pSpellInfo->EffectApplyAuraName[0] == SPELL_AURA_MOUNTED)
+                        SpellEffectEntry const* spellEffect0 = pSpellInfo->GetSpellEffect(SpellEffectIndex(0));
+                        SpellEffectEntry const* spellEffect1 = pSpellInfo->GetSpellEffect(SpellEffectIndex(1));
+                        SpellEffectEntry const* spellEffect2 = pSpellInfo->GetSpellEffect(SpellEffectIndex(2));
+                        if (!spellEffect0)
+                            continue;
+
+                        if (spellEffect0->EffectApplyAuraName == SPELL_AURA_MOUNTED)
                         {
-                            if (pSpellInfo->EffectApplyAuraName[1] == SPELL_AURA_MOD_INCREASE_MOUNTED_SPEED)
+                            if (!spellEffect1)
+                                continue;
+
+                            if (spellEffect1->EffectApplyAuraName == SPELL_AURA_MOD_INCREASE_MOUNTED_SPEED)
                             {
-                                if (pSpellInfo->EffectBasePoints[1] == master_speed1)
+                                if (spellEffect1->EffectBasePoints == master_speed1)
                                 {
                                     spellMount = spellId;
                                     break;
                                 }
                             }
-                            else if ((pSpellInfo->EffectApplyAuraName[1] == SPELL_AURA_MOD_INCREASE_MOUNTED_SPEED)
-                                && (pSpellInfo->EffectApplyAuraName[2] == SPELL_AURA_MOD_FLIGHT_SPEED_MOUNTED))
+                            else if (spellEffect2 && ((spellEffect1->EffectApplyAuraName == SPELL_AURA_MOD_INCREASE_MOUNTED_SPEED)
+                                && (spellEffect2->EffectApplyAuraName == SPELL_AURA_MOD_FLIGHT_SPEED_MOUNTED)))
                             {
-                                if ((pSpellInfo->EffectBasePoints[1] == master_speed1)
-                                    && (pSpellInfo->EffectBasePoints[2] == master_speed2))
+                                if ((spellEffect1->EffectBasePoints == master_speed1)
+                                    && (spellEffect2->EffectBasePoints == master_speed2))
                                 {
                                     spellMount = spellId;
                                     break;
                                 }
                             }
-                            else if ((pSpellInfo->EffectApplyAuraName[2] == SPELL_AURA_MOD_INCREASE_MOUNTED_SPEED)
-                                && (pSpellInfo->EffectApplyAuraName[1] == SPELL_AURA_MOD_FLIGHT_SPEED_MOUNTED))
-                                if ((pSpellInfo->EffectBasePoints[2] == master_speed2)
-                                    && (pSpellInfo->EffectBasePoints[1] == master_speed1))
+                            else if (spellEffect2 && ((spellEffect2->EffectApplyAuraName == SPELL_AURA_MOD_INCREASE_MOUNTED_SPEED)
+                                && (spellEffect1->EffectApplyAuraName == SPELL_AURA_MOD_FLIGHT_SPEED_MOUNTED)))
+                            {
+                                if ((spellEffect2->EffectBasePoints == master_speed2)
+                                    && (spellEffect1->EffectBasePoints == master_speed1))
                                 {
                                     spellMount = spellId;
                                     break;
                                 }
+                            }
                         }
                     }
                     if (spellMount > 0) m_bot->CastSpell(m_bot, spellMount, TRIGGERED_NONE);
@@ -2123,10 +2143,10 @@ void PlayerbotAI::HandleBotOutgoingPacket(const WorldPacket& packet)
                     buf += GetMaster()->GetName();
                     buf += ".";
                     SendWhisper(buf, *inviter);
-                    m_bot->GetSession()->HandleGroupDeclineOpcode(p); // packet not used
+                    m_bot->GetSession()->HandleGroupInviteResponseOpcode(p); // packet not used
                 }
                 else
-                    m_bot->GetSession()->HandleGroupAcceptOpcode(p);  // packet not used
+                    m_bot->GetSession()->HandleGroupInviteResponseOpcode(p);  // packet not used
             }
             return;
         }
@@ -2292,7 +2312,7 @@ void PlayerbotAI::HandleBotOutgoingPacket(const WorldPacket& packet)
             if (!pSpellInfo)
                 return;
 
-            if (pSpellInfo->AuraInterruptFlags & AURA_INTERRUPT_FLAG_NOT_SEATED)
+            if (pSpellInfo->GetAuraInterruptFlags() & AURA_INTERRUPT_FLAG_NOT_SEATED)
                 return;
 
             SetIgnoreUpdateTime((msTime / 1000) + 1);
@@ -3930,10 +3950,11 @@ void PlayerbotAI::DoLoot()
             switch (skillId)
             {
             case SKILL_MINING:
-                if (HasTool(TC_MINING_PICK) && CastSpell(MINING))
+                // ToDo: update this!
+                /*if (HasTool(TC_MINING_PICK) && CastSpell(MINING))
                     return;
                 else
-                    skillFailed = true;
+                    skillFailed = true;*/
                 break;
             case SKILL_HERBALISM:
                 if (CastSpell(HERB_GATHERING))
@@ -3942,18 +3963,20 @@ void PlayerbotAI::DoLoot()
                     skillFailed = true;
                 break;
             case SKILL_SKINNING:
-                if (c && HasCollectFlag(COLLECT_FLAG_SKIN) &&
+                // ToDo: update this!
+                /*if (c && HasCollectFlag(COLLECT_FLAG_SKIN) &&
                     HasTool(TC_SKINNING_KNIFE) && CastSpell(SKINNING, *c))
                     return;
                 else
-                    skillFailed = true;
+                    skillFailed = true;*/
                 break;
-            case SKILL_LOCKPICKING:
+                // ToDo: update this!
+            /*case SKILL_LOCKPICKING:
                 if (CastSpell(PICK_LOCK_1))
                     return;
                 else
                     skillFailed = true;
-                break;
+                break;*/
             case SKILL_NONE:
                 if (CastSpell(3365)) //Spell 3365 = Opening?
                     return;
@@ -3973,49 +3996,50 @@ void PlayerbotAI::DoLoot()
             skillFailed = true;
         }
 
-        if (go) // only go's can be forced
-        {
-            // if pickable, check if a forcible item is available for the bot
-            if (skillId == SKILL_LOCKPICKING && (m_bot->HasSkill(SKILL_BLACKSMITHING) ||
-                m_bot->HasSkill(SKILL_ENGINEERING)))
-            {
-                // check for skeleton keys appropriate for lock value
-                if (m_bot->HasSkill(SKILL_BLACKSMITHING))
-                {
-                    Item *kItem = FindKeyForLockValue(reqSkillValue);
-                    if (kItem)
-                    {
-                        TellMaster("I have a skeleton key that can open it!");
-                        UseItem(kItem, TARGET_FLAG_OBJECT, m_lootCurrent);
-                        return;
-                    }
-                    else
-                    {
-                        TellMaster("I have no skeleton keys that can open that lock.");
-                        forceFailed = true;
-                    }
-                }
+        // ToDo: update this!
+        //if (go) // only go's can be forced
+        //{
+        //    // if pickable, check if a forcible item is available for the bot
+        //    if (skillId == SKILL_LOCKPICKING && (m_bot->HasSkill(SKILL_BLACKSMITHING) ||
+        //        m_bot->HasSkill(SKILL_ENGINEERING)))
+        //    {
+        //        // check for skeleton keys appropriate for lock value
+        //        if (m_bot->HasSkill(SKILL_BLACKSMITHING))
+        //        {
+        //            Item *kItem = FindKeyForLockValue(reqSkillValue);
+        //            if (kItem)
+        //            {
+        //                TellMaster("I have a skeleton key that can open it!");
+        //                UseItem(kItem, TARGET_FLAG_OBJECT, m_lootCurrent);
+        //                return;
+        //            }
+        //            else
+        //            {
+        //                TellMaster("I have no skeleton keys that can open that lock.");
+        //                forceFailed = true;
+        //            }
+        //        }
 
-                // check for a charge that can blast it open
-                if (m_bot->HasSkill(SKILL_ENGINEERING))
-                {
-                    Item *bItem = FindBombForLockValue(reqSkillValue);
-                    if (bItem)
-                    {
-                        TellMaster("I can blast it open!");
-                        UseItem(bItem, TARGET_FLAG_OBJECT, m_lootCurrent);
-                        return;
-                    }
-                    else
-                    {
-                        TellMaster("I have nothing to blast it open with.");
-                        forceFailed = true;
-                    }
-                }
-            }
-            else
-                forceFailed = true;
-        }
+        //        // check for a charge that can blast it open
+        //        if (m_bot->HasSkill(SKILL_ENGINEERING))
+        //        {
+        //            Item *bItem = FindBombForLockValue(reqSkillValue);
+        //            if (bItem)
+        //            {
+        //                TellMaster("I can blast it open!");
+        //                UseItem(bItem, TARGET_FLAG_OBJECT, m_lootCurrent);
+        //                return;
+        //            }
+        //            else
+        //            {
+        //                TellMaster("I have nothing to blast it open with.");
+        //                forceFailed = true;
+        //            }
+        //        }
+        //    }
+        //    else
+        //        forceFailed = true;
+        //}
 
         // DEBUG_LOG ("[PlayerbotAI]%s: keyFailed [%s]", m_bot->GetName(), keyFailed ? "true" : "false");
         // DEBUG_LOG ("[PlayerbotAI]%s: skillFailed [%s]", m_bot->GetName(), skillFailed ? "true" : "false");
@@ -4219,7 +4243,7 @@ bool PlayerbotAI::IsRegenerating()
         SpellEntry const* spell = aura->second->GetSpellProto();
         if (!spell)
             continue;
-        if (spell->Category == 59 || spell->Category == 11){
+        if (spell->GetCategory() == 59 || spell->GetCategory() == 11){
             return true;
         }
     }
@@ -4752,7 +4776,7 @@ void PlayerbotAI::PlaySound(uint32 soundid)
 {
     WorldPacket data(SMSG_PLAY_SOUND, 4);
     data << soundid;
-    GetMaster()->GetSession()->SendPacket(data);
+    GetMaster()->GetSession()->SendPacket(&data);
 }
 
 // PlaySound data from SoundEntries.dbc
@@ -5192,7 +5216,7 @@ void PlayerbotAI::SendWhisper(const std::string& text, Player& player) const
     if (player.GetPlayerbotAI())
         return;
 
-    WorldPacket* const packet = new WorldPacket(CMSG_MESSAGECHAT, 200);
+    WorldPacket* const packet = new WorldPacket(CMSG_MESSAGECHAT_WHISPER, 200);
     *packet << uint32(CHAT_MSG_WHISPER);
     *packet << uint32(LANG_UNIVERSAL);
     *packet << player.GetName();
@@ -5331,13 +5355,17 @@ bool PlayerbotAI::CastSpell(uint32 spellId)
 
     uint32 target_type = TARGET_FLAG_UNIT;
 
-    if (pSpellInfo->Effect[0] == SPELL_EFFECT_OPEN_LOCK)
+    SpellEffectEntry const* spellEffect = pSpellInfo->GetSpellEffect(SpellEffectIndex(0));
+    if (!spellEffect)
+        return false;
+
+    if (spellEffect->Effect == SPELL_EFFECT_OPEN_LOCK)
         target_type = TARGET_FLAG_OBJECT;
 
     m_CurrentlyCastingSpellId = spellId;
 
-    if (pSpellInfo->Effect[0] == SPELL_EFFECT_OPEN_LOCK ||
-        pSpellInfo->Effect[0] == SPELL_EFFECT_SKINNING)
+    if (spellEffect->Effect == SPELL_EFFECT_OPEN_LOCK ||
+        spellEffect->Effect == SPELL_EFFECT_SKINNING)
     {
         if (m_lootCurrent)
         {
@@ -5492,7 +5520,11 @@ bool PlayerbotAI::Buff(uint32 spellId, Unit* target, void (*beforeCast)(Player *
     //DEBUG_LOG("...willBenefit: %d (start)", willBenefitFromSpell);
     for (uint8 i = 0; i < MAX_EFFECT_INDEX && !willBenefitFromSpell; ++i)
     {
-        if (spellProto->EffectApplyAuraName[i] == SPELL_AURA_NONE)
+        SpellEffectEntry const* spellEffect = spellProto->GetSpellEffect(SpellEffectIndex(i));
+        if (!spellEffect)
+            return false;
+
+        if (spellEffect->EffectApplyAuraName == SPELL_AURA_NONE)
         {
             //DEBUG_LOG("...Effect%d NONE", i);
             break;
@@ -5500,11 +5532,11 @@ bool PlayerbotAI::Buff(uint32 spellId, Unit* target, void (*beforeCast)(Player *
         //DEBUG_LOG("...Effect%d exists", i);
 
         int32 bonus = m_bot->CalculateSpellDamage(target, spellProto, SpellEffectIndex(i));
-        Unit::AuraList const& auras = target->GetAurasByType(AuraType(spellProto->EffectApplyAuraName[i]));
+        Unit::AuraList const& auras = target->GetAurasByType(AuraType(spellEffect->EffectApplyAuraName));
         for (Unit::AuraList::const_iterator it = auras.begin(); it != auras.end() && !willBenefitFromSpell; ++it)
         {
             //DEBUG_LOG("...m_amount (%d) vs bonus (%d)", (*it)->GetModifier()->m_amount, bonus);
-            if ((*it)->GetModifier()->m_miscvalue == spellProto->EffectMiscValue[i])
+            if ((*it)->GetModifier()->m_miscvalue == spellEffect->EffectMiscValue)
             {
                 hasComparableAura = true;
                 //DEBUG_LOG("...hasComparableAura");
@@ -5726,135 +5758,6 @@ Item* PlayerbotAI::FindBombForLockValue(uint32 reqSkillValue)
     return nullptr;
 }
 
-bool PlayerbotAI::HasTool(uint32 TC)
-{
-    std::ostringstream out;
-
-    switch (TC)
-    {
-    case TC_MINING_PICK:                //  = 165
-
-        if (m_bot->HasItemTotemCategory(TC))
-            return true;
-        else
-            out << "|cffff0000I do not have a MINING PICK!";
-        break;
-
-    case TC_ARCLIGHT_SPANNER:          //  = 14
-
-        if (m_bot->HasItemTotemCategory(TC))
-            return true;
-        else
-            out << "|cffff0000I do not have an ARCLIGHT SPANNER!";
-        break;
-
-    case TC_BLACKSMITH_HAMMER:         //  = 162
-
-        if (m_bot->HasItemTotemCategory(TC))
-            return true;
-        else
-            out << "|cffff0000I do not have a BLACKSMITH's HAMMER!";
-        break;
-
-    case TC_SKINNING_KNIFE:            //  = 166
-
-        if (m_bot->HasItemTotemCategory(TC))
-            return true;
-        else
-            out << "|cffff0000I do not have a SKINNING KNIFE!";
-        break;
-
-    case TC_COPPER_ROD:                //  = 6,
-        if (m_bot->HasItemTotemCategory(TC))
-            return true;
-        else
-            out << "|cffff0000I do not have a RUNED COPPER ROD!";
-        break;
-
-    case TC_SILVER_ROD:                //  = 7,
-        if (m_bot->HasItemTotemCategory(TC))
-            return true;
-        else
-            out << "|cffff0000I do not have a RUNED SILVER ROD!";
-        break;
-
-    case TC_GOLDEN_ROD:                //  = 8,
-        if (m_bot->HasItemTotemCategory(TC))
-            return true;
-        else
-            out << "|cffff0000I do not have a RUNED GOLDEN ROD!";
-        break;
-
-    case TC_TRUESILVER_ROD:            //  = 9,
-        if (m_bot->HasItemTotemCategory(TC))
-            return true;
-        else
-            out << "|cffff0000I do not have a RUNED TRUESILVER ROD!";
-        break;
-
-    case TC_ARCANITE_ROD:              //  = 10,
-        if (m_bot->HasItemTotemCategory(TC))
-            return true;
-        else
-            out << "|cffff0000I do not have a RUNED ARCANITE ROD!";
-        break;
-
-    case TC_FEL_IRON_ROD:              //  = 41,
-        if (m_bot->HasItemTotemCategory(TC))
-            return true;
-        else
-            out << "|cffff0000I do not have a RUNED FEL IRON ROD!";
-        break;
-
-    case TC_ADAMANTITE_ROD:            //  = 62,
-        if (m_bot->HasItemTotemCategory(TC))
-            return true;
-        else
-            out << "|cffff0000I do not have a RUNED ADAMANTITE ROD!";
-        break;
-
-    case TC_ETERNIUM_ROD:              //  = 63,
-        if (m_bot->HasItemTotemCategory(TC))
-            return true;
-        else
-            out << "|cffff0000I do not have a RUNED ETERNIUM ROD!";
-        break;
-
-    case TC_RUNED_AZURITE_ROD:         //  = 101,
-        if (m_bot->HasItemTotemCategory(TC))
-            return true;
-        else
-            out << "|cffff0000I do not have a RUNED AZURITE ROD!";
-        break;
-
-    case TC_VIRTUOSO_INKING_SET:       //  = 121,
-        if (m_bot->HasItemTotemCategory(TC))
-            return true;
-        else
-            out << "|cffff0000I do not have a VIRTUOSO INKING SET!";
-        break;
-
-    case TC_RUNED_COBALT_ROD:          //  = 189,
-        if (m_bot->HasItemTotemCategory(TC))
-            return true;
-        else
-            out << "|cffff0000I do not have a RUNED COBALT ROD!";
-        break;
-
-    case TC_RUNED_TITANIUM_ROD:        //  = 190,
-
-        if (m_bot->HasItemTotemCategory(TC))
-            return true;
-        else
-            out << "|cffff0000I do not have a RUNED TITANIUM ROD!";
-        break;
-    default:
-        out << "|cffffffffI do not know what tool that needs! TC (" << TC << ")";
-    }
-    TellMaster(out.str().c_str());
-    return false;
-}
-
 bool PlayerbotAI::PickPocket(Unit* pTarget)
 {
     if(!pTarget)
@@ -5924,11 +5827,15 @@ bool PlayerbotAI::HasSpellReagents(uint32 spellId)
 
     for (uint32 i = 0; i < MAX_SPELL_REAGENTS; ++i)
     {
-        if (pSpellInfo->Reagent[i] <= 0)
+        SpellReagentsEntry const* spellReagents = pSpellInfo->GetSpellReagents();
+        if (!spellReagents)
             continue;
 
-        uint32 itemid = pSpellInfo->Reagent[i];
-        uint32 count = pSpellInfo->ReagentCount[i];
+        if (spellReagents->Reagent[i] <= 0)
+            continue;
+
+        uint32 itemid = spellReagents->Reagent[i];
+        uint32 count = spellReagents->ReagentCount[i];
 
         if (!m_bot->HasItemCount(itemid, count))
             return false;
@@ -5950,26 +5857,18 @@ uint32 PlayerbotAI::GetSpellCharges(uint32 spellId)
     std::list<uint32> chargeList;
     for (uint32 i = 0; i < MAX_SPELL_REAGENTS; ++i)
     {
-        if (pSpellInfo->Reagent[i] <= 0)
+        SpellReagentsEntry const* spellReagents = pSpellInfo->GetSpellReagents();
+        if (!spellReagents)
+            continue;
+
+        if (spellReagents->Reagent[i] <= 0)
             continue;
 
         uint32 totalcount = 0;
-        uint32 itemid = pSpellInfo->Reagent[i];
-        uint32 count = pSpellInfo->ReagentCount[i];
+        uint32 itemid = spellReagents->Reagent[i];
+        uint32 count = spellReagents->ReagentCount[i];
         ItemCountInInv(itemid, totalcount);
         chargeList.push_back((totalcount / count));
-    }
-
-    for (uint32 i = 0; i < MAX_SPELL_TOTEM_CATEGORIES; ++i)
-    {
-        if (pSpellInfo->TotemCategory[i] == 0)
-            continue;
-
-        if (!m_bot->HasItemTotemCategory(pSpellInfo->TotemCategory[i]))
-        {
-            m_noToolList.push_back(pSpellInfo->TotemCategory[i]);
-            return 0;
-        }
     }
 
     if (!chargeList.empty())
@@ -7873,7 +7772,7 @@ void PlayerbotAI::HandleTeleportAck()
     m_bot->GetMotionMaster()->Clear(true);
     if (m_bot->IsBeingTeleportedNear())
     {
-        WorldPacket p = WorldPacket(MSG_MOVE_TELEPORT_ACK, 8 + 4 + 4);
+        WorldPacket p = WorldPacket(CMSG_MOVE_TELEPORT_ACK, 8 + 4 + 4);
         p.appendPackGUID(m_bot->GetObjectGuid());
         p << (uint32) 0; // supposed to be flags? not used currently
         p << (uint32) CurrentTime(); // time - not currently used
@@ -8125,9 +8024,9 @@ void PlayerbotAI::InspectUpdate()
 {
     WorldPacket packet(SMSG_INSPECT_RESULTS, 50);
     packet << m_bot->GetPackGUID();
-    m_bot->BuildPlayerTalentsInfoData(packet);
-    m_bot->BuildEnchantmentsInfoData(packet);
-    GetMaster()->GetSession()->SendPacket(packet);
+    m_bot->BuildPlayerTalentsInfoData(&packet);
+    m_bot->BuildEnchantmentsInfoData(&packet);
+    GetMaster()->GetSession()->SendPacket(&packet);
 }
 
 void PlayerbotAI::Repair(const uint32 itemid, Creature* rCreature)
@@ -10538,7 +10437,11 @@ void PlayerbotAI::_HandleCommandEnchant(std::string &text, Player &fromPlayer)
                     if (!spellInfo)
                         continue;
 
-                    if (IsPrimaryProfessionSkill(*it) && spellInfo->Effect[EFFECT_INDEX_0] != SPELL_EFFECT_ENCHANT_ITEM)
+                    SpellEffectEntry const* spellEffect = spellInfo->GetSpellEffect(SpellEffectIndex(0));
+                    if (!spellEffect)
+                        return;
+
+                    if (IsPrimaryProfessionSkill(*it) && spellEffect->Effect != SPELL_EFFECT_ENCHANT_ITEM)
                         continue;
 
                     if (SkillAbility->skillId == *it && m_bot->HasSpell(SkillAbility->spellId) && SkillAbility->forward_spellid == 0 && ((SkillAbility->classmask & m_bot->getClassMask()) == 0))
@@ -10556,11 +10459,8 @@ void PlayerbotAI::_HandleCommandEnchant(std::string &text, Player &fromPlayer)
                     }
                 }
         }
-        m_noToolList.unique();
-        for (std::list<uint32>::iterator it = m_noToolList.begin(); it != m_noToolList.end(); it++)
-            HasTool(*it);
+
         ch.SendSysMessage(msg.str().c_str());
-        m_noToolList.clear();
         m_spellsToLearn.clear();
     }
 }
@@ -10744,7 +10644,11 @@ void PlayerbotAI::_HandleCommandCraft(std::string &text, Player &fromPlayer)
                 if (!spellInfo)
                     continue;
 
-                if (IsPrimaryProfessionSkill(*it) && spellInfo->Effect[EFFECT_INDEX_0] != SPELL_EFFECT_CREATE_ITEM)
+                SpellEffectEntry const* spellEffect = spellInfo->GetSpellEffect(SpellEffectIndex(0));
+                if (!spellEffect)
+                    return;
+
+                if (IsPrimaryProfessionSkill(*it) && spellEffect->Effect != SPELL_EFFECT_CREATE_ITEM)
                     continue;
 
                 if (SkillAbility->skillId == *it && m_bot->HasSpell(SkillAbility->spellId) && SkillAbility->forward_spellid == 0 && ((SkillAbility->classmask & m_bot->getClassMask()) == 0))
@@ -10762,11 +10666,8 @@ void PlayerbotAI::_HandleCommandCraft(std::string &text, Player &fromPlayer)
                 }
             }
     }
-    m_noToolList.unique();
-    for (std::list<uint32>::iterator it = m_noToolList.begin(); it != m_noToolList.end(); it++)
-        HasTool(*it);
+
     ch.SendSysMessage(msg.str().c_str());
-    m_noToolList.clear();
     m_spellsToLearn.clear();
 }
 
@@ -11389,18 +11290,20 @@ void PlayerbotAI::_HandleCommandSkill(std::string &text, Player &fromPlayer)
                         WorldPacket data(SMSG_PLAY_SPELL_VISUAL, 12);           // visual effect on trainer
                         data << ObjectGuid(fromPlayer.GetSelectionGuid());
                         data << uint32(0xB3);                                   // index from SpellVisualKit.dbc
-                        GetMaster()->GetSession()->SendPacket(data);
+                        GetMaster()->GetSession()->SendPacket(&data);
 
-                        data.Initialize(SMSG_PLAY_SPELL_IMPACT, 12);            // visual effect on player
-                        data << m_bot->GetObjectGuid();
-                        data << uint32(0x016A);                                 // index from SpellVisualKit.dbc
-                        GetMaster()->GetSession()->SendPacket(data);
+                        // ToDo: update this!
+                        //data.Initialize(SMSG_PLAY_SPELL_IMPACT, 12);            // visual effect on player
+                        //data << m_bot->GetObjectGuid();
+                        //data << uint32(0x016A);                                 // index from SpellVisualKit.dbc
+                        //GetMaster()->GetSession()->SendPacket(&data);
                     }
 
-                    WorldPacket data(SMSG_TRAINER_BUY_SUCCEEDED, 12);
-                    data << ObjectGuid(fromPlayer.GetSelectionGuid());
-                    data << uint32(spellId);                                // should be same as in packet from client
-                    GetMaster()->GetSession()->SendPacket(data);
+                    // ToDo: update this!
+                    //WorldPacket data(SMSG_TRAINER_BUY_SUCCEEDED, 12);
+                    //data << ObjectGuid(fromPlayer.GetSelectionGuid());
+                    //data << uint32(spellId);                                // should be same as in packet from client
+                    //GetMaster()->GetSession()->SendPacket(&data);
                     MakeSpellLink(pSpellInfo, msg);
                     msg << " ";
                     msg << Cash(cost) << " ";
@@ -11442,18 +11345,20 @@ void PlayerbotAI::_HandleCommandSkill(std::string &text, Player &fromPlayer)
                         WorldPacket data(SMSG_PLAY_SPELL_VISUAL, 12);           // visual effect on trainer
                         data << ObjectGuid(fromPlayer.GetSelectionGuid());
                         data << uint32(0xB3);                                   // index from SpellVisualKit.dbc
-                        GetMaster()->GetSession()->SendPacket(data);
+                        GetMaster()->GetSession()->SendPacket(&data);
 
-                        data.Initialize(SMSG_PLAY_SPELL_IMPACT, 12);            // visual effect on player
-                        data << m_bot->GetObjectGuid();
-                        data << uint32(0x016A);                                 // index from SpellVisualKit.dbc
-                        GetMaster()->GetSession()->SendPacket(data);
+                        // ToDo: update this!
+                        //data.Initialize(SMSG_PLAY_SPELL_IMPACT, 12);            // visual effect on player
+                        //data << m_bot->GetObjectGuid();
+                        //data << uint32(0x016A);                                 // index from SpellVisualKit.dbc
+                        //GetMaster()->GetSession()->SendPacket(&data);
                     }
 
-                    WorldPacket data(SMSG_TRAINER_BUY_SUCCEEDED, 12);
-                    data << ObjectGuid(fromPlayer.GetSelectionGuid());
-                    data << uint32(spellId);                                // should be same as in packet from client
-                    GetMaster()->GetSession()->SendPacket(data);
+                    // ToDo: update this!
+                    //WorldPacket data(SMSG_TRAINER_BUY_SUCCEEDED, 12);
+                    //data << ObjectGuid(fromPlayer.GetSelectionGuid());
+                    //data << uint32(spellId);                                // should be same as in packet from client
+                    //GetMaster()->GetSession()->SendPacket(&data);
                     MakeSpellLink(pSpellInfo, msg);
                     msg << " ";
                     msg << Cash(cost) << " ";
@@ -11603,7 +11508,11 @@ void PlayerbotAI::_HandleCommandSkill(std::string &text, Player &fromPlayer)
                     if (!spellInfo)
                         continue;
 
-                    if (skillLine->skillId == *it && spellInfo->Effect[0] == SPELL_EFFECT_WEAPON)
+                    SpellEffectEntry const* spellEffect = spellInfo->GetSpellEffect(SpellEffectIndex(0));
+                    if (!spellEffect)
+                        return;
+
+                    if (skillLine->skillId == *it && spellEffect->Effect == SPELL_EFFECT_WEAPON)
                         MakeWeaponSkillLink(spellInfo, msg, *it);
                 }
         }

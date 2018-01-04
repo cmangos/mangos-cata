@@ -99,16 +99,18 @@ PlayerbotHunterAI::~PlayerbotHunterAI() {}
 
 CombatManeuverReturns PlayerbotHunterAI::DoFirstCombatManeuver(Unit* pTarget)
 {
-    Player *m_bot = GetPlayerBot();
-    m_has_ammo = m_bot->HasItemCount( m_bot->GetUInt32Value(PLAYER_AMMO_ID), 1 );
-    //DEBUG_LOG("current ammo (%u)",m_bot->GetUInt32Value(PLAYER_AMMO_ID));
-    m_bot->setAttackTimer(RANGED_ATTACK,0);
-    if (!m_has_ammo)
-    {
-       m_ai->FindAmmo();
-       //DEBUG_LOG("new ammo (%u)",m_bot->GetUInt32Value(PLAYER_AMMO_ID));
-       m_has_ammo = m_bot->HasItemCount( m_bot->GetUInt32Value(PLAYER_AMMO_ID), 1 );
-    }
+    // ToDo: update this!
+    //Player *m_bot = GetPlayerBot();
+    //m_has_ammo = m_bot->HasItemCount( m_bot->GetUInt32Value(PLAYER_AMMO_ID), 1 );
+    ////DEBUG_LOG("current ammo (%u)",m_bot->GetUInt32Value(PLAYER_AMMO_ID));
+    //m_bot->setAttackTimer(RANGED_ATTACK,0);
+    //if (!m_has_ammo)
+    //{
+    //   m_ai->FindAmmo();
+    //   //DEBUG_LOG("new ammo (%u)",m_bot->GetUInt32Value(PLAYER_AMMO_ID));
+    //   m_has_ammo = m_bot->HasItemCount( m_bot->GetUInt32Value(PLAYER_AMMO_ID), 1 );
+    //}
+
     // There are NPCs in BGs and Open World PvP, so don't filter this on PvP scenarios (of course if PvP targets anyone but tank, all bets are off anyway)
     // Wait until the tank says so, until any non-tank gains aggro or X seconds - whichever is shortest
     if (m_ai->GetCombatOrder() & PlayerbotAI::ORDERS_TEMP_WAIT_TANKAGGRO)
@@ -212,8 +214,9 @@ CombatManeuverReturns PlayerbotHunterAI::DoNextCombatManeuverPVE(Unit *pTarget)
         // switch to melee combat (target in melee range, out of ammo)
         m_rangedCombat = false;
         m_ai->SetCombatStyle(PlayerbotAI::COMBAT_MELEE);
-        if (!m_bot->GetUInt32Value(PLAYER_AMMO_ID))
-            m_ai->TellMaster("Out of ammo!");
+        // ToDo: update this!
+        //if (!m_bot->GetUInt32Value(PLAYER_AMMO_ID))
+        //    m_ai->TellMaster("Out of ammo!");
 
         // become monkey (increases dodge chance)...
         if (ASPECT_OF_THE_MONKEY > 0 && !m_bot->HasAura(ASPECT_OF_THE_MONKEY, EFFECT_INDEX_0))
@@ -343,7 +346,7 @@ bool PlayerbotHunterAI::IsTargetEnraged(Unit* pTarget)
     {
         SpellAuraHolder *holder = itr->second;
         // Return true is target unit has aura with DISPEL_ENRAGE dispel type
-        if ((1 << holder->GetSpellProto()->Dispel) & GetDispellMask(DISPEL_ENRAGE))
+        if ((1 << holder->GetSpellProto()->GetDispel()) & GetDispellMask(DISPEL_ENRAGE))
             return true;
     }
 
@@ -406,65 +409,67 @@ void PlayerbotHunterAI::DoNonCombatActions()
             if (PET_MEND > 0 && pet->isAlive() && !pet->HasAura(PET_MEND, EFFECT_INDEX_0) && m_ai->CastSpell(PET_MEND, *m_bot))
                 m_ai->TellMaster("healing pet.");
         }
-        else if (pet->GetHappinessState() != HAPPY) // if pet is hungry
-        {
-            Unit *caster = (Unit *) m_bot;
-            // list out items in main backpack
-            for (uint8 slot = INVENTORY_SLOT_ITEM_START; slot < INVENTORY_SLOT_ITEM_END; slot++)
-            {
-                Item* const pItem = m_bot->GetItemByPos(INVENTORY_SLOT_BAG_0, slot);
-                if (pItem)
-                {
-                    const ItemPrototype* const pItemProto = pItem->GetProto();
-                    if (!pItemProto)
-                        continue;
 
-                    if (pet->HaveInDiet(pItemProto)) // is pItem in pets diet
-                    {
-                        // DEBUG_LOG ("[PlayerbotHunterAI]: DoNonCombatActions - Food for pet: %s",pItemProto->Name1);
-                        caster->CastSpell(caster, 51284, TRIGGERED_OLD_TRIGGERED); // pet feed visual
-                        uint32 count = 1; // number of items used
-                        int32 benefit = pet->GetCurrentFoodBenefitLevel(pItemProto->ItemLevel); // nutritional value of food
-                        m_bot->DestroyItemCount(pItem, count, true); // remove item from inventory
-                        m_bot->CastCustomSpell(m_bot, PET_FEED, &benefit, nullptr, nullptr, TRIGGERED_OLD_TRIGGERED); // feed pet
-                        m_ai->TellMaster("feeding pet.");
-                        m_ai->SetIgnoreUpdateTime(10);
-                        return;
-                    }
-                }
-            }
-            // list out items in other removable backpacks
-            for (uint8 bag = INVENTORY_SLOT_BAG_START; bag < INVENTORY_SLOT_BAG_END; ++bag)
-            {
-                const Bag* const pBag = (Bag *) m_bot->GetItemByPos(INVENTORY_SLOT_BAG_0, bag);
-                if (pBag)
-                    for (uint8 slot = 0; slot < pBag->GetBagSize(); ++slot)
-                    {
-                        Item* const pItem = m_bot->GetItemByPos(bag, slot);
-                        if (pItem)
-                        {
-                            const ItemPrototype* const pItemProto = pItem->GetProto();
-                            if (!pItemProto)
-                                continue;
+        // ToDo: update this!
+        //else if (pet->GetHappinessState() != HAPPY) // if pet is hungry
+        //{
+        //    Unit *caster = (Unit *) m_bot;
+        //    // list out items in main backpack
+        //    for (uint8 slot = INVENTORY_SLOT_ITEM_START; slot < INVENTORY_SLOT_ITEM_END; slot++)
+        //    {
+        //        Item* const pItem = m_bot->GetItemByPos(INVENTORY_SLOT_BAG_0, slot);
+        //        if (pItem)
+        //        {
+        //            const ItemPrototype* const pItemProto = pItem->GetProto();
+        //            if (!pItemProto)
+        //                continue;
 
-                            if (pet->HaveInDiet(pItemProto)) // is pItem in pets diet
-                            {
-                                // DEBUG_LOG ("[PlayerbotHunterAI]: DoNonCombatActions - Food for pet: %s",pItemProto->Name1);
-                                caster->CastSpell(caster, 51284, TRIGGERED_OLD_TRIGGERED); // pet feed visual
-                                uint32 count = 1; // number of items used
-                                int32 benefit = pet->GetCurrentFoodBenefitLevel(pItemProto->ItemLevel); // nutritional value of food
-                                m_bot->DestroyItemCount(pItem, count, true); // remove item from inventory
-                                m_bot->CastCustomSpell(m_bot, PET_FEED, &benefit, nullptr, nullptr, TRIGGERED_OLD_TRIGGERED); // feed pet
-                                m_ai->TellMaster("feeding pet.");
-                                m_ai->SetIgnoreUpdateTime(10);
-                                return;
-                            }
-                        }
-                    }
-            }
-            if (pet->HasAura(PET_MEND, EFFECT_INDEX_0) && !pet->HasAura(PET_FEED, EFFECT_INDEX_0))
-                m_ai->TellMaster("..no pet food!");
-            m_ai->SetIgnoreUpdateTime(7);
-        }
+        //            if (pet->HaveInDiet(pItemProto)) // is pItem in pets diet
+        //            {
+        //                // DEBUG_LOG ("[PlayerbotHunterAI]: DoNonCombatActions - Food for pet: %s",pItemProto->Name1);
+        //                caster->CastSpell(caster, 51284, TRIGGERED_OLD_TRIGGERED); // pet feed visual
+        //                uint32 count = 1; // number of items used
+        //                int32 benefit = pet->GetCurrentFoodBenefitLevel(pItemProto->ItemLevel); // nutritional value of food
+        //                m_bot->DestroyItemCount(pItem, count, true); // remove item from inventory
+        //                m_bot->CastCustomSpell(m_bot, PET_FEED, &benefit, nullptr, nullptr, TRIGGERED_OLD_TRIGGERED); // feed pet
+        //                m_ai->TellMaster("feeding pet.");
+        //                m_ai->SetIgnoreUpdateTime(10);
+        //                return;
+        //            }
+        //        }
+        //    }
+        //    // list out items in other removable backpacks
+        //    for (uint8 bag = INVENTORY_SLOT_BAG_START; bag < INVENTORY_SLOT_BAG_END; ++bag)
+        //    {
+        //        const Bag* const pBag = (Bag *) m_bot->GetItemByPos(INVENTORY_SLOT_BAG_0, bag);
+        //        if (pBag)
+        //            for (uint8 slot = 0; slot < pBag->GetBagSize(); ++slot)
+        //            {
+        //                Item* const pItem = m_bot->GetItemByPos(bag, slot);
+        //                if (pItem)
+        //                {
+        //                    const ItemPrototype* const pItemProto = pItem->GetProto();
+        //                    if (!pItemProto)
+        //                        continue;
+
+        //                    if (pet->HaveInDiet(pItemProto)) // is pItem in pets diet
+        //                    {
+        //                        // DEBUG_LOG ("[PlayerbotHunterAI]: DoNonCombatActions - Food for pet: %s",pItemProto->Name1);
+        //                        caster->CastSpell(caster, 51284, TRIGGERED_OLD_TRIGGERED); // pet feed visual
+        //                        uint32 count = 1; // number of items used
+        //                        int32 benefit = pet->GetCurrentFoodBenefitLevel(pItemProto->ItemLevel); // nutritional value of food
+        //                        m_bot->DestroyItemCount(pItem, count, true); // remove item from inventory
+        //                        m_bot->CastCustomSpell(m_bot, PET_FEED, &benefit, nullptr, nullptr, TRIGGERED_OLD_TRIGGERED); // feed pet
+        //                        m_ai->TellMaster("feeding pet.");
+        //                        m_ai->SetIgnoreUpdateTime(10);
+        //                        return;
+        //                    }
+        //                }
+        //            }
+        //    }
+        //    if (pet->HasAura(PET_MEND, EFFECT_INDEX_0) && !pet->HasAura(PET_FEED, EFFECT_INDEX_0))
+        //        m_ai->TellMaster("..no pet food!");
+        //    m_ai->SetIgnoreUpdateTime(7);
+        //}
     }
 } // end DoNonCombatActions

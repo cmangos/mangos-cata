@@ -130,11 +130,11 @@ void WorldSession::SendPacket(WorldPacket const* packet)
     if (GetPlayer())
     {
         if (GetPlayer()->GetPlayerbotAI())
-            GetPlayer()->GetPlayerbotAI()->HandleBotOutgoingPacket(packet);
+            GetPlayer()->GetPlayerbotAI()->HandleBotOutgoingPacket(*packet);
         else if (GetPlayer()->GetPlayerbotMgr())
-            GetPlayer()->GetPlayerbotMgr()->HandleMasterOutgoingPacket(packet);
+            GetPlayer()->GetPlayerbotMgr()->HandleMasterOutgoingPacket(*packet);
     }
-    
+
     if (!m_Socket)
         return;
 #endif

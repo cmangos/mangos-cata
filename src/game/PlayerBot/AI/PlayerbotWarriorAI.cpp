@@ -514,16 +514,17 @@ bool PlayerbotWarriorAI::CanPull()
     if (!m_bot) return false;
     if (!m_ai) return false;
 
-    if (m_bot->GetUInt32Value(PLAYER_AMMO_ID)) // Having ammo equipped means a weapon is equipped as well. Probably. [TODO: does this work with throwing knives? Can a playerbot 'cheat' ammo into the slot without a proper weapon?]
-    {
-        // Can't do this, CanPull CANNOT check for anything that requires a target
-        //if (!m_ai->IsInRange(m_ai->GetCurrentTarget(), AUTO_SHOT))
-        //{
-        //    m_ai->TellMaster("I'm out of range.");
-        //    return false;
-        //}
-        return true;
-    }
+    // ToDo: update this!
+    //if (m_bot->GetUInt32Value(PLAYER_AMMO_ID)) // Having ammo equipped means a weapon is equipped as well. Probably. [TODO: does this work with throwing knives? Can a playerbot 'cheat' ammo into the slot without a proper weapon?]
+    //{
+    //    // Can't do this, CanPull CANNOT check for anything that requires a target
+    //    //if (!m_ai->IsInRange(m_ai->GetCurrentTarget(), AUTO_SHOT))
+    //    //{
+    //    //    m_ai->TellMaster("I'm out of range.");
+    //    //    return false;
+    //    //}
+    //    return true;
+    //}
 
     return false;
 }

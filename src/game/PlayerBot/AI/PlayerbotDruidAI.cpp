@@ -534,19 +534,19 @@ CombatManeuverReturns PlayerbotDruidAI::HealPlayer(Player* target)
         {
             SpellAuraHolder *holder = itr->second;
             //I dont know what this does but it doesn't work without it
-            if ((1 << holder->GetSpellProto()->Dispel) & dispelMask)
+            if ((1 << holder->GetSpellProto()->GetDispel()) & dispelMask)
             {
                 //If the spell is dispellable and we can dispel it, do so
-                if ((holder->GetSpellProto()->Dispel == DISPEL_CURSE) & (REMOVE_CURSE > 0))
+                if ((holder->GetSpellProto()->GetDispel() == DISPEL_CURSE) & (REMOVE_CURSE > 0))
                 {
                     if (CastSpell(REMOVE_CURSE, target))
                         return RETURN_CONTINUE;
                     return RETURN_NO_ACTION_ERROR;
                 }
             }
-            else if ((1 << holder->GetSpellProto()->Dispel) & dispelMask2)
+            else if ((1 << holder->GetSpellProto()->GetDispel()) & dispelMask2)
             {
-                if ((holder->GetSpellProto()->Dispel == DISPEL_POISON) & (ABOLISH_POISON > 0))
+                if ((holder->GetSpellProto()->GetDispel() == DISPEL_POISON) & (ABOLISH_POISON > 0))
                 {
                     if (CastSpell(ABOLISH_POISON, target))
                         return RETURN_CONTINUE;
