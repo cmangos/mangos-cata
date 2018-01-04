@@ -3787,12 +3787,6 @@ void Spell::EffectDummy(SpellEffectEntry const* effect)
 
                     // 31989 -> dummy effect (step 1) + dummy effect (step 2) -> 31709 (taunt like spell for each target)
                     Unit* friendTarget = !unitTarget || unitTarget->IsFriendlyTo(m_caster) ? unitTarget : unitTarget->getVictim();
-                    if (friendTarget)
-                    {
-                        Player* player = friendTarget->GetBeneficiaryPlayer();
-                        if (!player || !player->IsInSameRaidWith((Player*)m_caster))
-                            friendTarget = nullptr;
-                    }
 
                     // non-standard cast requirement check
                     if (!friendTarget || friendTarget->getAttackers().empty())
@@ -3811,7 +3805,8 @@ void Spell::EffectDummy(SpellEffectEntry const* effect)
                     Unit::AttackerSet attackers = friendTarget->getAttackers();
 
                     // selected from list 3
-                    for (uint32 i = 0; i < std::min(size_t(3), attackers.size()); ++i)
+                    size_t size = std::min(size_t(3), attackers.size());
+                    for (uint32 i = 0; i < size; ++i)
                     {
                         Unit::AttackerSet::iterator aItr = attackers.begin();
                         std::advance(aItr, urand() % attackers.size());
