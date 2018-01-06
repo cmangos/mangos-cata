@@ -88,7 +88,7 @@ void WorldSession::HandlePetAction(WorldPacket& recv_data)
 
     if (!pet)
     {
-        if (petUnit->hasUnitState(UNIT_STAT_CONTROLLED))
+        if (petUnit->hasUnitState(UNIT_STAT_POSSESSED))
         {
             // possess case
             if (flag != uint8(ACT_COMMAND))
@@ -135,7 +135,7 @@ void WorldSession::HandlePetAction(WorldPacket& recv_data)
             {
                 case COMMAND_STAY:                          // flat=1792  // STAY
                 {
-                    if (!petUnit->hasUnitState(UNIT_STAT_CONTROLLED))
+                    if (!petUnit->hasUnitState(UNIT_STAT_POSSESSED))
                     {
                         petUnit->StopMoving();
                         petUnit->GetMotionMaster()->Clear();
@@ -146,7 +146,7 @@ void WorldSession::HandlePetAction(WorldPacket& recv_data)
                 }
                 case COMMAND_FOLLOW:                        // spellid=1792  // FOLLOW
                 {
-                    if (!petUnit->hasUnitState(UNIT_STAT_CONTROLLED))
+                    if (!petUnit->hasUnitState(UNIT_STAT_POSSESSED))
                     {
                         petUnit->StopMoving();
                         petUnit->GetMotionMaster()->Clear();
@@ -169,7 +169,7 @@ void WorldSession::HandlePetAction(WorldPacket& recv_data)
                         if (petUnit->getVictim() != targetUnit)
                         {
                             petUnit->AttackStop();
-                            if (!petUnit->hasUnitState(UNIT_STAT_CONTROLLED))
+                            if (!petUnit->hasUnitState(UNIT_STAT_POSSESSED))
                             {
                                 petUnit->GetMotionMaster()->Clear();
 
@@ -285,7 +285,7 @@ void WorldSession::HandlePetAction(WorldPacket& recv_data)
 
                 petUnit->AttackStop();
 
-                if (!petUnit->hasUnitState(UNIT_STAT_CONTROLLED))
+                if (!petUnit->hasUnitState(UNIT_STAT_POSSESSED))
                 {
                     petUnit->GetMotionMaster()->Clear();
 
@@ -303,7 +303,7 @@ void WorldSession::HandlePetAction(WorldPacket& recv_data)
             }
 
             // auto turn to target unless possessed
-            if (result == SPELL_FAILED_UNIT_NOT_INFRONT && !petUnit->hasUnitState(UNIT_STAT_CONTROLLED))
+            if (result == SPELL_FAILED_UNIT_NOT_INFRONT && !petUnit->hasUnitState(UNIT_STAT_POSSESSED))
             {
                 if (unit_target)
                 {
@@ -330,7 +330,7 @@ void WorldSession::HandlePetAction(WorldPacket& recv_data)
             }
             else
             {
-                if (petUnit->hasUnitState(UNIT_STAT_CONTROLLED))
+                if (petUnit->hasUnitState(UNIT_STAT_POSSESSED))
                     Spell::SendCastResult(GetPlayer(), spellInfo, 0, result);
                 else
                 {
