@@ -14,22 +14,22 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-cmake_minimum_required (VERSION 2.6)
+cmake_minimum_required (VERSION 3.0)
 set(EXECUTABLE_NAME "ad")
-project (${EXECUTABLE_NAME})
 
 list(APPEND AD_SOURCE
      loadlib/loadlib.cpp
      loadlib/adt.cpp
      loadlib/wdt.cpp
      dbcfile.cpp
-     System.cpp)
+     System.cpp
+)
 
-include_directories(loadlib ${CMAKE_SOURCE_DIR}/dep/StormLib)
+include_directories(loadlib)
 
 add_executable(${EXECUTABLE_NAME} ${AD_SOURCE})
 
-target_link_libraries(${EXECUTABLE_NAME} ${ZLIB_LIBRARIES} ${BZIP2_LIBRARIES} ${STORMLIB_LIBRARIES})
+target_link_libraries(${EXECUTABLE_NAME} storm)
 
 if(MSVC)
   # Define OutDir to source/bin/(platform)_(configuaration) folder.
