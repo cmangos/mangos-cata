@@ -5923,7 +5923,7 @@ bool Spell::DoSummonCritter(CreatureSummonPositions& list, SummonPropertiesEntry
     critter->SelectLevel();                                 // some summoned critters have different from 1 DB data for level/hp
     const CreatureInfo* info = critter->GetCreatureInfo();
     // Some companions have additional UNIT_FLAG_NON_ATTACKABLE (0x2), perphaps coming from template, so add template flags
-    critter->SetUInt32Value(UNIT_FIELD_FLAGS, (UNIT_FLAG_IMMUNE_TO_PLAYER | UNIT_FLAG_IMMUNE_TO_NPC | info->UnitFlags));
+    critter->SetUInt32Value(UNIT_FIELD_FLAGS, info->UnitFlags);
     critter->SetUInt32Value(UNIT_NPC_FLAGS, info->NpcFlags);// some companions may have quests, so they need npc flags
     critter->InitPetCreateSpells();                         // some companions may have spells (e.g. disgusting oozeling)
     if (m_duration > 0)                                     // set timer for unsummon
@@ -5941,6 +5941,9 @@ bool Spell::DoSummonCritter(CreatureSummonPositions& list, SummonPropertiesEntry
         critter->SetPvPSanctuary(true);
 
     critter->SetByteFlag(UNIT_FIELD_BYTES_2, 1, UNIT_BYTE2_FLAG_UNK5);
+
+    critter->SetImmuneToNPC(true);
+    critter->SetImmuneToPlayer(true);
 
     return true;
 }
@@ -6015,6 +6018,12 @@ bool Spell::DoSummonGuardian(CreatureSummonPositions& list, SummonPropertiesEntr
 
         if (m_caster->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PLAYER_CONTROLLED))
             spawnCreature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PLAYER_CONTROLLED);
+
+        if (m_caster->IsImmuneToNPC())
+            spawnCreature->SetImmuneToNPC(true);
+
+        if (m_caster->IsImmuneToPlayer())
+            spawnCreature->SetImmuneToPlayer(true);
 
         if (m_caster->IsPvP())
             spawnCreature->SetPvP(true);
@@ -6099,6 +6108,12 @@ bool Spell::DoSummonTotem(SpellEffectEntry const* effect, uint8 slot_dbc)
 
     if (m_caster->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PLAYER_CONTROLLED))
         pTotem->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PLAYER_CONTROLLED);
+
+    if (m_caster->IsImmuneToNPC())
+        pTotem->SetImmuneToNPC(true);
+
+    if (m_caster->IsImmuneToPlayer())
+        pTotem->SetImmuneToPlayer(true);
 
     if (m_caster->IsPvP())
         pTotem->SetPvP(true);
@@ -6218,6 +6233,12 @@ bool Spell::DoSummonPet(SpellEffectEntry const* effect)
     spawnCreature->AIM_Initialize();
 
     m_caster->SetPet(spawnCreature);
+
+    if (m_caster->IsImmuneToNPC())
+        spawnCreature->SetImmuneToNPC(true);
+
+    if (m_caster->IsImmuneToPlayer())
+        spawnCreature->SetImmuneToPlayer(true);
 
     if (m_caster->GetTypeId() == TYPEID_PLAYER)
     {
@@ -6825,6 +6846,12 @@ void Spell::EffectTameCreature(SpellEffectEntry const* /*effect*/)
     pet->setFaction(plr->getFaction());
     pet->SetUInt32Value(UNIT_CREATED_BY_SPELL, m_spellInfo->Id);
 
+    if (plr->IsImmuneToNPC())
+        pet->SetImmuneToNPC(true);
+
+    if (plr->IsImmuneToPlayer())
+        pet->SetImmuneToPlayer(true);
+
     if (plr->IsPvP())
         pet->SetPvP(true);
 
@@ -6964,6 +6991,12 @@ void Spell::EffectSummonPet(SpellEffectEntry const* effect)
 
     if (m_caster->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PLAYER_CONTROLLED))
         NewSummon->SetUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_PLAYER_CONTROLLED);
+
+    if (m_caster->IsImmuneToNPC())
+        NewSummon->SetImmuneToNPC(true);
+
+    if (m_caster->IsImmuneToPlayer())
+        NewSummon->SetImmuneToPlayer(true);
 
     if (m_caster->GetTypeId() == TYPEID_PLAYER)
     {
