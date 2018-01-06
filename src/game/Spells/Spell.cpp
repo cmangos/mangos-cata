@@ -3275,7 +3275,7 @@ SpellCastResult Spell::PreCastCheck(Aura* triggeredByAura /*= nullptr*/)
 
 SpellCastResult Spell::SpellStart(SpellCastTargets const* targets, Aura* triggeredByAura)
 {
-    m_spellState = SPELL_STATE_STARTING;
+    m_spellState = SPELL_STATE_TARGETING;
     m_targets = *targets;
 
     if (m_CastItem)
@@ -3311,7 +3311,7 @@ SpellCastResult Spell::SpellStart(SpellCastTargets const* targets, Aura* trigger
 
 void Spell::Prepare()
 {
-    m_spellState = SPELL_STATE_PREPARING;
+    m_spellState = SPELL_STATE_CASTING;
 
     // Prepare data for triggers
     prepareDataForTriggerSystem();
@@ -3363,12 +3363,12 @@ void Spell::cancel()
     switch (m_spellState)
     {
         case SPELL_STATE_CREATED:
-        case SPELL_STATE_STARTING:
-        case SPELL_STATE_PREPARING:
+        case SPELL_STATE_TARGETING:
+        case SPELL_STATE_CASTING:
             m_caster->ResetGCD(m_spellInfo);
 
         //(no break)
-        case SPELL_STATE_DELAYED:
+        case SPELL_STATE_TRAVELING:
         {
             SendInterrupted(0);
 
@@ -3376,7 +3376,11 @@ void Spell::cancel()
                 SendCastResult(SPELL_FAILED_INTERRUPTED);
         } break;
 
-        case SPELL_STATE_CASTING:
+        case SPELL_STATE_LANDING:
+            sLog.outError("Spell [%u] is interrupted while processing", m_spellInfo->Id);
+            // no break
+
+        case SPELL_STATE_CHANNELING:
         {
             for (TargetList::iterator ihit = m_UniqueTargetInfo.begin(); ihit != m_UniqueTargetInfo.end(); ++ihit)
             {
@@ -3721,7 +3725,7 @@ void Spell::cast(bool skipCheck)
 
         // Okay, maps created, now prepare flags
         m_immediateHandled = false;
-        m_spellState = SPELL_STATE_DELAYED;
+        m_spellState = SPELL_STATE_TRAVELING;
         SetDelayStart(0);
 
         // on spell cast end proc,
@@ -3744,13 +3748,15 @@ void Spell::cast(bool skipCheck)
 
 void Spell::handle_immediate()
 {
+    m_spellState = SPELL_STATE_LANDING;
+
     // process immediate effects (items, ground, etc.) also initialize some variables
     _handle_immediate_phase();
 
     // start channeling if applicable (after _handle_immediate_phase for get persistent effect dynamic object for channel target
     if (IsChanneledSpell(m_spellInfo) && m_duration)
     {
-        m_spellState = SPELL_STATE_CASTING;
+        m_spellState = SPELL_STATE_CHANNELING;
         SendChannelStart(m_duration);
 
         // Proc spell aura triggers on start of channeled spell
@@ -3769,7 +3775,7 @@ void Spell::handle_immediate()
     // Remove used for cast item if need (it can be already nullptr after TakeReagents call
     TakeCastItem();
 
-    if (m_spellState != SPELL_STATE_CASTING)
+    if (m_spellState != SPELL_STATE_CHANNELING)
         finish(true);                                       // successfully finish spell cast (not last in case autorepeat or channel spell)
 }
 
@@ -3932,7 +3938,7 @@ void Spell::update(uint32 difftime)
         !m_caster->HasAffectedAura(SPELL_AURA_ALLOW_CAST_WHILE_MOVING, m_spellInfo))
     {
         // always cancel for channeled spells
-        if (m_spellState == SPELL_STATE_CASTING && !m_spellInfo->HasAttribute(SPELL_ATTR_EX5_CAN_CHANNEL_WHEN_MOVING))
+        if (m_spellState == SPELL_STATE_CHANNELING && !m_spellInfo->HasAttribute(SPELL_ATTR_EX5_CAN_CHANNEL_WHEN_MOVING))
             cancel();
         // don't cancel for melee, autorepeat, triggered and instant spells
         else if(!IsNextMeleeSwingSpell() && !IsAutoRepeat() && !m_IsTriggeredSpell && (spellInterrupts && spellInterrupts->InterruptFlags & SPELL_INTERRUPT_FLAG_MOVEMENT))
@@ -3941,7 +3947,7 @@ void Spell::update(uint32 difftime)
 
     switch (m_spellState)
     {
-        case SPELL_STATE_PREPARING:
+        case SPELL_STATE_CASTING:
         {
             if (m_timer)
             {
@@ -3954,7 +3960,7 @@ void Spell::update(uint32 difftime)
             if (m_timer == 0 && !IsNextMeleeSwingSpell() && !IsAutoRepeat())
                 cast();
         } break;
-        case SPELL_STATE_CASTING:
+        case SPELL_STATE_CHANNELING:
         {
             if (m_timer > 0)
             {
@@ -7537,7 +7543,7 @@ void Spell::Delayed()
     if (!m_caster || m_caster->GetTypeId() != TYPEID_PLAYER)
         return;
 
-    if (m_spellState == SPELL_STATE_DELAYED)
+    if (m_spellState == SPELL_STATE_TRAVELING)
         return;                                             // spell is active and can't be time-backed
 
     if (isDelayableNoMore())                                // Spells may only be delayed twice
@@ -7576,7 +7582,7 @@ void Spell::Delayed()
 
 void Spell::DelayedChannel()
 {
-    if (!m_caster || m_caster->GetTypeId() != TYPEID_PLAYER || getState() != SPELL_STATE_CASTING)
+    if (!m_caster || m_caster->GetTypeId() != TYPEID_PLAYER || getState() != SPELL_STATE_CHANNELING)
         return;
 
     if (isDelayableNoMore())                                // Spells may only be delayed twice
@@ -7969,13 +7975,13 @@ bool SpellEvent::Execute(uint64 e_time, uint32 p_time)
             // event will be re-added automatically at the end of routine)
         } break;
 
-        case SPELL_STATE_CASTING:
+        case SPELL_STATE_CHANNELING:
         {
             // this spell is in channeled state, process it on the next update
             // event will be re-added automatically at the end of routine)
         } break;
 
-        case SPELL_STATE_DELAYED:
+        case SPELL_STATE_TRAVELING:
         {
             // first, check, if we have just started
             if (m_Spell->GetDelayStart() != 0)
