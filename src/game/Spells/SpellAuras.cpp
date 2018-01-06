@@ -9110,7 +9110,7 @@ SpellAuraHolder::SpellAuraHolder(SpellEntry const* spellproto, Unit* target, Wor
     m_procCharges(0), m_stackAmount(1),
     m_timeCla(1000), m_removeMode(AURA_REMOVE_BY_DEFAULT), m_AuraDRGroup(DIMINISHING_NONE),
     m_permanent(false), m_isRemovedOnShapeLost(true), m_deleted(false),
-    m_spellAuraHolderState(SPELLAURAHOLDER_STATE_CREATED)
+    m_spellAuraHolderState(SPELLAURAHOLDER_STATE_CREATED), m_skipUpdate(false)
 {
     MANGOS_ASSERT(target);
     MANGOS_ASSERT(spellproto && spellproto == sSpellStore.LookupEntry(spellproto->Id) && "`info` must be pointer to sSpellStore element");
@@ -10378,6 +10378,12 @@ SpellAuraHolder::~SpellAuraHolder()
 
 void SpellAuraHolder::Update(uint32 diff)
 {
+    if (m_skipUpdate)
+    {
+        m_skipUpdate = false;
+        return;
+    }
+
     for (int32 i = 0; i < MAX_EFFECT_INDEX; ++i)
         if (Aura* aura = m_auras[i])
             aura->UpdateAura(diff);
@@ -10578,4 +10584,9 @@ void Aura::HandleOverrideSpellPowerByAp(bool apply, bool Real)
         return;
 
     ((Player*)GetTarget())->UpdateSpellDamageAndHealingBonus();
+}
+
+void SpellAuraHolder::SetCreationDelayFlag()
+{
+    m_skipUpdate = true;
 }
