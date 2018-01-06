@@ -2321,7 +2321,7 @@ bool WorldObject::IsSpellReady(SpellEntry const& spellEntry, ItemPrototype const
         }
     }
 
-    if (spellEntry.GetRecoveryTime() && m_cooldownMap.FindBySpellId(spellEntry.Id) != m_cooldownMap.end())
+    if (m_cooldownMap.FindBySpellId(spellEntry.Id) != m_cooldownMap.end())
         return false;
 
     if (spellCategory && m_cooldownMap.FindByCategory(spellCategory) != m_cooldownMap.end())
