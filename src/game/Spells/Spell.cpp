@@ -2521,7 +2521,7 @@ void Spell::SetTargetMap(SpellEffectIndex effIndex, uint32 targetMode, UnitList&
             break;
         case TARGET_SINGLE_ENEMY:
         {
-            if (Unit* pUnitTarget = m_caster->SelectMagnetTarget(m_targets.getUnitTarget(), this, effIndex))
+            if (Unit* pUnitTarget = m_caster->SelectMagnetTarget(m_caster->GetMap()->GetUnit(m_caster->GetChannelObjectGuid())))
             {
                 if (m_targets.getUnitTarget() && m_targets.getUnitTarget() != pUnitTarget)
                     m_spellFlags |= SPELL_FLAG_REDIRECTED;
