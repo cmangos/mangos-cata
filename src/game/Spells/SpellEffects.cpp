@@ -3218,7 +3218,7 @@ void Spell::EffectDummy(SpellEffectEntry const* effect)
                     uint8 maxCreatures = unitTarget->GetMap()->GetDifficulty() == RAID_DIFFICULTY_25MAN_NORMAL || unitTarget->GetMap()->GetDifficulty() == RAID_DIFFICULTY_25MAN_HEROIC ? 5 : 2;
 
                     for (uint8 i = 0; i < maxCreatures; ++i)
-                        m_caster->CastSpell(unitTarget, m_spellInfo->CalculateSimpleValue(eff_idx), TRIGGERED_OLD_TRIGGERED);
+                        m_caster->CastSpell(unitTarget, effect->CalculateSimpleValue(), TRIGGERED_OLD_TRIGGERED);
 
                     return;
                 }
