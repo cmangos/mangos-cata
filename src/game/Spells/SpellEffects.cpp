@@ -5887,6 +5887,9 @@ bool Spell::DoSummonCritter(CreatureSummonPositions& list, SummonPropertiesEntry
     if (m_caster->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PLAYER_CONTROLLED))
         critter->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PLAYER_CONTROLLED);
 
+    if (m_caster->IsPvPFreeForAll())
+        critter->SetPvPFreeForAll(true);
+
     if (m_caster->IsPvPSanctuary())
         critter->SetPvPSanctuary(true);
 
@@ -5969,6 +5972,9 @@ bool Spell::DoSummonGuardian(CreatureSummonPositions& list, SummonPropertiesEntr
         if (m_caster->IsPvP())
             spawnCreature->SetPvP(true);
 
+        if (m_caster->IsPvPFreeForAll())
+            spawnCreature->SetPvPFreeForAll(true);
+
         if (m_caster->IsPvPSanctuary())
             spawnCreature->SetPvPSanctuary(true);
 
@@ -6050,8 +6056,8 @@ bool Spell::DoSummonTotem(SpellEffectEntry const* effect, uint8 slot_dbc)
     if (m_caster->IsPvP())
         pTotem->SetPvP(true);
 
-    if (m_caster->IsFFAPvP())
-        pTotem->SetFFAPvP(true);
+    if (m_caster->IsPvPFreeForAll())
+        pTotem->SetPvPFreeForAll(true);
 
     if (m_caster->IsPvPSanctuary())
         pTotem->SetPvPSanctuary(true);
@@ -6773,8 +6779,8 @@ void Spell::EffectTameCreature(SpellEffectEntry const* /*effect*/)
     if (plr->IsPvP())
         pet->SetPvP(true);
 
-    if (plr->IsFFAPvP())
-        pet->SetFFAPvP(true);
+    if (plr->IsPvPFreeForAll())
+        pet->SetPvPFreeForAll(true);
 
     if (plr->IsPvPSanctuary())
         pet->SetPvPSanctuary(true);
@@ -6920,8 +6926,8 @@ void Spell::EffectSummonPet(SpellEffectEntry const* effect)
         if (m_caster->IsPvP())
             NewSummon->SetPvP(true);
 
-        if (m_caster->IsFFAPvP())
-            NewSummon->SetFFAPvP(true);
+        if (m_caster->IsPvPFreeForAll())
+            NewSummon->SetPvPFreeForAll(true);
 
         if (m_caster->IsPvPSanctuary())
             NewSummon->SetPvPSanctuary(true);
@@ -12170,8 +12176,8 @@ void Spell::EffectCreateTamedPet(SpellEffectEntry const* effect)
     if (unitTarget->IsPvP())
         newTamedPet->SetPvP(true);
 
-    if (unitTarget->IsFFAPvP())
-        newTamedPet->SetFFAPvP(true);
+    if (unitTarget->IsPvPFreeForAll())
+        newTamedPet->SetPvPFreeForAll(true);
 
     if (unitTarget->IsPvPSanctuary())
         newTamedPet->SetPvPSanctuary(true);

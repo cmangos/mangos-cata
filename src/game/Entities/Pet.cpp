@@ -280,8 +280,8 @@ bool Pet::LoadPetFromDB(Player* owner, uint32 petentry /*= 0*/, uint32 petnumber
     if (owner->IsPvP())
         SetPvP(true);
 
-    if (owner->IsFFAPvP())
-        SetFFAPvP(true);
+    if (owner->IsPvPFreeForAll())
+        SetPvPFreeForAll(true);
 
     if (owner->IsPvPSanctuary())
         SetPvPSanctuary(true);
