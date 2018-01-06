@@ -9260,7 +9260,7 @@ void SpellAuraHolder::_AddSpellAuraHolder()
     if (!m_spellProto->HasAttribute(SPELL_ATTR_EX5_HIDE_DURATION) && GetSpellMaxDuration(m_spellProto) > 0)
         flags |= AFLAG_DURATION;
 
-    if (IsPositive())
+    if (IsPositive() && !GetSpellProto()->HasAttribute(SPELL_ATTR_NEGATIVE))
         flags |= AFLAG_POSITIVE;
     else
         flags |= AFLAG_NEGATIVE;
