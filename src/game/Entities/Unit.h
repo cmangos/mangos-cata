@@ -611,7 +611,7 @@ enum UnitFlags2
 {
     UNIT_FLAG2_FEIGN_DEATH          = 0x00000001,
     UNIT_FLAG2_UNK1                 = 0x00000002,           // Hides body and body armor. Weapons and shoulder and head armor still visible
-    UNIT_FLAG2_UNK2                 = 0x00000004,
+    UNIT_FLAG2_IGNORE_REPUTATION    = 0x00000004,
     UNIT_FLAG2_COMPREHEND_LANG      = 0x00000008,
     UNIT_FLAG2_CLONED               = 0x00000010,           // Used in SPELL_AURA_MIRROR_IMAGE
     UNIT_FLAG2_UNK5                 = 0x00000020,
@@ -621,6 +621,11 @@ enum UnitFlags2
     UNIT_FLAG2_UNK9                 = 0x00000200,
     UNIT_FLAG2_DISARM_RANGED        = 0x00000400,
     UNIT_FLAG2_REGENERATE_POWER     = 0x00000800,
+    UNIT_FLAG2_SPELL_CLICK_IN_GROUP = 0x00001000,
+    UNIT_FLAG2_SPELL_CLICK_DISABLED = 0x00002000,
+    UNIT_FLAG2_INTERACT_ANY_REACTION= 0x00004000,
+    UNIT_FLAG2_UNK15                = 0x00008000,
+    UNIT_FLAG2_UNK16                = 0x00010000,
     UNIT_FLAG2_WORGEN_TRANSFORM     = 0x00080000,           // transform to worgen
     UNIT_FLAG2_WORGEN_TRANSFORM2    = 0x00100000,           // transform to worgen, but less animation?
     UNIT_FLAG2_WORGEN_TRANSFORM3    = 0x00200000            // transform to worgen, but less animation?
@@ -1502,7 +1507,7 @@ class Unit : public WorldObject
         bool CanFreeMove() const { return !hasUnitState(UNIT_STAT_NO_FREE_MOVE) && !GetOwnerGuid(); }
 
         virtual uint32 GetLevelForTarget(Unit const* /*target*/) const { return getLevel(); }
-        bool IsTrivialForTarget(Unit const* unit) const;
+        bool IsTrivialForTarget(Unit const* pov) const;
 
         void SetLevel(uint32 lvl);
 
@@ -1573,7 +1578,28 @@ class Unit : public WorldObject
 
             return false;
         }
-        bool IsPvP() const { return HasByteFlag(UNIT_FIELD_BYTES_2, 1, UNIT_BYTE2_FLAG_PVP); }
+
+        ReputationRank GetReactionTo(Unit const* unit) const override;
+        ReputationRank GetReactionTo(Corpse const* corpse) const override;
+
+        bool IsEnemy(Unit const* unit) const override;
+        bool IsFriend(Unit const* unit) const override;
+
+        bool CanAssist(Unit const* unit, bool ignoreFlags = false) const;
+        bool CanAssist(Corpse const* corpse) const;
+
+        bool CanAttack(Unit const* unit) const;
+        bool CanAttackNow(Unit const* unit) const;
+
+        bool CanCooperate(Unit const* unit) const;
+
+        bool CanInteract(GameObject const* object) const;
+        bool CanInteract(Unit const* unit) const;
+        bool CanInteractNow(Unit const* unit) const;
+
+        bool IsCivilianForTarget(Unit const* pov) const;
+
+        bool IsPvP() const { return HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP); }
         void SetPvP(bool state);
         bool IsPvPFreeForAll() const { return HasByteFlag(UNIT_FIELD_BYTES_2, 1, UNIT_BYTE2_FLAG_FFA_PVP); }
         void SetPvPFreeForAll(bool state);
