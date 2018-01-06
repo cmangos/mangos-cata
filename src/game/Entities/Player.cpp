@@ -19359,7 +19359,7 @@ void Player::UpdatePotionCooldown(Spell* spell)
     if (spellEntry)
     {
         // start cooldowns at server side, if any
-        AddCooldown(*spell->m_spellInfo, itemProto);
+        AddCooldown(*spellEntry, itemProto);
     }
 
     m_lastPotionId = 0;
