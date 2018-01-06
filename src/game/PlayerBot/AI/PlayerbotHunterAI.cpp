@@ -241,7 +241,7 @@ CombatManeuverReturns PlayerbotHunterAI::DoNextCombatManeuverPVE(Unit *pTarget)
 
             m_bot->setAttackTimer(RANGED_ATTACK,500);
 
-            const SpellEntry* spellInfo = sSpellTemplate.LookupEntry<SpellEntry>(AUTO_SHOT);
+            const SpellEntry* spellInfo = sSpellStore.LookupEntry(AUTO_SHOT);
             if (!spellInfo)
                 return RETURN_CONTINUE;
 

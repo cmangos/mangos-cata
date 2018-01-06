@@ -956,7 +956,7 @@ void Player::MakeTalentGlyphLink(std::ostringstream &out)
 
                     TalentEntry const* talentInfo = sTalentStore.LookupEntry(talent.talentEntry->TalentID);
 
-                    SpellEntry const* spell_entry = sSpellTemplate.LookupEntry<SpellEntry>(talentInfo->RankID[talent.currentRank]);
+                    SpellEntry const* spell_entry = sSpellStore.LookupEntry(talentInfo->RankID[talent.currentRank]);
 
                     out << "|cff4e96f7|Htalent:" << talent.talentEntry->TalentID << ":" << talent.currentRank
                         << " |h[" << spell_entry->SpellName[GetSession()->GetSessionDbcLocale()] << "]|h|r";
@@ -980,7 +980,7 @@ void Player::MakeTalentGlyphLink(std::ostringstream &out)
                 if (!glyph)
                     continue;
 
-                SpellEntry const* spell_entry = sSpellTemplate.LookupEntry<SpellEntry>(glyph->SpellId);
+                SpellEntry const* spell_entry = sSpellStore.LookupEntry(glyph->SpellId);
 
                 out << "|cff66bbff|Hglyph:" << GetGlyphSlot(i) << ":" << m_glyphs[specIdx][i].GetId()
                     << " |h[" << spell_entry->SpellName[GetSession()->GetSessionDbcLocale()] << "]|h|r";

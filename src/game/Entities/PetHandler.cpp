@@ -247,7 +247,7 @@ void WorldSession::HandlePetAction(WorldPacket& recv_data)
                 return;
             }
 
-            if (petUnit->GetCharmInfo() && petUnit->GetCharmInfo()->GetGlobalCooldownMgr().HasGlobalCooldown(spellInfo))
+            if (!petUnit->IsSpellReady(*spellInfo))
                 return;
 
             for (int i = 0; i < MAX_EFFECT_INDEX; ++i)
@@ -325,9 +325,6 @@ void WorldSession::HandlePetAction(WorldPacket& recv_data)
 
             if (result == SPELL_CAST_OK)
             {
-                if (creature)
-                    creature->AddCreatureSpellCooldown(spellid);
-
                 unit_target = spell->m_targets.getUnitTarget();
 
                 charmInfo->SetSpellOpener();
@@ -344,7 +341,7 @@ void WorldSession::HandlePetAction(WorldPacket& recv_data)
                         Spell::SendCastResult((Player*)owner, spellInfo, 0, result, true);
                 }
 
-                if (creature && !creature->HasSpellCooldown(spellid))
+                if (creature && creature->IsSpellReady(*spellInfo))
                     GetPlayer()->SendClearCooldown(spellid, petUnit);
 
                 charmInfo->SetSpellOpener();
@@ -759,7 +756,7 @@ void WorldSession::HandlePetCastSpellOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    if (petUnit->GetCharmInfo() && petUnit->GetCharmInfo()->GetGlobalCooldownMgr().HasGlobalCooldown(spellInfo))
+    if (!petUnit->IsSpellReady(*spellInfo))
         return;
 
     Aura* triggeredByAura = petUnit->GetTriggeredByClientAura(spellid);
@@ -780,18 +777,14 @@ void WorldSession::HandlePetCastSpellOpcode(WorldPacket& recvPacket)
 
     SpellCastResult result = triggeredByAura ? SPELL_CAST_OK : spell->CheckPetCast(nullptr);
     if (result == SPELL_CAST_OK)
-    {
-        if (pet)
-            pet->AddCreatureSpellCooldown(spellid);
         spell->SpellStart(&(spell->m_targets), triggeredByAura);
-    }
     else
     {
         Unit* owner = petUnit->GetMaster();
         if (owner && owner->GetTypeId() == TYPEID_PLAYER && !triggeredByAura)
             Spell::SendCastResult((Player*)owner, spellInfo, 0, result, true);
 
-        if (pet && !pet->HasSpellCooldown(spellid) && !triggeredByAura)
+        if (pet && pet->IsSpellReady(*spellInfo) && !triggeredByAura)
             GetPlayer()->SendClearCooldown(spellid, pet);
 
         spell->finish(false);

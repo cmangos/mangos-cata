@@ -365,7 +365,7 @@ bool PlayerbotClassAI::FleeFromAoEIfCan(uint32 spellId, Unit* pTarget)
 
     // Step 1: Get radius from hostile AoE spell
     float radius = 0;
-    SpellEntry const* spellproto = sSpellTemplate.LookupEntry<SpellEntry>(spellId);
+    SpellEntry const* spellproto = sSpellStore.LookupEntry(spellId);
     if (spellproto)
     {
         SpellEffectEntry const* spellEffect = spellproto->GetSpellEffect(SpellEffectIndex(0));
@@ -433,7 +433,7 @@ bool PlayerbotClassAI::FleeFromNpcWithAuraIfCan(uint32 NpcEntry, uint32 spellId,
 
     // Step 1: Get radius from hostile aura spell
     float radius = 0;
-    SpellEntry const* spellproto = sSpellTemplate.LookupEntry<SpellEntry>(spellId);
+    SpellEntry const* spellproto = sSpellStore.LookupEntry(spellId);
     if (spellproto)
     {
         SpellEffectEntry const* spellEffect = spellproto->GetSpellEffect(SpellEffectIndex(0));

@@ -1979,7 +1979,7 @@ void ObjectMgr::LoadItemPrototypes()
         for (uint32 k = 0; k < MAX_ITEM_PROTO_SPELLS; k++)
             if (proto->Spells[k].SpellCategory && proto->Spells[k].SpellId)
             {
-                if (SpellEntry const* spellInfo = sSpellTemplate.LookupEntry<SpellEntry>(proto->Spells[k].SpellId))
+                if (SpellEntry const* spellInfo = sSpellStore.LookupEntry(proto->Spells[k].SpellId))
                     sItemSpellCategoryStore[proto->Spells[k].SpellCategory].insert(ItemCategorySpellPair(proto->Spells[k].SpellId, i));
                 else
                     sLog.outErrorDb("Item (Entry: %u) not correct %u spell id, must exist in spell table.", i, proto->Spells[k].SpellId);

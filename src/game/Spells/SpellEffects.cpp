@@ -980,21 +980,8 @@ void Spell::EffectDummy(SpellEffectEntry const* effect)
                     if (m_caster->GetTypeId() == TYPEID_PLAYER)
                     {
                         // immediately finishes the cooldown on certain Rogue abilities
-                        const SpellCooldowns& cm = ((Player*)m_caster)->GetSpellCooldownMap();
-                        for (SpellCooldowns::const_iterator itr = cm.begin(); itr != cm.end();)
-                        {
-                            SpellEntry const* spellInfo = sSpellStore.LookupEntry(itr->first);
-
-                            if (!spellInfo)
-                                return;
-
-                            SpellClassOptionsEntry const* spellClassOptions = spellInfo->GetSpellClassOptions();
-
-                            if (spellClassOptions && spellClassOptions->SpellFamilyName == SPELLFAMILY_ROGUE && (spellClassOptions->SpellFamilyFlags.IsFitToFamilyMask(uint64(0x0000026000000860))))
-                                ((Player*)m_caster)->RemoveSpellCooldown((itr++)->first, true);
-                            else
-                                ++itr;
-                        }
+                        auto cdCheck = [](SpellEntry const& spellEntry) -> bool { return (spellEntry.GetSpellFamilyName() == SPELLFAMILY_ROGUE && (spellEntry.GetSpellClassOptions() && spellEntry.GetSpellClassOptions()->SpellFamilyFlags & uint64(0x0000026000000860))); };
+                        static_cast<Player*>(m_caster)->RemoveSomeCooldown(cdCheck);
                     }
 
                     return;
@@ -3276,20 +3263,15 @@ void Spell::EffectDummy(SpellEffectEntry const* effect)
                         return;
 
                     // immediately finishes the cooldown on Frost spells
-                    const SpellCooldowns& cm = ((Player*)m_caster)->GetSpellCooldownMap();
-                    for (SpellCooldowns::const_iterator itr = cm.begin(); itr != cm.end();)
+                    auto cdCheck = [](SpellEntry const& spellEntry) -> bool
                     {
-                        SpellEntry const* spellInfo = sSpellStore.LookupEntry(itr->first);
-
-                        if (spellInfo->GetSpellFamilyName() == SPELLFAMILY_MAGE &&
-                            (GetSpellSchoolMask(spellInfo) & SPELL_SCHOOL_MASK_FROST) &&
-                            spellInfo->Id != 11958 && GetSpellRecoveryTime(spellInfo) > 0)
-                        {
-                            ((Player*)m_caster)->RemoveSpellCooldown((itr++)->first, true);
-                        }
-                        else
-                            ++itr;
-                    }
+                        if (spellEntry.Id == 11958 || spellEntry.GetSpellFamilyName() != SPELLFAMILY_MAGE)
+                            return false;
+                        if ((GetSpellSchoolMask(&spellEntry) & SPELL_SCHOOL_MASK_FROST) && GetSpellRecoveryTime(&spellEntry) > 0)
+                            return true;
+                        return false;
+                    };
+                    static_cast<Player*>(m_caster)->RemoveSomeCooldown(cdCheck);
                     return;
                 }
                 case 31687:                                 // Summon Water Elemental
@@ -3606,16 +3588,8 @@ void Spell::EffectDummy(SpellEffectEntry const* effect)
                         return;
 
                     // immediately finishes the cooldown on certain Rogue abilities
-                    const SpellCooldowns& cm = ((Player*)m_caster)->GetSpellCooldownMap();
-                    for (SpellCooldowns::const_iterator itr = cm.begin(); itr != cm.end();)
-                    {
-                        SpellEntry const *spellInfo = sSpellStore.LookupEntry(itr->first);
-                        SpellClassOptionsEntry const* prepClassOptions = spellInfo->GetSpellClassOptions();
-                        if (prepClassOptions && prepClassOptions->SpellFamilyName == SPELLFAMILY_ROGUE && (prepClassOptions->SpellFamilyFlags & uint64(0x0000024000000860)))
-                            ((Player*)m_caster)->RemoveSpellCooldown((itr++)->first,true);
-                        else
-                            ++itr;
-                    }
+                    auto cdCheck = [](SpellEntry const& spellEntry) -> bool { return (spellEntry.GetSpellFamilyName() == SPELLFAMILY_ROGUE && (spellEntry.GetSpellClassOptions() && spellEntry.GetSpellClassOptions()->SpellFamilyFlags & uint64(0x0000024000000860))); };
+                    static_cast<Player*>(m_caster)->RemoveSomeCooldown(cdCheck);
                     return;
                 }
                 case 31231:                                 // Cheat Death
@@ -3685,16 +3659,8 @@ void Spell::EffectDummy(SpellEffectEntry const* effect)
                         return;
 
                     // immediately finishes the cooldown for hunter abilities
-                    const SpellCooldowns& cm = ((Player*)m_caster)->GetSpellCooldownMap();
-                    for (SpellCooldowns::const_iterator itr = cm.begin(); itr != cm.end();)
-                    {
-                        SpellEntry const* spellInfo = sSpellStore.LookupEntry(itr->first);
-
-                        if (spellInfo->GetSpellFamilyName() == SPELLFAMILY_HUNTER && spellInfo->Id != 23989 && GetSpellRecoveryTime(spellInfo) > 0 )
-                            ((Player*)m_caster)->RemoveSpellCooldown((itr++)->first,true);
-                        else
-                            ++itr;
-                    }
+                    auto cdCheck = [](SpellEntry const& spellEntry) -> bool { return (spellEntry.GetSpellFamilyName() == SPELLFAMILY_HUNTER && spellEntry.Id != 23989 && GetSpellRecoveryTime(&spellEntry) > 0); };
+                    static_cast<Player*>(m_caster)->RemoveSomeCooldown(cdCheck);
                     return;
                 }
                 case 37506:                                 // Scatter Shot
@@ -3793,7 +3759,7 @@ void Spell::EffectDummy(SpellEffectEntry const* effect)
                     // non-standard cast requirement check
                     if (!friendTarget || friendTarget->getAttackers().empty())
                     {
-                        ((Player*)m_caster)->RemoveSpellCooldown(m_spellInfo->Id, true);
+                        m_caster->RemoveSpellCooldown(m_spellInfo->Id, true);
                         SendCastResult(SPELL_FAILED_TARGET_AFFECTING_COMBAT);
                         return;
                     }
@@ -4261,11 +4227,16 @@ void Spell::EffectTriggerSpell(SpellEffectEntry const* effect)
                 return;
 
             uint32 spellId = 1784;
-            // reset cooldown on it if needed
-            if (((Player*)unitTarget)->HasSpellCooldown(spellId))
-                ((Player*)unitTarget)->RemoveSpellCooldown(spellId);
+            SpellEntry const* spellEntry = sSpellStore.LookupEntry(spellId);
+            if (spellEntry)
+            {
+                Player* playerTarget = static_cast<Player*>(unitTarget);
+                // reset cooldown on it if needed
+                if (!playerTarget->IsSpellReady(*spellEntry))
+                    playerTarget->RemoveSpellCooldown(*spellEntry);
+                m_caster->CastSpell(unitTarget, spellEntry, TRIGGERED_OLD_TRIGGERED);
+            }
 
-            m_caster->CastSpell(unitTarget, spellId, TRIGGERED_OLD_TRIGGERED);
             return;
         }
         case 29284:                                         // Brittle Armor - (need add max stack of 24575 Brittle Armor)
@@ -7364,7 +7335,7 @@ void Spell::EffectInterruptCast(SpellEffectEntry const* /*effect*/)
             // check if we can interrupt spell
             if ((curSpellInfo->GetInterruptFlags() & SPELL_INTERRUPT_FLAG_INTERRUPT) && curSpellInfo->GetPreventionType() == SPELL_PREVENTION_TYPE_SILENCE )
             {
-                unitTarget->ProhibitSpellSchool(GetSpellSchoolMask(curSpellInfo), GetSpellDuration(m_spellInfo));
+                unitTarget->LockOutSpells(GetSpellSchoolMask(curSpellInfo), GetSpellDuration(m_spellInfo));
                 unitTarget->InterruptSpell(CurrentSpellTypes(i), false);
                 interruptedSpellId = curSpellInfo->Id;
             }
@@ -8907,7 +8878,7 @@ void Spell::EffectScriptEffect(SpellEffectEntry const* effect)
                     if (!caster || caster->GetTypeId() != TYPEID_PLAYER)
                         return;
 
-                    ((Player*)caster)->RemoveSpellCategoryCooldown(82, true);
+                    caster->RemoveSpellCategoryCooldown(82, true);
                     return;
                 }
                 case 50742:                                 // Ooze Combine
