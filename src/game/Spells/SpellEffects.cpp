@@ -1619,7 +1619,7 @@ void Spell::EffectDummy(SpellEffectEntry const* effect)
                 }
                 case 39246:
                 {
-                    if (!unitTarget || unitTarget->GetTypeId() != TYPEID_UNIT || eff_idx != EFFECT_INDEX_2)
+                    if (!unitTarget || unitTarget->GetTypeId() != TYPEID_UNIT || effect->EffectIndex != EFFECT_INDEX_2)
                         return;
 
                     uint32 spellId;
