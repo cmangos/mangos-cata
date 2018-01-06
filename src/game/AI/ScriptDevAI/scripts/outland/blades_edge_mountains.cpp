@@ -30,7 +30,7 @@ npc_light_orb_collector
 EndContentData */
 
 #include "AI/ScriptDevAI/include/precompiled.h"
-#include "Entities/TemporarySummon.h"
+#include "Entities/TemporarySpawn.h"
 
 /*######
 ## mobs_nether_drake
@@ -295,9 +295,7 @@ struct npc_bloodmaul_stout_triggerAI : public ScriptedAI
             // Give kill credit to the summoner player
             if (m_creature->IsTemporarySummon())
             {
-                TemporarySummon* pTemporary = (TemporarySummon*)m_creature;
-
-                if (Player* pSummoner = m_creature->GetMap()->GetPlayer(pTemporary->GetSummonerGuid()))
+                if (Player* pSummoner = m_creature->GetMap()->GetPlayer(m_creature->GetSpawnerGuid()))
                     pSummoner->KilledMonsterCredit(m_creature->GetEntry(), m_creature->GetObjectGuid());
             }
 
@@ -541,7 +539,7 @@ struct npc_simon_game_bunnyAI : public ScriptedAI
 
             // Get original summoner
             if (m_creature->IsTemporarySummon())
-                m_masterPlayerGuid = ((TemporarySummon*)m_creature)->GetSummonerGuid();
+                m_masterPlayerGuid = m_creature->GetSpawnerGuid();
 
             // Get closest apexis
             if (GameObject* pGo = GetClosestGameObjectWithEntry(m_creature, GO_APEXIS_RELIC, 5.0f))
@@ -848,9 +846,7 @@ struct npc_light_orb_collectorAI : public ScriptedAI
             // Give kill credit to the player
             if (m_creature->IsTemporarySummon())
             {
-                TemporarySummon* pTemporary = (TemporarySummon*)m_creature;
-
-                if (Player* pSummoner = m_creature->GetMap()->GetPlayer(pTemporary->GetSummonerGuid()))
+                if (Player* pSummoner = m_creature->GetMap()->GetPlayer(m_creature->GetSpawnerGuid()))
                     pSummoner->KilledMonsterCredit(NPC_KILL_CREDIT_TRIGGER, m_creature->GetObjectGuid());
             }
 
@@ -892,7 +888,6 @@ CreatureAI* GetAI_npc_light_orb_collector(Creature* pCreature)
 {
     return new npc_light_orb_collectorAI(pCreature);
 }
-
 
 /*######
 ## Grimoire business AIs
@@ -1187,7 +1182,7 @@ struct npc_vimgol_middle_bunnyAI : public ScriptedAI
             else
             {
                 if (playersInsideCircles() == 5)
-                    m_creature->SummonCreature(NPC_VIMGOL_THE_VILE, m_creature->GetPositionX(), m_creature->GetPositionY(), m_creature->GetPositionZ(), m_creature->GetOrientation(), TEMPSUMMON_TIMED_OOC_OR_DEAD_DESPAWN, 90000);
+                    m_creature->SummonCreature(NPC_VIMGOL_THE_VILE, m_creature->GetPositionX(), m_creature->GetPositionY(), m_creature->GetPositionZ(), m_creature->GetOrientation(), TEMPSPAWN_TIMED_OOC_OR_DEAD_DESPAWN, 90000);
                 if (m_uiBeamTimer == 0)
                 {
                     CastBunnySpell(nullptr, SPELL_PENTAGRAM_BEAM);
@@ -1311,8 +1306,7 @@ struct npc_spirit_prisoner_of_bladespire : public ScriptedAI
     {
         if (eventType == AI_EVENT_CUSTOM_A)
         {
-            TemporarySummon* summon = (TemporarySummon*)m_creature;
-            if (Unit* summoner = summon->GetSummoner())
+            if (Unit* summoner = m_creature->GetSummoner())
                 m_creature->GetMotionMaster()->MovePoint(POINT_PLAYER_POSITION, summoner->GetPositionX(), summoner->GetPositionY(), summoner->GetPositionZ());
         }
     }

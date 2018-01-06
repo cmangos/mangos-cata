@@ -35,7 +35,7 @@ EndContentData */
 
 #include "AI/ScriptDevAI/include/precompiled.h"
 #include "AI/ScriptDevAI/base/escort_ai.h"
-#include "Entities/TemporarySummon.h"
+#include "Entities/TemporarySpawn.h"
 #include "AI/ScriptDevAI/base/follower_ai.h"
 
 /*######
@@ -81,7 +81,7 @@ struct npc_nesingwary_trapperAI : public ScriptedAI
             if (m_creature->IsTemporarySummon())
             {
                 // Get the summoner trap
-                if (GameObject* pTrap = m_creature->GetMap()->GetGameObject(((TemporarySummon*)m_creature)->GetSummonerGuid()))
+                if (GameObject* pTrap = m_creature->GetMap()->GetGameObject(m_creature->GetSummonerGuid()))
                     m_trapGuid = pTrap->GetObjectGuid();
             }
         }

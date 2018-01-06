@@ -45,7 +45,7 @@
 #include "Chat/Chat.h"
 #include "Server/DB2Stores.h"
 #include "Entities/Vehicle.h"
-#include "Entities/TemporarySummon.h"
+#include "Entities/TemporarySpawn.h"
 #include "MotionGenerators/PathFinder.h"
 #include "Entities/ObjectGuid.h"
 
@@ -2295,7 +2295,7 @@ void Spell::SetTargetMap(SpellEffectIndex effIndex, uint32 targetMode, UnitList&
                 return;
 
             if (caster->GetTypeId() == TYPEID_UNIT && ((Creature*)caster)->IsTemporarySummon())
-                targetUnitMap.push_back(((TemporarySummon*)(Creature*)caster)->GetSummoner());
+                targetUnitMap.push_back(((Creature*)caster)->GetSummoner());
             else if (caster->GetTypeId() == TYPEID_GAMEOBJECT && !((GameObject*)caster)->HasStaticDBSpawnData())
                 targetUnitMap.push_back(((GameObject*)caster)->GetOwner());
             else
@@ -3135,7 +3135,7 @@ void Spell::SetTargetMap(SpellEffectIndex effIndex, uint32 targetMode, UnitList&
                         }
                     }
 
-                    //unitTarget->SummonCreature(VISUAL_WAYPOINT, nextPos.x, nextPos.y, nextPos.z, 0, TEMPSUMMON_TIMED_DESPAWN, 15000);
+                    //unitTarget->SummonCreature(VISUAL_WAYPOINT, nextPos.x, nextPos.y, nextPos.z, 0, TEMPSPAWN_TIMED_DESPAWN, 15000);
                     float hitZ = nextPos.z + 1.5f;
                     if (pUnitTarget->GetMap()->GetHitPosition(prevPos.x, prevPos.y, prevPos.z + 1.5f, nextPos.x, nextPos.y, hitZ, pUnitTarget->GetPhaseMask(), -1.0f))
                     {

@@ -28,7 +28,7 @@
 #include "Util.h"
 #include "Entities/Pet.h"
 #include "Spells/SpellAuras.h"
-#include "TemporarySummon.h"
+#include "TemporarySpawn.h"
 
 void WorldSession::HandlePetAction(WorldPacket& recv_data)
 {
@@ -860,6 +860,6 @@ void WorldSession::HandleDismissCritter(WorldPacket& recvData)
     if (_player->GetCritterGuid() == guid)
     {
         if (pet->GetTypeId() == TYPEID_UNIT && ((Creature*)pet)->IsTemporarySummon())
-            ((TemporarySummon*)pet)->UnSummon();
+            ((TemporarySpawn*)pet)->UnSummon();
     }
 }
