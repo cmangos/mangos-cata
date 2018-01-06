@@ -11174,7 +11174,7 @@ uint32 Unit::GetCreateMaxPowers(Powers power) const
 
 void Unit::AddToWorld()
 {
-    Object::AddToWorld();
+    WorldObject::AddToWorld();
     ScheduleAINotify(0);
 }
 

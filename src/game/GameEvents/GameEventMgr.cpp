@@ -697,6 +697,8 @@ void GameEventMgr::UnApplyEvent(uint16 event_id)
     UpdateEventQuests(event_id, false);
     UpdateWorldStates(event_id, false);
     SendEventMails(event_nid);
+
+    OnEventHappened(event_id, false, false);
 }
 
 void GameEventMgr::ApplyNewEvent(uint16 event_id, bool resume)
@@ -727,6 +729,8 @@ void GameEventMgr::ApplyNewEvent(uint16 event_id, bool resume)
     // Not send mails at game event startup, if game event just resume after server shutdown (has been active at server before shutdown)
     if (!resume)
         SendEventMails(event_id);
+
+    OnEventHappened(event_id, true, resume);
 }
 
 void GameEventMgr::GameEventSpawn(int16 event_id)
@@ -1060,4 +1064,13 @@ bool GameEventMgr::IsActiveHoliday(HolidayIds id)
 bool IsHolidayActive(HolidayIds id)
 {
     return sGameEventMgr.IsActiveHoliday(id);
+}
+
+void GameEventMgr::OnEventHappened(uint16 event_id, bool activate, bool resume)
+{
+    sMapMgr.DoForAllMaps([event_id, activate, resume](Map* map) -> void
+    {
+        if (map->GetInstanceData())
+            map->OnEventHappened(event_id, activate, resume);
+    });
 }
