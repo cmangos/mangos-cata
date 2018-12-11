@@ -1,8 +1,8 @@
-CREATE DATABASE `mangos` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
+CREATE DATABASE `catamangos` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
-CREATE DATABASE `characters` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
+CREATE DATABASE `catacharacters` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
-CREATE DATABASE `realmd` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
+CREATE DATABASE `catarealmd` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 CREATE USER 'mangos'@'localhost' IDENTIFIED BY 'mangos';
 
